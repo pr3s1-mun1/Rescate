@@ -1,0 +1,50 @@
+{% include 'navbar.html' %}
+<body >
+    <div class="container">
+        {% include 'pestanas.html' %}
+    </div>
+
+    <div class="container bg-white p-4 rounded shadow-sm mt-4">
+        <h1 class="text-center mb-4">Catálogo de Equipos</h1>
+
+        <form method="GET" class="row g-2 mb-3">
+            <div class="col-md-10">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar equipo...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">🔍</button>
+            </div>
+        </form>
+        <a href="{% url 'add_catalogo' 'equipos' %}">
+            <button class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</button>
+        </a>   
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Clave</th>
+                    <th>Descripción</th>
+                    <th class="text-center">Unidad</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipo in equipos %}
+                <tr>
+                    <td>{{ equipo.clave }}</td>
+                    <td>{{ equipo.descripcion }}</td>
+                    <td class="text-center">{{ equipo.unidad }}</td>
+                    <td class="d-flex justify-content-center">
+                        <a href="{% url 'update_catalogo' 'equipos' equipo.clave%}" class="btn btn-warning btn-sm me-2">✏️</a>
+                        <form action="{% url 'delete_catalogo' 'equipos' equipo.clave %}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este equipo?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                        </form>                        
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center">No se encontraron equipos</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>

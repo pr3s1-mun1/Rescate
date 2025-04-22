@@ -1,0 +1,54 @@
+{% include 'navbar.html' %}
+
+<body >
+    <div class="container">
+        {% include 'pestanas.html' %}
+    </div>
+
+    <div class="container bg-white p-4 rounded shadow-sm mt-4">
+        <h1 class="text-center mb-4">Catálogo de Bases</h1>
+
+        <form method="GET" class="row g-2 mb-3">
+            <div class="col-md-10">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar base...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">🔍</button>
+            </div>
+        </form>
+
+        <a href="{% url 'add_catalogo' 'bases' %}" class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</a>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Lista de Bases</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for base in bases %}
+                    <tr>
+                        <td>
+                            <span class="d-inline-block" style="width: 20px; height: 20px; border-radius: 3px; background-color: rgb({{ base.rojo }}, {{ base.verde }}, {{ base.azul }})"></span>
+                            <span class="ms-2">{{ base.clave }}</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'update_catalogo' 'bases' base.clave %}" class="btn btn-warning btn-sm">✏️</a>
+                            <form method="POST" action="{% url 'delete_catalogo' 'bases' base.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta base?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">No se encontraron bases</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>

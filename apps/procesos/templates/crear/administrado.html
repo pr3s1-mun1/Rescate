@@ -1,0 +1,68 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+        <div class="container py-5">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Administrado</h1>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="administrado" id="input-administrado-seleccionado">
+                    
+                    <div class="row align-items-start">
+                        <div class="col-md-6">
+                            <p><strong>Administrado disponible:</strong> 
+                                <span id="contador-administrado-disponible">0</span>
+                            </p>
+                            <table class="table table-striped table-bordered" id="tabla-administrado-disponible">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Clave</th>
+                                        <th scope="col">Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for medicamento in medicamentos %}
+                                    <tr ondblclick="moverASeleccionadosadministrado(this, '{{ medicamento.descripcion }}', '{{ medicamento.unidad }}')">
+                                        <td>{{ medicamento.clave }}</td>
+                                        <td>{{ medicamento.descripcion }}</td>
+                                        <td style="display: none;">{{ medicamento.unidad }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p><strong>Administrado asignado:</strong> 
+                                <span id="contador-administrado-asignado">0</span>
+                            </p>
+                            <table class="table table-bordered table-hover" id="tabla-administrado-asignado">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Descripción</th>
+                                        <th scope="col">Unidad</th>
+                                        <th scope="col">Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se insertan con JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button type="submit" class="btn btn-primary" name="submit_administrado">Asignar</button>
+                        <a href="#" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>    
+        </div>
+    </div>
+</body>
+
+<script src="{% static 'js/admini_asign.js' %}"></script>
+
+

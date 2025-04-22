@@ -1,0 +1,66 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+        <div class="container py-5">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Materiales</h1>
+        
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="materiales_seleccionados" id="input-materiales-seleccionados">
+                    
+                    <div class="row align-items-start">
+                        <div class="col-md-6">
+                            <p><strong>Materiales disponibles:</strong> 
+                                <span id="contador-materiales-disponibles">0</span>
+                            </p>
+                            <table class="table table-striped table-bordered" id="tabla-materiales-disponibles">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Clave</th>
+                                        <th scope="col">Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for material in materiales %}
+                                    <tr ondblclick="moverASeleccionadosMaterial(this, '{{ material.clave }}', '{{ material.descripcion }}', '{{ material.unidad }}')">
+                                        <td>{{ material.clave }}</td>
+                                        <td>{{ material.descripcion }}</td>
+                                        <td style="display: none;">{{ material.unidad }}  </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                        <div class="col-md-6">
+                            <p><strong>Materiales asignados:</strong> 
+                                <span id="contador-materiales-asignados">0</span>
+                            </p>
+                            <table class="table table-bordered table-hover" id="tabla-materiales-asignados">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Descripción</th>
+                                        <th scope="col">Unidad</th>
+                                        <th scope="col">Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Aquí se insertan los asignados por JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button type="submit" class="btn btn-primary" name="submit_materiales">Asignar</button>
+                        <a href="#" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>    
+        </div>
+    </div>
+</body>
+
+<script src="{% static 'js/material_asign.js' %}"></script>

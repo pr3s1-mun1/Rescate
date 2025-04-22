@@ -1,0 +1,122 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+        <div class="container py-5">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Selección de Partes Corporales</h1>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="partes_seleccionadas" id="input-partes-seleccionadas">
+                    
+                    <div class="row align-items-start">
+                        <!-- Columna izquierda - Figura humana posterior -->
+                        <div class="col-md-4 human-body-container">
+                            <svg width="200" height="400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 500" class="human-body w-100 h-100">
+                                <!-- Cabeza circular dividida en 4 cuadrantes -->
+                                <path class="parte-cuerpo parte-cabeza" id="head-ul" d="M150,60 L150,30 A30,30 0 0,0 120,60 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA POST. SUP. IZQUIERDA" data-valor="18"/>
+                                <path class="parte-cuerpo parte-cabeza" id="head-ur" d="M150,60 L180,60 A30,30 0 0,0 150,30 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA POST. SUP. DERECHA" data-valor=""/>
+                                <path class="parte-cuerpo parte-cabeza" id="head-ll" d="M150,60 L120,60 A30,30 0 0,0 150,90 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA POST. INF. IZQUIERDA" data-valor=""/>
+                                <path class="parte-cuerpo parte-cabeza" id="head-lr" d="M150,60 L150,90 A30,30 0 0,0 180,60 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA POST. INF. DERECHA" data-valor=""/>
+                                <circle cx="150" cy="60" r="30" fill="none" stroke="#333" stroke-width="1.5"/>
+                            
+                                <!-- Torso dividido -->
+                                <rect class="parte-cuerpo parte-torso" id="torso-left-1" x="120" y="90" width="60" height="120" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="LESIÓN ESPALDA" data-value=""/>
+  
+                                <!-- Brazos -->
+                                <rect class="parte-cuerpo" id="left-shoulder" x="90" y="90" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Hombro Izquierdo" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-arm" x="90" y="120" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Brazo Izquierdo" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-forearm" x="90" y="160" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Antebrazo Izquierdo" data-valor=""/>
+                                
+                                <rect class="parte-cuerpo" id="right-shoulder" x="180" y="90" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Hombro Derecho" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-arm" x="180" y="120" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Brazo Derecho" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-forearm" x="180" y="160" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Antebrazo Derecho" data-valor=""/>
+                            
+                                <!-- Piernas -->
+                                <rect class="parte-cuerpo" id="left-thigh" x="120" y="210" width="30" height="50" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Muslo Izquierdo" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-knee" x="120" y="260" width="30" height="20" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Rodilla Izquierda" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-leg" x="120" y="280" width="30" height="70" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Pierna Izquierda" data-valor=""/>
+                                
+                                <rect class="parte-cuerpo" id="right-thigh" x="150" y="210" width="30" height="50" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Muslo Derecho" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-knee" x="150" y="260" width="30" height="20" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Rodilla Derecha" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-leg" x="150" y="280" width="30" height="70" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Pierna Derecha" data-valor=""/>
+                            </svg>
+                            <h3>Posterior</h3>
+                        </div>
+
+                        <!-- Columna central - Figura humana frontal -->
+                        <div class="col-md-4 human-body-container">
+                            <svg width="200" height="400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 500" class="human-body w-100 h-100">
+                                <!-- Cabeza circular dividida en 4 cuadrantes -->
+                                <path class="parte-cuerpo parte-cabeza" id="head-ul" d="M150,60 L150,30 A30,30 0 0,0 120,60 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA FRONT. SUP. IZQUIERDA" data-valor="18"/>
+                                <path class="parte-cuerpo parte-cabeza" id="head-ur" d="M150,60 L180,60 A30,30 0 0,0 150,30 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA FRONT. SUP. DERECHA" data-valor=""/>
+                                <path class="parte-cuerpo parte-cabeza" id="head-ll" d="M150,60 L120,60 A30,30 0 0,0 150,90 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA FRONT. INF. IZQUIERDA" data-valor=""/>
+                                <path class="parte-cuerpo parte-cabeza" id="head-lr" d="M150,60 L150,90 A30,30 0 0,0 180,60 L150,60 Z" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="CABEZA FRONT. INF. DERECHA" data-valor=""/>
+                                <circle cx="150" cy="60" r="30" fill="none" stroke="#333" stroke-width="1.5"/>
+                            
+                                <!-- Torso dividido -->
+                                <rect class="parte-cuerpo parte-torso" id="torso-left-1" x="120" y="90" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="TORAX SUPERIOR IZQUIERDO" data-valor=""/>
+                                <rect class="parte-cuerpo parte-torso" id="torso-left-2" x="120" y="120" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="TORAX INFERIOR IZQUIERDO" data-valor=""/>
+                                <rect class="parte-cuerpo parte-torso" id="torso-left-3" x="120" y="150" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="ABDOMEN SUPERIOR IZQUIERDO" data-valor=""/>
+                                <rect class="parte-cuerpo parte-torso" id="torso-left-4" x="120" y="180" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="ABDOMEN INFERIOR IZQUIERDO" data-valor=""/>
+                                
+                                <rect class="parte-cuerpo parte-torso" id="torso-right-1" x="150" y="90" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="TORAX SUPERIOR DERECHO" data-valor=""/>
+                                <rect class="parte-cuerpo parte-torso" id="torso-right-2" x="150" y="120" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="TORAX INFERIOR DERECHO" data-valor=""/>
+                                <rect class="parte-cuerpo parte-torso" id="torso-right-3" x="150" y="150" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="ABDOMEN SUPERIOR DERECHO" data-valor=""/>
+                                <rect class="parte-cuerpo parte-torso" id="torso-right-4" x="150" y="180" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="ABDOMEN INFERIOR DERECHO" data-valor=""/>
+                            
+                                <!-- Brazos -->
+                                <rect class="parte-cuerpo" id="left-shoulder" x="90" y="90" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Hombro Izquierdo" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-arm" x="90" y="120" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Brazo Izquierdo" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-forearm" x="90" y="160" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Antebrazo Izquierdo" data-valor=""/>
+                                
+                                <rect class="parte-cuerpo" id="right-shoulder" x="180" y="90" width="30" height="30" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Hombro Derecho" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-arm" x="180" y="120" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Brazo Derecho" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-forearm" x="180" y="160" width="30" height="40" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Antebrazo Derecho" data-valor=""/>
+                            
+                                <!-- Piernas -->
+                                <rect class="parte-cuerpo" id="left-thigh" x="120" y="210" width="30" height="50" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Muslo Izquierdo" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-knee" x="120" y="260" width="30" height="20" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Rodilla Izquierda" data-valor=""/>
+                                <rect class="parte-cuerpo" id="left-leg" x="120" y="280" width="30" height="70" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Pierna Izquierda" data-valor=""/>
+                                
+                                <rect class="parte-cuerpo" id="right-thigh" x="150" y="210" width="30" height="50" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Muslo Derecho" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-knee" x="150" y="260" width="30" height="20" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Rodilla Derecha" data-valor=""/>
+                                <rect class="parte-cuerpo" id="right-leg" x="150" y="280" width="30" height="70" fill="#f8f9fa" stroke="#333" stroke-width="1.5" data-parte="Pierna Derecha" data-valor=""/>
+                            </svg>
+                            <h3>Frontal</h3>
+                        </div>
+
+                        <!-- Columna derecha - Tabla de selección -->
+                        <div class="col-md-4 selection-table-container">
+                            <p><strong>Partes seleccionadas:</strong> 
+                                <span id="contador-partes-seleccionadas">0</span>
+                            </p>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered" id="tabla-partes-seleccionadas">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Parte del cuerpo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llenará dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button type="submit" class="btn btn-primary" name="submit_partes">Guardar selección</button>
+                        <a href="#" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>    
+        </div>
+    </div>
+
+    <script src="{% static 'js/lesion_asign.js'%}"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Hoja de Servicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJX3cRrR5QJSP1Xr5V4v7wiM0Yx6evFhHO2a4aqGn0FSWlf5F6pAnQkj0r8G" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/servicio.css' %}">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="d-flex">
+        {% include 'sidebar.html' %}
+
+        <div class="container">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="formulario-tab" data-bs-toggle="tab" href="#formulario" role="tab" aria-controls="formulario" aria-selected="true">Servicio</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="vista1-tab" data-bs-toggle="tab" href="#vista1" role="tab" aria-controls="vista1" aria-selected="false">Unidad</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="vista2-tab" data-bs-toggle="tab" href="#vista2" role="tab" aria-controls="vista2" aria-selected="false">Paramédicos</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista3-tab" data-bs-toggle="tab" href="#vista3" role="tab" aria-controls="vista3" aria-selected="false">Procedimiento</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista4-tab" data-bs-toggle="tab" href="#vista4" role="tab" aria-controls="vista4" aria-selected="false">Alergia</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista5-tab" data-bs-toggle="tab" href="#vista5" role="tab" aria-controls="vista5" aria-selected="false">Material</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista6-tab" data-bs-toggle="tab" href="#vista6" role="tab" aria-controls="vista6" aria-selected="false">Ingerido</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista7-tab" data-bs-toggle="tab" href="#vista7" role="tab" aria-controls="vista7" aria-selected="false">Administrado</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista8-tab" data-bs-toggle="tab" href="#vista8" role="tab" aria-controls="vista8" aria-selected="false">Paramédicos</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista9-tab" data-bs-toggle="tab" href="#vista9" role="tab" aria-controls="vista9" aria-selected="false">Equipo</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista10-tab" data-bs-toggle="tab" href="#vista10" role="tab" aria-controls="vista10" aria-selected="false">Lesion</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista11-tab" data-bs-toggle="tab" href="#vista11" role="tab" aria-controls="vista11" aria-selected="false">Impacto</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista12-tab" data-bs-toggle="tab" href="#vista12" role="tab" aria-controls="vista12" aria-selected="false">Unidad</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link disabled" id="vista13-tab" data-bs-toggle="tab" href="#vista13" role="tab" aria-controls="vista13" aria-selected="false">Testigos</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="formulario" role="tabpanel" aria-labelledby="formulario-tab">
+                    {% include 'crear/servicio.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista1" role="tabpanel" aria-labelledby="vista1-tab">
+                    {% include 'crear/unidad_asignado.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista2" role="tabpanel" aria-labelledby="vista2-tab">
+                    {% include 'crear/paramedico_asignado.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista3" role="tabpanel" aria-labelledby="vista3-tab">
+                    {% include 'crear/procedimiento.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista4" role="tabpanel" aria-labelledby="vista4-tab">
+                    {% include 'crear/alergia.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista5" role="tabpanel" aria-labelledby="vista5-tab">
+                    {% include 'crear/material.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista6" role="tabpanel" aria-labelledby="vista6-tab">
+                    {% include 'crear/ingerido.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista7" role="tabpanel" aria-labelledby="vista7-tab">
+                    {% include 'crear/administrado.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista8" role="tabpanel" aria-labelledby="vista8-tab">
+                    {% include 'crear/paramedico_asignado.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista9" role="tabpanel" aria-labelledby="vista9-tab">
+                    {% include 'crear/equipo.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista10" role="tabpanel" aria-labelledby="vista10-tab">
+                    {% include 'crear/lesion.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista11" role="tabpanel" aria-labelledby="vista11-tab">
+                    {% include 'crear/impacto.html' %}
+                </div>
+            
+                <div class="tab-pane fade" id="vista12" role="tabpanel" aria-labelledby="vista12-tab">
+                    {% include 'crear/unidad_asignado.html' %}
+                </div>
+
+                <div class="tab-pane fade" id="vista13" role="tabpanel" aria-labelledby="vista13-tab">
+                    {% include 'crear/testigos.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

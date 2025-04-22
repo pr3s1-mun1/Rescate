@@ -1,0 +1,64 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+        <div class="container py-5">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Procedimientos</h1>
+        
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="procedimientos_seleccionados" id="input-procedimientos-seleccionados">
+                    
+                    <div class="row align-items-start">
+                        <div class="col-md-6">
+                            <p><strong>Procedimientos disponibles:</strong> 
+                                <span id="contador-procedimientos-disponibles">0</span>
+                            </p>
+                            <table class="table table-striped table-bordered" id="tabla-procedimientos-disponibles">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Protocolo</th>
+                                        <th scope="col">Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for procedimiento in procedimientos %}
+                                    <tr ondblclick="moverASeleccionadosProcedimiento(this, '{{ procedimiento.protocolo }}', '{{ procedimiento.descripcion }}')">
+                                        <td>{{ procedimiento.protocolo }}</td>
+                                        <td>{{ procedimiento.descripcion }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                        <div class="col-md-6">
+                            <p><strong>Procedimientos asignados:</strong> 
+                                <span id="contador-procedimientos-asignados">0</span>
+                            </p>
+                            <table class="table table-bordered table-hover" id="tabla-procedimientos-asignados">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Protocolo</th>
+                                        <th scope="col">Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Aquí se insertan los asignados por JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button type="submit" class="btn btn-primary" name="submit_procedimientos">Asignar</button>
+                        <a href="#" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>    
+        </div>
+    </div>
+</body>
+
+<script src="{% static 'js/procedi_asig.js' %}"></script>

@@ -1,0 +1,60 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+        <div class="container">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Paramédicos Asignados</h1>
+        
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="paramedicos_seleccionados" id="input-paramedicos-seleccionados">
+                    
+                    <div class="row align-items-start">
+                        <div class="col-md-6">
+                            <p><strong>Paramédicos no asignados:</strong> 
+                                <span id="contador-paramedicos-disponibles">0</span>
+                            </p>
+                            <table class="table table-striped table-bordered" id="tabla-paramedicos-disponibles">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Clave</th>
+                                        <th scope="col">Nombre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for paramedico in paramedicos %}
+                                    <tr ondblclick="moverASeleccionados(this, '{{ paramedico.clave }}', '{{ paramedico.nombre }}')">
+                                        <td>{{ paramedico.clave }}</td>
+                                        <td>{{ paramedico.nombre }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                        <div class="col-md-6">
+                            <p><strong>Paramédicos asignados:</strong> 
+                                <span id="contador-paramedicos-asignados">0</span>
+                            </p>
+                            <table class="table table-bordered table-hover" id="tabla-paramedicos-asignados">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Clave</th>
+                                        <th scope="col">Nombre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>    
+        </div>
+    </div>
+
+</body>
+
+<script src="{% static 'js/paramed_asig.js' %}"></script>

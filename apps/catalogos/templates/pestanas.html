@@ -1,0 +1,38 @@
+<div class="container my-3 p-3 bg-light rounded shadow-sm">
+    <div class="row g-2 justify-content-center text-center gap-2">
+        <a href="{% url 'catalogo_general' 'ambulancias' %}" title="Ambulancias" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/ambulancias/' %} btn-primary {% endif %}">🚑</a>
+        <a href="{% url 'catalogo_general' 'alergias' %}" title="Alergias" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/alergias/' %} btn-primary {% endif %}">🤧</a>
+        <a href="{% url 'catalogo_general' 'bases' %}" title="Bases" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/bases/' %} btn-primary {% endif %}">🏥</a>
+        <a href="{% url 'catalogo_general' 'hospitales' %}" title="Hospitales" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/hospitales/' %} btn-primary {% endif %}">🏥</a>
+        <a href="{% url 'catalogo_general' 'paramedicos' %}" title="Paramédicos" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/paramedicos/' %} btn-primary {% endif %}">👨‍⚕️</a>
+        <a href="{% url 'catalogo_general' 'tipos_servicio' %}" title="Tipos de servicio" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/tipos_servicio/' %} btn-primary {% endif %}">📝</a>
+        <a href="{% url 'catalogo_general' 'grupos_servicio' %}" title="Grupos de servicio" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/grupos_servicio/' %} btn-primary {% endif %}">📌</a>
+        <a href="{% url 'catalogo_general' 'procedimientos' %}" title="Procedimientos" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/procedimientos/' %} btn-primary {% endif %}">📋</a>
+        <a href="{% url 'catalogo_general' 'tipos_unidades' %}" title="Tipos de unidades" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/tipos_unidades/' %} btn-primary {% endif %}">🚗</a>
+        <a href="{% url 'catalogo_general' 'enfermedades' %}" title="Enfermedades" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/enfermedades/' %} btn-primary {% endif %}">🦠</a>
+        <a href="{% url 'catalogo_general' 'grupos_enfermedades' %}" title="Grupos de enfermedades" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/grupos_enfermedades/' %} btn-primary {% endif %}">🔬</a>
+        <a href="{% url 'catalogo_general' 'medicamentos' %}" title="Medicamentos" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/medicamentos/' %} btn-primary {% endif %}">💊</a>
+        <a href="{% url 'catalogo_general' 'materiales' %}" title="Materiales" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/materiales/' %} btn-primary {% endif %}">📦</a>
+        <a href="{% url 'catalogo_general' 'equipos' %}" title="Equipos" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/equipos/' %} btn-primary {% endif %}">🛠️</a>
+        <a href="{% url 'catalogo_general' 'marcas_vehiculos' %}" title="Marcas de vehículos" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/marcas_vehiculos/' %} btn-primary {% endif %}">🚙</a>
+        <a href="{% url 'catalogo_general' 'calles' %}" title="Calles" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/calles/' %} btn-primary {% endif %}">🛤️</a>
+        <a href="{% url 'catalogo_general' 'colonias' %}" title="Colonias" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/colonias/' %} btn-primary {% endif %}">🏘️</a>
+    </div>
+</div>

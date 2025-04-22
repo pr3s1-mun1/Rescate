@@ -1,0 +1,111 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+
+        <div class="container">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Crear Hoja de Servicio</h1>
+
+                <form method="post" id="submit_servicio">
+                    {% csrf_token %}
+
+                    <div class="groupbox mb-4">
+                        <h2 class="groupbox-title">Datos del servicio o evento</h2>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.fecha.id_for_label }}" class="form-label">Fecha</label>
+                                    {{ form.fecha }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.estatus.id_for_label }}" class="form-label">Estatus</label>
+                                    {{ form.estatus }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.colonia_emergencia.id_for_label }}" class="form-label">Colonia</label>
+                                    {{ form.colonia_emergencia }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.direccion_emergencia.id_for_label }}" class="form-label">Dirección</label>
+                                    {{ form.direccion_emergencia }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.calle_entre.id_for_label }}" class="form-label">Cruce</label>
+                                    {{ form.calle_entre }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group highlight-field">
+                                    <label for="{{ form.numero_servicio.id_for_label }}" class="form-label"># Servicio</label>
+                                    {{ form.clave }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.descripcion_evento.id_for_label }}" class="form-label">Descripción</label>
+                            {{ form.descripcion_evento }}
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.tipo_servicio_reporta.id_for_label }}" class="form-label">Servicio Reportado</label>
+                                    {{ form.tipo_servicio_reporta }}
+                                </div>
+                            </div>
+                        
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.tipo_servicio_realizado.id_for_label }}" class="form-label">Servicio Realizado</label>
+                                    {{ form.tipo_servicio_realizado }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="groupbox mb-4">
+                        <h2 class="groupbox-title">Radio operador</h2>
+
+                        <div class="form-group">
+                            <label for="{{ form.nombre_persona_reporta.id_for_label }}" class="form-label">Nombre</label>
+                            {{ form.nombre_persona_reporta }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.edad_persona_reporta.id_for_label }}" class="form-label">Edad</label>
+                                    {{ form.edad_persona_reporta }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.telefono_persona_reporta.id_for_label }}" class="form-label">Teléfono</label>
+                                    {{ form.telefono_persona_reporta }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.sexo_persona_reporta.id_for_label }}" class="form-label">Sexo</label>
+                                    {{ form.sexo_persona_reporta }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-4">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="{% static 'js/general_asig.js' %}"></script>

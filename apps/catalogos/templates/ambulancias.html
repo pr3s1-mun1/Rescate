@@ -1,0 +1,63 @@
+{% include 'navbar.html' %}
+
+<body class="">
+    <div class="container">
+        {% include 'pestanas.html' %}
+    </div>
+
+    <div class="container bg-white p-4 rounded shadow-sm mt-4">
+        <h1 class="text-center mb-3">Catálogo de Ambulancias</h1>
+        
+        <form method="GET" class="row g-2">
+            <div class="col-md-10">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar ambulancia...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">🔍</button>
+            </div>
+        </form>
+
+        <a href="{% url 'add_catalogo' 'ambulancias' %}" class="btn btn-success my-3">
+            Nuevo {{ catalogo|title }}
+        </a>
+
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Clave</th>
+                        <th>Ambulancia</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ambulancia in ambulancias %}
+                    <tr>
+                        <td>{{ ambulancia.clave }}</td>
+                        <td>{{ ambulancia.descripcion }}</td>
+                        <td>
+                            {% if ambulancia.estado == "1" %}
+                                <span class="badge bg-success">Activo</span>
+                            {% elif ambulancia.estado == "3" %}
+                                <span class="badge bg-warning text-dark">Reparación</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'update_catalogo' 'ambulancias' ambulancia.clave %}" class="btn btn-warning btn-sm">✏️</a>
+                            <form method="POST" action="{% url 'delete_catalogo' 'ambulancias' ambulancia.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta ambulancia?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No se encontraron ambulancias</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>
+</body>

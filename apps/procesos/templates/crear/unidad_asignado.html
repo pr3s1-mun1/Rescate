@@ -1,0 +1,65 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+        <div class="container">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Tipo de Unidad Asignado</h1>
+        
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Total de unidades:</strong> <span id="contador-unidades">[ 0 ]</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Total de unidades asignadas:</strong> <span id="contados-unidades">[ 0 ]</span></p>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-start">
+                        <div class="col-md-6">
+                            <table class="table table-striped table-bordered" id="tabla-unidades">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Clave</th>
+                                        <th scope="col">Nombre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for unidad in unidades %}
+                                    <tr ondblclick="moverUnidadASeleccionados(this, '{{ unidad.clave }}', '{{ unidad.descripcion }}')">
+                                        <td>{{ unidad.clave }}</td>
+                                        <td>{{ unidad.descripcion }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover" id="tabla-seleccionados">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Tipo de Unidad</th>
+                                        <th scope="col">ID Unidad</th>
+                                        <th scope="col">Agente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>    
+        </div>
+    </div>
+
+</body>
+
+<script src="{% static 'js/unidad_asig.js' %}"></script>
+
+</html>

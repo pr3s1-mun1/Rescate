@@ -1,0 +1,209 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Buscar Servicios</title>
+    <link rel="stylesheet" href="{% static 'css/servicio.css' %}">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="d-flex">
+        {% include 'sidebar.html' %}
+
+        <div class="container py-5">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+
+                <h1 class="text-center mb-4">Buscador de Servicios</h1>
+
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="clave" class="form-control" placeholder="Buscar por clave o nombre...">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                    </div>
+                </form>
+
+                <a href="{% url 'formulario_servicio'%}" class="btn btn-success">Generar Hoja de Servicio</a>
+                
+                {% load static %}
+
+                <div class="servicios-container">
+                    {% for servicio in servicios %}
+                    <div class="servicio-card">
+                        <div class="servicio-header">
+                            <h3>{{ servicio.nombre_persona_reporta }}</h3>
+                            <span class="servicio-id">#{{ servicio.clave }}</span>
+                        </div>
+                        
+                        <div class="servicio-body">
+                            <div class="servicio-info">
+                                <div>
+                                    <span class="info-label">Fecha:</span>
+                                    <span>{{ servicio.fecha|date:"l, j F Y" }}</span>
+                                </div>
+                                <div>
+                                    <span class="info-label">Edad/Sexo:</span>
+                                    <span>{{ servicio.edad }} años / {{ servicio.sexo }}</span>
+                                </div>
+                                <div>
+                                    <span class="info-label">Ubicación:</span>
+                                    <span>{{ servicio.direccion_emergencia.calle|truncatechars:25 }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="servicio-details">
+                                <div class="detail-item">
+                                    <i class="icon-ambulancia"></i>
+                                    <span>{{ servicio.ambulancia }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="icon-hospital"></i>
+                                    <span>{{ servicio.hospital }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="icon-servicio"></i>
+                                    <span>{{ servicio.tipo_servicio_realizado.descripcion|default:"Urgencia" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="servicio-actions">
+                            <button class="btn-ver">Ver detalles</button>
+                            <button class="btn-editar">Editar</button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-resultados">
+                        <p>No se encontraron servicios registrados</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <style>
+                    .servicios-container {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                        gap: 20px;
+                        padding: 15px;
+                    }
+                    
+                    .servicio-card {
+                        border: 1px solid #e0e0e0;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                        transition: box-shadow 0.3s ease;
+                    }
+                    
+                    .servicio-header {
+                        background-color: #f8f9fa;
+                        padding: 15px;
+                        border-bottom: 1px solid #e0e0e0;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    
+                    .servicio-header h3 {
+                        margin: 0;
+                        font-size: 1.1rem;
+                        color: #333;
+                    }
+                    
+                    .servicio-id {
+                        background-color: #e9ecef;
+                        padding: 3px 8px;
+                        border-radius: 4px;
+                        font-size: 0.8rem;
+                        color: #495057;
+                    }
+                    
+                    .servicio-body {
+                        padding: 15px;
+                    }
+                    
+                    .servicio-info {
+                        margin-bottom: 15px;
+                    }
+                    
+                    .servicio-info div {
+                        margin-bottom: 8px;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .info-label {
+                        font-weight: 600;
+                        color: #555;
+                        margin-right: 5px;
+                    }
+                    
+                    .servicio-details {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px;
+                        margin-top: 15px;
+                    }
+                    
+                    .detail-item {
+                        display: flex;
+                        align-items: center;
+                        background-color: #f1f8fe;
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 0.85rem;
+                    }
+                    
+                    .detail-item i {
+                        margin-right: 5px;
+                        color: #4a90e2;
+                    }
+                    
+                    .servicio-actions {
+                        display: flex;
+                        border-top: 1px solid #e0e0e0;
+                        padding: 10px 15px;
+                        background-color: #f8f9fa;
+                    }
+                    
+                    .btn-ver, .btn-editar {
+                        flex: 1;
+                        padding: 8px;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 0.85rem;
+                        margin: 0 5px;
+                    }
+                    
+                    .btn-ver {
+                        background-color: #4a90e2;
+                        color: white;
+                    }
+                    
+                    .btn-editar {
+                        background-color: #e9ecef;
+                        color: #333;
+                    }
+                    
+                    .no-resultados {
+                        grid-column: 1 / -1;
+                        text-align: center;
+                        padding: 40px;
+                        color: #6c757d;
+                    }
+                </style>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

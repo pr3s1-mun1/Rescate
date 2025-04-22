@@ -1,0 +1,118 @@
+.groupbox {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.groupbox-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+h1 {
+  color: #333 !important;
+  font-weight: bold !important;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+h2 {
+  color: #04847c !important;
+  font-weight: bold !important;
+  border-bottom: 2px solid #b4b4b4;
+  padding-bottom: 10px;
+}
+
+/*Estilos para el diseño del cuerpo*/
+.human-body {
+  display: block;
+  margin: 10px auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+}
+
+.human-body svg {
+  margin-left: 50%;
+}
+
+.parte-cuerpo {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.parte-cuerpo:hover {
+  opacity: 0.9;
+  stroke: #ff6d00 !important;
+  stroke-width: 2px !important;
+}
+
+.parte-cuerpo.active {
+  filter: drop-shadow(0 0 8px rgba(255, 46, 46, 0.7));
+  stroke: #ff5900 !important;
+}
+
+
+/*Estilos para imagenes de vehiculo */
+.imagenes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.imagen:hover {
+  filter: drop-shadow(0 0 8px rgba(131, 172, 255, 0.7));
+  transition: border-color 0.3s ease-in-out;
+}
+
+
+.imagen:hover img {
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.imagen:hover p {
+  color: #fff;
+  transition: color 0.1s ease-in-out;
+}
+
+
+.img3 .imagen{
+  margin-inline: 25px;
+}
+
+.imagen img {
+  object-fit: cover;
+  display: block;
+}
+
+/* Estilos para inputs de signos vitales 
+.groupbox.tilosinput .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.groupbox.tilosinput label {
+    background-color: #04847c;
+    color: white;
+    padding: 0.375rem 0.75rem;
+    min-width: 120px;
+    text-align: right;
+    margin-right: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0;
+}
+
+.groupbox.tilosinput input {
+    flex-grow: 1;
+    width: 30%;
+    padding: 0.375rem 0.75rem;
+}*/
