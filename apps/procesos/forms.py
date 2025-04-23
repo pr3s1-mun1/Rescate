@@ -147,3 +147,13 @@ class PacientesForm(forms.ModelForm):
                 field.widget.attrs.update({
                     'class': 'form-control mb-3'
                 })
+
+class UnidadAsignadoForm(forms.ModelForm):
+    class Meta:
+        model = UnidadxServicio
+        fields = '__all__'
+
+class ParamedicoAsignadoForm(forms.ModelForm):
+    class Meta:
+        model = ParamedicoxPaciente
+        fields = '__all__'

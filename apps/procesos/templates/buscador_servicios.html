@@ -12,7 +12,6 @@
     {% include 'navbar.html' %}
 
     <div class="d-flex">
-        {% include 'sidebar.html' %}
 
         <div class="container py-5">
             <div class="form-container bg-light p-4 rounded shadow-sm">
@@ -26,8 +25,6 @@
                         <button type="submit" class="btn btn-primary">Buscar</button>
                     </div>
                 </form>
-
-                <a href="{% url 'formulario_servicio'%}" class="btn btn-success">Generar Hoja de Servicio</a>
                 
                 {% load static %}
 

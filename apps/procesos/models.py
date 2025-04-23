@@ -26,15 +26,20 @@ class Servicio(models.Model):
     def __str__(self):
         return f"{self.descripcion_evento[:30]}"
 
+    @classmethod
+    def obtener_siguiente_numero(cls):
+        ultimo = cls.objects.order_by('-clave').first()
+        return ultimo.clave + 1 if ultimo else 1
+
 
 class ParamedicoxPaciente(models.Model):
-    clave = models.IntegerField(primary_key=True)
-    paciente = models.CharField(max_length=100)
+    clave = models.AutoField(primary_key=True)
+    paciente = models.CharField(max_length=100, null=True)
     paramedico = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True)
     servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True)
 
 class UnidadxServicio(models.Model):
-    clave = models.IntegerField(primary_key=True)
+    clave = models.AutoField(primary_key=True)
     unidad = models.ForeignKey(TipoUnidad, on_delete=models.SET_NULL, null=True)
     servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True)
     numero_unidad = models.CharField(max_length=20)
