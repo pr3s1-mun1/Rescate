@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from apps.catalogos.forms import *
 from .forms import ParamedicosForm, ServicioForm, PacientesForm, UnidadAsignadoForm, ParamedicoAsignadoForm
@@ -18,7 +18,7 @@ def formulario_servicio(request):
         'procedimientos': Procedimiento.objects.all(),
         'pacientes': PacientexServicio.objects.all(),
         
-        'modo_crear': True
+        'editar': False
     }
     
     return render(request, 'create.html', context)
@@ -70,7 +70,6 @@ def crear_servicio(request):
                     unidad[campo] = valor
 
             for unidad in unidades_asignadas:
-                print(f"Guardando unidad asignada: {unidad}")
                 try:
                     tipo_unidad = TipoUnidad.objects.get(clave=unidad.get('clave'))
                     unidad_asignado = UnidadxServicio(
@@ -96,7 +95,6 @@ def crear_servicio(request):
                     paramedico['clave'] = valor
 
             for paramedico in paramedicos_asignados:
-                print(f"Guardando paramédico asignado: {paramedico}")
                 try:
                     paramedico_obj = Paramedicos.objects.get(clave=paramedico['clave'])
                     paramedico_asignado = ParamedicoxPaciente(
@@ -104,14 +102,12 @@ def crear_servicio(request):
                         paramedico=paramedico_obj
                     )
                     paramedico_asignado.save()
-                    print("Paramédico asignado guardado correctamente")
                 except Exception as e:
                     print(f"Error al guardar paramédico asignado: {e}")
 
 
-            return redirect('vista_main')
+                return redirect('modificar_servicio', pk=servicio.id if servicio else None)
         else:
-            print("El formulario de servicio no es válido")
             print(servicio_form.errors)
     else:
         servicio_form = ServicioForm()
@@ -121,3 +117,25 @@ def crear_servicio(request):
         'unidades': TipoUnidad.objects.all(),
         'paramedicos': Paramedicos.objects.all()
     })
+
+def modificar_servicio(request, pk):
+    servicio = get_object_or_404(Servicio, pk=pk)
+    form_servicio = ServicioForm(instance=servicio)  
+    
+    context = {
+        'form': form_servicio,
+        'form_paciente': PacientesForm(),
+        'paramedicos': Paramedicos.objects.all(),
+        'unidades': TipoUnidad.objects.all(),
+        'alergias': Alergia.objects.all(),
+        'materiales': Material.objects.all(),
+        'medicamentos': Medicamento.objects.all(),
+        'equipos': Equipo.objects.all(),
+        'procedimientos': Procedimiento.objects.all(),
+        'pacientes': PacientexServicio.objects.filter(servicio=servicio), 
+        
+        'editar': True,
+        'servicio': servicio  
+    }
+    
+    return render(request, 'modificar_servicio.html', context)
