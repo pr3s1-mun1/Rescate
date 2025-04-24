@@ -69,8 +69,10 @@
                         </div>
                         
                         <div class="servicio-actions">
-                            <button class="btn-ver">Ver detalles</button>
-                            <button class="btn-editar">Editar</button>
+                            <form action="{% url 'carga_modifica' servicio.clave  %}" method="post">
+                                {% csrf_token %}
+                                <button class="btn-ver" type="submit">Modificar</button>
+                            </form>
                         </div>
                     </div>
                     {% empty %}

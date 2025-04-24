@@ -116,6 +116,11 @@ class PacientexServicio(models.Model):
     edad_tipo = models.CharField(max_length=1)
     domicilio_numero = models.CharField(max_length=10)
 
+    @classmethod
+    def obtener_siguiente_numero(cls):
+        ultimo = cls.objects.order_by('-clave').first()
+        return ultimo.clave + 1 if ultimo else 1
+
 
 
 

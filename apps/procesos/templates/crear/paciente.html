@@ -98,7 +98,7 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="numero_input">Numero</label>
-                                    <input id="numero_input" class="form-control mb-3">
+                                    <input id="numero_input" name="domicilio_numero" class="form-control mb-3">
                                 </div>
                             </div>
                         </div>
@@ -209,11 +209,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="{{ form_paciente.pulso.id_for_label }}">Pulso</label>
-                                    {{ form_paciente.pulso }}
+                                    {{ form_paciente.pulso_diagnostico }}
                                 </div>
                                 <div class="form-group">
                                     <label for="{{ form_paciente.respiracion.id_for_label }}">Respiración</label>
-                                    {{ form_paciente.respiracion }}
+                                    {{ form_paciente.respiracion_diagnostico }}
                                 </div>
                                 <div class="form-group">
                                     <label for="{{ form_paciente.pupilas.id_for_label }}">Pupilas</label>
@@ -378,8 +378,6 @@
                         </div>
                     </div>
                     
-
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">Guardar</button>
                 </form>
             </div>
         </div>

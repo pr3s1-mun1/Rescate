@@ -44,6 +44,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for paramedico_asignado in paramedicos_asignados %}
+                                        <tr>
+                                            <td>{{ paramedico_asignado.paramedico_id }}</td>
+                                            <td>{{ paramedico_asignado.paramedico.nombre }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>

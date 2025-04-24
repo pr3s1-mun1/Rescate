@@ -48,9 +48,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for unidad_asignada in unidades_asignadas %}
+                                        <tr>
+                                            <td>{{ unidad_asignada.unidad.descripcion }}</td>
+                                            <td>{{ unidad_asignada.numero_unidad }}</td>
+                                            <td>{{ unidad_asignada.agente_nombre }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
+                        
                     </div>
 
                 </form>

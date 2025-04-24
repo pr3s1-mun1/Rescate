@@ -118,13 +118,18 @@ def crear_servicio(request):
         'paramedicos': Paramedicos.objects.all()
     })
 
-def modificar_servicio(request, pk):
+def carga_modifica(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
     form_servicio = ServicioForm(instance=servicio)  
+    form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
+    
+    pacientes = PacientexServicio.objects.filter(servicio=servicio)
+    paramedicos_asignados = ParamedicoxPaciente.objects.filter(servicio=servicio)
+    unidades_asignadas = UnidadxServicio.objects.filter(servicio=servicio)
     
     context = {
         'form': form_servicio,
-        'form_paciente': PacientesForm(),
+        'form_paciente': form_paciente,
         'paramedicos': Paramedicos.objects.all(),
         'unidades': TipoUnidad.objects.all(),
         'alergias': Alergia.objects.all(),
@@ -132,10 +137,57 @@ def modificar_servicio(request, pk):
         'medicamentos': Medicamento.objects.all(),
         'equipos': Equipo.objects.all(),
         'procedimientos': Procedimiento.objects.all(),
-        'pacientes': PacientexServicio.objects.filter(servicio=servicio), 
+        'pacientes': pacientes,
+        'paramedicos_asignados': paramedicos_asignados,
+        'unidades_asignadas': unidades_asignadas,
         
         'editar': True,
         'servicio': servicio  
     }
     
     return render(request, 'modificar_servicio.html', context)
+
+def guardar_todo(request, pk):
+    servicio = get_object_or_404(Servicio, pk=pk)
+
+    if request.method == 'POST':
+        form_servicio = ServicioForm(request.POST, instance=servicio)
+        pacientes_form = PacientesForm(request.POST)
+
+        if form_servicio.is_valid():
+            form_servicio.save()
+
+        if pacientes_form.is_valid():
+            try:
+                paciente = pacientes_form.save(commit=False)
+                paciente.servicio = servicio
+                paciente.save()
+            except Exception as e:
+                print(f"Error al guardar paciente: {e}")
+        else:
+            print("El formulario de paciente no es válido")
+            for campo, error in pacientes_form.errors.items():
+                print(f"Campo: {campo}, Error: {error}")
+
+
+        ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
+        paramedicos_asignados = []
+        for clave, valor in request.POST.items():
+            if clave.startswith('paramedicos['):
+                paramedico_id = clave.split('[')[1].split(']')[0]
+                paramedico = Paramedicos.objects.get(clave=valor)
+                paramedico_asignado = ParamedicoxPaciente(servicio=servicio, paramedico=paramedico)
+                paramedico_asignado.save()
+
+        UnidadxServicio.objects.filter(servicio=servicio).delete()
+        unidades_asignadas = []
+        for clave, valor in request.POST.items():
+            if clave.startswith('unidades['):
+                clave_unidad = clave.split('[')[1].split(']')[0]
+                campo = clave.split('[')[2].split(']')[0]
+                unidad = TipoUnidad.objects.get(clave=clave_unidad)
+                if campo == 'id_unidad':
+                    unidad_asignada = UnidadxServicio(servicio=servicio, unidad=unidad, numero_unidad=valor)
+                    unidad_asignada.save()
+
+    return redirect('vista_main')
