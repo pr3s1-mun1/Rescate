@@ -39,16 +39,12 @@ class ParamedicosForm(forms.ModelForm):
 
 
 
+from django import forms
+from .models import PacientexServicio  # Asegúrate de importar correctamente tu modelo
+
 class PacientesForm(forms.ModelForm):
     EXCLUDED_FIELDS = ['clave']
-    CHOICES = ['fallecio']
-    CHECKED_BOX = [
-        'firmo_liberacion',
-        'tiene_acompanante',
-        'entregan_pertenencias',
-        'libera_responsabilidad',
-        'niega_firmar',
-    ]
+    CHOICES = ['fallecio', 'entregan_pertenencias', 'tiene_acompanante', 'libera_responsabilidad', 'firmo_liberacion', 'niega_firmar']
     DATE_FIELDS = [
         'fecha_salida',
         'fecha_llegada',
@@ -59,7 +55,7 @@ class PacientesForm(forms.ModelForm):
 
     class Meta:
         model = PacientexServicio
-        fields = '__all__'
+        exclude = ['servicio']
         widgets = {
             'estado_civil': forms.Select(choices=[
                 ('1', 'CASADO (A)'),
@@ -128,20 +124,26 @@ class PacientesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Configurar campos de fecha con el formato datetime-local
         for field_name, field in self.fields.items():
-            if field_name in self.CHECKED_BOX:
-                field.widget = forms.RadioSelect(
-                    choices=[(True, 'Sí'), (False, 'No')],
-                    attrs={'class': 'd-inline mb-3'}
+            if field_name in self.DATE_FIELDS:
+                field.widget = forms.DateTimeInput(
+                    attrs={
+                        'type': 'datetime-local',
+                        'class': 'form-control mb-3'
+                    },
+                    format='%Y-%m-%dT%H:%M'
                 )
+                
+                # Formatear el valor inicial si existe
+                if self.instance and hasattr(self.instance, field_name):
+                    date_value = getattr(self.instance, field_name)
+                    if date_value:
+                        field.initial = date_value.strftime('%Y-%m-%dT%H:%M')
             elif field_name in self.CHOICES:
                 field.widget = forms.Select(
                     choices=[(True, 'Sí'), (False, 'No')],
                     attrs={'class': 'form-control mb-3'}
-                )
-            elif field_name in self.DATE_FIELDS:
-                field.widget = forms.DateInput(
-                    attrs={'type': 'datetime-local', 'class': 'form-control mb-3'}                
                 )
             elif field_name in self.EXCLUDED_FIELDS:
                 field.widget.attrs.update({

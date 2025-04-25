@@ -44,7 +44,7 @@
                                 </div>
                                 <div>
                                     <span class="info-label">Edad/Sexo:</span>
-                                    <span>{{ servicio.edad }} años / {{ servicio.sexo }}</span>
+                                    <span>{{ servicio.edad_persona_reporta }} años / {{ servicio.sexo_persona_reporta }}</span>
                                 </div>
                                 <div>
                                     <span class="info-label">Ubicación:</span>
@@ -81,123 +81,6 @@
                     </div>
                     {% endfor %}
                 </div>
-                
-                <style>
-                    .servicios-container {
-                        display: grid;
-                        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                        gap: 20px;
-                        padding: 15px;
-                    }
-                    
-                    .servicio-card {
-                        border: 1px solid #e0e0e0;
-                        border-radius: 8px;
-                        overflow: hidden;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                        transition: box-shadow 0.3s ease;
-                    }
-                    
-                    .servicio-header {
-                        background-color: #f8f9fa;
-                        padding: 15px;
-                        border-bottom: 1px solid #e0e0e0;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                    }
-                    
-                    .servicio-header h3 {
-                        margin: 0;
-                        font-size: 1.1rem;
-                        color: #333;
-                    }
-                    
-                    .servicio-id {
-                        background-color: #e9ecef;
-                        padding: 3px 8px;
-                        border-radius: 4px;
-                        font-size: 0.8rem;
-                        color: #495057;
-                    }
-                    
-                    .servicio-body {
-                        padding: 15px;
-                    }
-                    
-                    .servicio-info {
-                        margin-bottom: 15px;
-                    }
-                    
-                    .servicio-info div {
-                        margin-bottom: 8px;
-                        font-size: 0.9rem;
-                    }
-                    
-                    .info-label {
-                        font-weight: 600;
-                        color: #555;
-                        margin-right: 5px;
-                    }
-                    
-                    .servicio-details {
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 10px;
-                        margin-top: 15px;
-                    }
-                    
-                    .detail-item {
-                        display: flex;
-                        align-items: center;
-                        background-color: #f1f8fe;
-                        padding: 5px 10px;
-                        border-radius: 4px;
-                        font-size: 0.85rem;
-                    }
-                    
-                    .detail-item i {
-                        margin-right: 5px;
-                        color: #4a90e2;
-                    }
-                    
-                    .servicio-actions {
-                        display: flex;
-                        border-top: 1px solid #e0e0e0;
-                        padding: 10px 15px;
-                        background-color: #f8f9fa;
-                    }
-                    
-                    .btn-ver, .btn-editar {
-                        flex: 1;
-                        padding: 8px;
-                        border: none;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        font-size: 0.85rem;
-                        margin: 0 5px;
-                    }
-                    
-                    .btn-ver {
-                        background-color: #4a90e2;
-                        color: white;
-                    }
-                    
-                    .btn-editar {
-                        background-color: #e9ecef;
-                        color: #333;
-                    }
-                    
-                    .no-resultados {
-                        grid-column: 1 / -1;
-                        text-align: center;
-                        padding: 40px;
-                        color: #6c757d;
-                    }
-                </style>
-
-
-
 
             </div>
         </div>

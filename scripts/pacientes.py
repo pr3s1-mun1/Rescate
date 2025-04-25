@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import random, datetime
 
-driver = webdriver.Chrome()
+driver = webdriver.Firefox()
 
 driver.get("http://127.0.0.1:8000/procesos/carga_modifica/1/")
 
@@ -245,15 +245,52 @@ numeros = ''.join(random.choices('0123456789', k=3))
 placa_generada = f"{letras}{numeros}"
 campo_placa.send_keys(placa_generada)
 
-opcion_id = "id_tiene_acompanante_0" if random.choice([True, False]) else "id_tiene_acompanante_1"
-campo_tiene_acompanante = WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.ID, opcion_id))
+# Campo para descripcion_pertenencias
+campo_descripcion_pertenencias = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.NAME, "descripcion_pertenencias"))
 )
-campo_tiene_acompanante.click()
+campo_descripcion_pertenencias.send_keys("Cartera, teléfono móvil, llaves")
 
+campo_sexo_acompanante = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.NAME, "sexo_acompanante"))
+)
+sexo_seleccionado = random.choice(["Masculino", "Femenino"])
+campo_sexo_acompanante.send_keys(sexo_seleccionado)
 
+campo_edad = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.NAME, "edad_acompanante"))
+)
+edad_seleccionada = str(random.randint(18, 80))  # Edad entre 18 y 80
+campo_edad.send_keys(edad_seleccionada)
 
+# Campo para parentesco
+campo_parentesco = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.NAME, "parentesco_acompanante"))
+)
+parentescos_posibles = ["Padre", "Madre", "Hermano", "Hermana", "Cónyuge", "Hijo", "Hija", "Amigo"]
+parentesco_seleccionado = random.choice(parentescos_posibles)
+campo_parentesco.send_keys(parentesco_seleccionado)
 
+# Campo para nombre
+campo_nombre = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.NAME, "nombre_acompanante"))
+)
+nombres_posibles = ["Juan Pérez", "María González", "Carlos López", "Ana Martínez", "Luis Ramírez", "Sofía Torres"]
+nombre_seleccionado = random.choice(nombres_posibles)
+campo_nombre.send_keys(nombre_seleccionado)
+
+# Campo para domicilio
+campo_domicilio = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.NAME, "domicilio_acompanante"))
+)
+domicilios_posibles = [
+    "Calle 123 #45-67, Bogotá",
+    "Avenida Principal 890, Medellín",
+    "Carrera 7 #12-34, Cali",
+    "Calle Luna 56, Barranquilla"
+]
+domicilio_seleccionado = random.choice(domicilios_posibles)
+campo_domicilio.send_keys(domicilio_seleccionado)
 # Mantén el navegador abierto
 input("Presiona Enter para cerrar el navegador...")
 driver.quit()

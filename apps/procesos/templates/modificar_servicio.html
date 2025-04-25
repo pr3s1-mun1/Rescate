@@ -298,30 +298,37 @@
             });
         });
 
-        // Validación del formulario
         document.getElementById('servicioForm').addEventListener('submit', function(e) {
-            // Validar la pestaña activa antes de enviar
-            const activeTab = document.querySelector('.tab-pane.active');
-            
-            if (!validarPestana(activeTab.id)) {
-                e.preventDefault();
-                alert('Por favor complete todos los campos requeridos en la pestaña actual');
-                return false;
-            }
-            
+            // Activar todos los campos ocultos antes de enviar
+            const allFields = this.querySelectorAll('input, select, textarea');
+            allFields.forEach(field => {
+                if (field.type === 'radio' || field.type === 'checkbox') {
+                    if (!field.checked) {
+                        // Crear un campo oculto para radios/checkboxes no seleccionados
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = field.name;
+                        hiddenInput.value = '';
+                        this.appendChild(hiddenInput);
+                    }
+                } else if (!field.name) {
+                    // Asegurar que todos los campos tengan nombre
+                    field.name = field.id;
+                }
+            });
+
             // Deshabilitar botón para evitar múltiples envíos
-            const submitBtn = document.getElementById('btnGuardar');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
-            
+            const submitBtns = document.querySelectorAll('[type="submit"]');
+            submitBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
+            });
+
             return true;
         });
 
         function validarPestana(tabId) {
-            // Implementa la validación específica para cada pestaña
             console.log(`Validando pestaña: ${tabId}`);
-            
-            // Ejemplo básico de validación
             let isValid = true;
             const currentTab = document.getElementById(tabId);
             
@@ -338,16 +345,16 @@
             return isValid;
         }
 
-        // Validación al cambiar de pestaña (opcional)
         document.getElementById('mainTabs').addEventListener('click', function(e) {
-            if (e.target.classList.contains('nav-link') && !e.target.classList.contains('active')) {
-                const currentTab = document.querySelector('.tab-pane.active');
-                if (!validarPestana(currentTab.id)) {
-                    e.preventDefault();
-                    alert('Complete los campos requeridos antes de cambiar de pestaña');
-                }
+        if (e.target.classList.contains('nav-link') && !e.target.classList.contains('active')) {
+            const currentTab = document.querySelector('.tab-pane.active');
+            if (!validarPestana(currentTab.id)) {
+                e.preventDefault();
+                alert('Complete los campos requeridos antes de cambiar de pestaña');
+                return false;
             }
-        });
+        }
+    });
     </script>
 </body>
 </html>

@@ -7,7 +7,6 @@
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Pacientes del servicio</h1>
 
-                <form method="post">
                     {% csrf_token %}
 
                     <div class="groupbox mb-4">
@@ -95,11 +94,9 @@
                                 </div>
                             </div>
                     
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="numero_input">Numero</label>
-                                    <input id="numero_input" name="domicilio_numero" class="form-control mb-3">
-                                </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.domicilio_numero.id_for_label }}">Número</label>
+                                {{ form_paciente.domicilio_numero }} <!-- Cambia el input manual por el campo del formulario -->
                             </div>
                         </div>
                     
@@ -131,6 +128,10 @@
                                 <div class="form-group">
                                     <label for="{{ form_paciente.edad.id_for_label }}">Edad</label>
                                     {{ form_paciente.edad }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form_paciente.edad_tipo.id_for_label }}">Edad</label>
+                                    {{ form_paciente.edad_tipo }}
                                 </div>
                             </div>
                         </div>
@@ -378,7 +379,6 @@
                         </div>
                     </div>
                     
-                </form>
             </div>
         </div>
     </div>
