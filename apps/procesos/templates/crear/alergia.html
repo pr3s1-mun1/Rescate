@@ -2,11 +2,10 @@
 
 <body>
     <div class="d-flex">
-        <div class="container py-5">
+        <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Alergias</h1>
         
-                <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="alergias_seleccionadas" id="input-alergias-seleccionadas">
                     
@@ -35,7 +34,7 @@
                     
                         <div class="col-md-6">
                             <p><strong>Alergias asignadas:</strong> 
-                                <span id="contador-alergias-asignadas">0</span>
+                                <span id="contador-alergias-asignadas">{{ alergias_asignados.count }}</span>
                             </p>
                             <table class="table table-bordered table-hover" id="tabla-alergias-asignadas">
                                 <thead>
@@ -45,17 +44,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Aquí se insertan las asignadas por JavaScript -->
+                                    {% for alergia in alergias_asignados %}
+                                        <tr>
+                                            <td>{{ alergia.clave }}</td>
+                                            <td>{{ alergia.alergia.descripcion }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
+                        
                     </div>
-                    
-                    <div class="d-flex justify-content-center gap-3 mt-3">
-                        <button type="submit" class="btn btn-primary" name="submit_alergias">Asignar</button>
-                        <a href="#" class="btn btn-secondary">Cancelar</a>
-                    </div>
-                </form>
             </div>    
         </div>
     </div>

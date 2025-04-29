@@ -3,7 +3,7 @@
 <body>
     <div class="d-flex">
 
-        <div class="container py-5">
+        <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Pacientes del servicio</h1>
 
@@ -46,8 +46,11 @@
                                 <div class="form-group mb-3">
                                     <label for="{{ form_paciente.clave.id_for_label }}"># Paciente</label>
                                     {{ form_paciente.clave }}
+                                    
+                                    <input type="hidden" name="paciente_id" value="{% if form_paciente.instance.id %}{{ form_paciente.instance.id }}{% endif %}">
                                 </div>
                             </div>
+                            
                         </div>
                     </div>                    
 
@@ -377,8 +380,7 @@
                                 {{ form_paciente.niega_firmar }}
                             </div>
                         </div>
-                    </div>
-                    
+                    </div>                  
             </div>
         </div>
     </div>

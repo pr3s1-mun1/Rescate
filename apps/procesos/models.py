@@ -122,9 +122,50 @@ class PacientexServicio(models.Model):
         return ultimo.clave + 1 if ultimo else 1
 
 
+class ProcedimientoxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    procedimiento = models.ForeignKey(Procedimiento, on_delete=models.SET_NULL, null=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
 
 
+class AlergiaxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    alergia = models.ForeignKey(Alergia, on_delete=models.SET_NULL, null=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
 
+class MaterialxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    material = models.ForeignKey(Material, on_delete=models.SET_NULL, null=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    cantidad = models.IntegerField()
+    costo = models.DecimalField(max_digits=18, decimal_places=2)
 
+class MedIngeridoxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    medicamento = models.ForeignKey(Medicamento, on_delete=models.SET_NULL, null=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    cantidad = models.IntegerField()
 
+class MedAdministradoxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    medicamento = models.ForeignKey(Medicamento, on_delete=models.SET_NULL, null=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    cantidad = models.IntegerField()
+    costo = models.DecimalField(max_digits=18, decimal_places=2)
 
+class EquipoxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    equipo = models.ForeignKey(Equipo, on_delete=models.SET_NULL, null=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    cantidad = models.IntegerField()
+
+class LesionxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    lesion = models.CharField(max_length=100)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    valor = models.DecimalField(max_digits=5, decimal_places=2)
+
+class ImpactoxVehiculo(models.Model):
+    clave = models.AutoField(primary_key=True)
+    impacto = models.CharField(max_length=100)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)

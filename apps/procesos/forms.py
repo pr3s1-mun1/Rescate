@@ -154,6 +154,7 @@ class PacientesForm(forms.ModelForm):
                 field.widget.attrs.update({
                     'class': 'form-control mb-3'
                 })
+    
 
 class UnidadAsignadoForm(forms.ModelForm):
     class Meta:

@@ -16,10 +16,22 @@ function moverASeleccionadosAlergia(fila, clave, nombre) {
     const celdaNombre = nuevaFila.insertCell(1);
     celdaNombre.textContent = nombre;
 
+    const inputClaveAlergia = document.createElement("input");
+    inputClaveAlergia.type = "hidden";
+    inputClaveAlergia.name = `alergias[${clave}][clave]`;
+    inputClaveAlergia.value = clave;
+    document.forms[0].appendChild(inputClaveAlergia);
+
+    const inputNombreAlergia = document.createElement("input");
+    inputNombreAlergia.type = "hidden";
+    inputNombreAlergia.name = `alergias[${clave}][descripcion]`;
+    inputNombreAlergia.value = nombre;
+    document.forms[0].appendChild(inputNombreAlergia);
+
     fila.remove();
 
-    actualizarContador("tabla-alergias-disponibles", "contador-alergias-disponibles");
-    actualizarContador("tabla-alergias-asignadas", "contador-alergias-asignadas");
+    actualizarContadorAlergia("tabla-alergias-disponibles", "contador-alergias-disponibles");
+    actualizarContadorAlergia("tabla-alergias-asignadas", "contador-alergias-asignadas");
 }
 
 function moverAOriginalesAlergia(fila, clave, nombre) {
@@ -39,8 +51,13 @@ function moverAOriginalesAlergia(fila, clave, nombre) {
 
     fila.remove();
 
-    actualizarContador("tabla-alergias-disponibles", "contador-alergias-disponibles");
-    actualizarContador("tabla-alergias-asignadas", "contador-alergias-asignadas");
+    actualizarContadorAlergia("tabla-alergias-disponibles", "contador-alergias-disponibles");
+    actualizarContadorAlergia("tabla-alergias-asignadas", "contador-alergias-asignadas");
+}
+
+function actualizarContadorAlergia(idTabla, idContador) {
+    const totalFilas = document.querySelectorAll(`#${idTabla} tbody tr:not(.d-none)`).length;
+    document.getElementById(idContador).textContent = totalFilas;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -53,8 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    const filasAsignadas = document.querySelectorAll("#tabla-alergias-asignadas tbody tr");
-    filasAsignadas.forEach(fila => {
+    const filasAsignados = document.querySelectorAll("#tabla-alergias-asignadas tbody tr");
+    filasAsignados.forEach(fila => {
         fila.addEventListener("dblclick", function () {
             const clave = this.cells[0].textContent.trim();
             const nombre = this.cells[1].textContent.trim();
@@ -62,23 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    actualizarContador("tabla-alergias-disponibles", "contador-alergias-disponibles");
-    actualizarContador("tabla-alergias-asignadas", "contador-alergias-asignadas");
-
-    const form = document.querySelector("form");
-    if (form) {
-        form.addEventListener("submit", function (e) {
-            const seleccionados = [];
-            document.querySelectorAll("#tabla-alergias-asignadas tbody tr").forEach(tr => {
-                const clave = tr.cells[0].textContent.trim();
-                const nombre = tr.cells[1].textContent.trim();
-                seleccionados.push({ clave, nombre });
-            });
-
-            const inputOculto = document.getElementById("input-alergias-seleccionadas");
-            if (inputOculto) {
-                inputOculto.value = JSON.stringify(seleccionados);
-            }
-        });
-    }
+    actualizarContadorAlergia("tabla-alergias-disponibles", "contador-alergias-disponibles");
+    actualizarContadorAlergia("tabla-alergias-asignadas", "contador-alergias-asignadas");
 });

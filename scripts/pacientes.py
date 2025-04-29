@@ -7,7 +7,7 @@ import random, datetime
 
 driver = webdriver.Firefox()
 
-driver.get("http://127.0.0.1:8000/procesos/carga_modifica/1/")
+driver.get("http://127.0.0.1:8000/procesos/carga_modifica/2/")
 
 campo_enfermedad = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.NAME, "enfermedad"))
