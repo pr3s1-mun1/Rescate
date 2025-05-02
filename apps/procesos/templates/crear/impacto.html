@@ -5,60 +5,74 @@
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4" style="font-size: 1.8rem;">Impacto</h1>
+                <input type="hidden" id="input-impacto-seleccionadas" name="impacto">
 
-                <h3 class="mb-4" style="font-size: 1.4rem;">Detalles de Impactos en el Vehiculo</h3>
                 <div class="row mt-6">
                     <div class="col-md-6">
                         <div class="row">
-                            <div class="col-md-4">
-                                    <img src="{% static 'img/vehfrontal.gif' %}" alt="" class="img-fluid">
+                            <div class="col-md-4 imagenes">
+                                <div class="imagen">
+                                    <img src="{% static 'img/vehfrontal.gif' %}" alt="FRONTAL" class="img-fluid">
+                                </div>
                                 <p class="text-center mt-1">Frontal</p>
                             </div>
                             <div class="col-md-4">
-                                    <img src="{% static 'img/vehposterior.gif' %}" alt="" class="img-fluid">
+                                <div class="imagen">
+                                    <img src="{% static 'img/vehposterior.gif' %}" alt="POSTERIOR" class="img-fluid">
+                                </div>
                                 <p class="text-center mt-1">Posterior</p>
                             </div>
                             <div class="col-md-4">
-                                    <img src="{% static 'img/vehsuperior.gif' %}" alt="" class="img-fluid">
+                                <div class="imagen">
+                                    <img src="{% static 'img/vehsuperior.gif' %}" alt="SUPERIOR O VOLCADURA" class="img-fluid">
+                                </div>
                                 <p class="text-center mt-1">Superior/Volcadura</p>
                             </div>
                         </div>
 
                         <div class="row mt-4 imagenes">
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehconddel.gif' %}" alt="ESQUINA LATERAL IZQUIERDA" class="img-fluid">
+                                <img src="{% static 'img/vehconddel.gif' %}" alt="ESQUINA LATERAL IZQUIERDA"
+                                    class="img-fluid">
                             </div>
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcondpuertadel.gif' %}" alt="PUERTA CONDUCTOR" class="img-fluid">
+                                <img src="{% static 'img/vehcondpuertadel.gif' %}" alt="PUERTA CONDUCTOR"
+                                    class="img-fluid">
                             </div>
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcondpuertaatras.gif' %}" alt="PUERTA DETRAS CONDUCTOR" class="img-fluid">
+                                <img src="{% static 'img/vehcondpuertaatras.gif' %}" alt="PUERTA DETRAS CONDUCTOR"
+                                    class="img-fluid">
                             </div>
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcondatras.gif' %}" alt="ESQUINA POSTERIOR IZQUIERDA" class="img-fluid">
+                                <img src="{% static 'img/vehcondatras.gif' %}" alt="ESQUINA POSTERIOR IZQUIERDA"
+                                    class="img-fluid">
                             </div>
                         </div>
                         <p class="text-center mt-1">Vehiculo del lado del conductor</p>
 
                         <div class="row mt-4">
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcopatras.gif' %}" alt="ESQUINA POSTERIOR DERECHA" class="img-fluid">
+                                <img src="{% static 'img/vehcopatras.gif' %}" alt="ESQUINA POSTERIOR DERECHA"
+                                    class="img-fluid">
                             </div>
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcoppuertaatras.gif' %}" alt="PUERTA DETRAS ACOMPAÑANTE" class="img-fluid">
+                                <img src="{% static 'img/vehcoppuertaatras.gif' %}" alt="PUERTA DETRAS ACOMPAÑANTE"
+                                    class="img-fluid">
                             </div>
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcoppuertadel.gif' %}" alt="PUERTA ACOMPAÑANTE" class="img-fluid">
+                                <img src="{% static 'img/vehcoppuertadel.gif' %}" alt="PUERTA ACOMPAÑANTE"
+                                    class="img-fluid">
                             </div>
                             <div class="col-md-3 imagen">
-                                    <img src="{% static 'img/vehcopdel.gif' %}" alt="ESQUINA LATERAL DERECHA" class="img-fluid">
+                                <img src="{% static 'img/vehcopdel.gif' %}" alt="ESQUINA LATERAL DERECHA"
+                                    class="img-fluid">
                             </div>
                         </div>
                         <p class="text-center mt-1">Vehiculo del lado del copiloto</p>
                     </div>
 
                     <div class="col-md-6">
-                        <p style="font-size: 1rem;"><strong>Partes seleccionadas:</strong> 
+                        <p style="font-size: 1rem;"><strong>Partes seleccionadas:</strong>
                             <span id="contador-impacto-seleccionadas">0</span>
                         </p>
                         <table class="table table-striped table-bordered" id="tabla-impacto-seleccionadas">

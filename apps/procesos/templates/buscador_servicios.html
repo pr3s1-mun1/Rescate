@@ -73,6 +73,11 @@
                                 {% csrf_token %}
                                 <button class="btn-ver" type="submit">Modificar</button>
                             </form>
+
+                            <form method="post" action="{% url 'reporte_servicio' servicio.clave %}" target="_blank">
+                                {% csrf_token %}
+                                <button class="btn-ver" type="submit">Generar Reporte</button>
+                            </form>
                         </div>
                     </div>
                     {% empty %}

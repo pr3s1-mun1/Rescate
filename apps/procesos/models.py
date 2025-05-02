@@ -151,7 +151,7 @@ class MedAdministradoxPaciente(models.Model):
     medicamento = models.ForeignKey(Medicamento, on_delete=models.SET_NULL, null=True)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
     cantidad = models.IntegerField()
-    costo = models.DecimalField(max_digits=18, decimal_places=2)
+    costo = models.DecimalField(max_digits=18, decimal_places=2, default=0)
 
 class EquipoxPaciente(models.Model):
     clave = models.AutoField(primary_key=True)
@@ -163,7 +163,7 @@ class LesionxPaciente(models.Model):
     clave = models.AutoField(primary_key=True)
     lesion = models.CharField(max_length=100)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
-    valor = models.DecimalField(max_digits=5, decimal_places=2)
+    valor = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
 class ImpactoxVehiculo(models.Model):
     clave = models.AutoField(primary_key=True)

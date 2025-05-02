@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var partesAgregadas = new Set(); 
     var contador = 0; 
     
+    // Elementos
+    var tablaImpactos = document.getElementById('tabla-impacto-seleccionadas');
+    var inputHidden = document.getElementById('input-impacto-seleccionadas'); // input hidden para los impactos
 
     function actualizarContador() {
         var contadorElement = document.getElementById('contador-impacto-seleccionadas');
@@ -10,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contadorElement.textContent = "[ " + contador + " ]";
         }
     }
-    
+
     /**
      * @param {HTMLTableRowElement} fila 
      * @param {string} parteCuerpo 
@@ -20,26 +23,25 @@ document.addEventListener('DOMContentLoaded', function() {
         partesAgregadas.delete(parteCuerpo); 
         contador--;
         actualizarContador();
+        prepararDatosEnvio()
     }
-    
 
     function manejarDobleClick() {
         var parteCuerpo = this.getAttribute('alt');
-        var tabla = document.getElementById('tabla-impacto-seleccionadas');
         
         if (partesAgregadas.has(parteCuerpo)) {
             return;
         }
         
-        if (!tabla) {
+        if (!tablaImpactos) {
             console.error('No se encontró la tabla con ID "tabla-impacto-seleccionadas"');
             return;
         }
         
-        var tbody = tabla.getElementsByTagName('tbody')[0];
+        var tbody = tablaImpactos.getElementsByTagName('tbody')[0];
         if (!tbody) {
             tbody = document.createElement('tbody');
-            tabla.appendChild(tbody);
+            tablaImpactos.appendChild(tbody);
         }
         
         var fila = tbody.insertRow();
@@ -55,11 +57,20 @@ document.addEventListener('DOMContentLoaded', function() {
         partesAgregadas.add(parteCuerpo);
         contador++;
         actualizarContador();
+        prepararDatosEnvio()
     }
-    
+
     imagenes.forEach(function(imagen) {
         imagen.addEventListener('dblclick', manejarDobleClick);
     });
     
+    // Función para preparar el JSON de los impactos seleccionados
+    function prepararDatosEnvio() {
+        const impactos = Array.from(tablaImpactos.querySelectorAll('tr')).map(
+            tr => ({ descripcion: tr.dataset.parte })
+        );
+        inputHidden.value = JSON.stringify(impactos); // Asignar el JSON al campo oculto
+    }
+
     actualizarContador();
 });

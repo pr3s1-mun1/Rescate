@@ -57,7 +57,7 @@ function moverAOriginalesAlergia(fila, clave, nombre) {
 
 function actualizarContadorAlergia(idTabla, idContador) {
     const totalFilas = document.querySelectorAll(`#${idTabla} tbody tr:not(.d-none)`).length;
-    document.getElementById(idContador).textContent = totalFilas;
+    document.getElementById(idContador).textContent = "[ " + totalFilas + " ]";
 }
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -53,3 +53,9 @@ function moverAOriginales(fila, clave, nombre) {
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
+    actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
+});
+

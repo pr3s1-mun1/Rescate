@@ -69,7 +69,7 @@ function moverAOriginalesProcedimiento(fila, clave, nombre, protocolo) {
 
 function actualizarContadorProcedimiento(idTabla, idContador) {
     const totalFilas = document.querySelectorAll(`#${idTabla} tbody tr:not(.d-none)`).length;
-    document.getElementById(idContador).textContent = totalFilas;
+    document.getElementById(idContador).textContent = "[ " + totalFilas + " ]";
 }
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -14,24 +14,30 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Esta parte ya está seleccionada');
             return;
         }
-
+    
+        const parteElemento = document.querySelector(`.parte-cuerpo[data-parte="${descripcion}"]`);
+        const valor = parteElemento?.getAttribute('data-valor') || "";
+    
         const newRow = document.createElement('tr');
         newRow.dataset.parte = descripcion;
+        newRow.dataset.valor = valor;  // <-- Aquí se guarda el valor
         newRow.innerHTML = `
             <td>${tablaSeleccionados.children.length + 1}</td>
             <td>${descripcion}</td>
+            <td>${valor}</td> <!-- Opcional: mostrarlo en la tabla -->
         `;
-
+    
         newRow.addEventListener('dblclick', function() {
             eliminarParte(this, descripcion);
         });
-
+    
         tablaSeleccionados.appendChild(newRow);
         partesAgregadas.add(descripcion);
         
         actualizarContador();
         actualizarInputHidden();
     }
+    
 
     /**
      * @param {HTMLTableRowElement} fila 
@@ -43,7 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
         reordenarNumeracion();
         actualizarContador();
         actualizarInputHidden();
+    
+        const parteElemento = document.querySelector(`.parte-cuerpo[data-parte="${descripcion}"]`);
+        if (parteElemento) {
+            parteElemento.style.fill = "";
+        }
     }
+    
 
     function reordenarNumeracion() {
         const filas = tablaSeleccionados.querySelectorAll('tr');
@@ -58,10 +70,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function actualizarInputHidden() {
         const partes = Array.from(tablaSeleccionados.querySelectorAll('tr')).map(
-            tr => tr.querySelector('td:nth-child(2)').textContent
+            tr => ({
+                descripcion: tr.dataset.parte,
+                valor: tr.dataset.valor
+            })
         );
         inputHidden.value = JSON.stringify(partes);
     }
+    
 
     partesCuerpo.forEach(parte => {
         parte.addEventListener('dblclick', function() {

@@ -2,63 +2,61 @@
 
 <body>
     <div class="d-flex">
-        <div class="container py-5">
+        <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Equipo</h1>
+                <input type="hidden" name="equipo" id="input-equipo-seleccionado">
 
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="equipo" id="input-equipo-seleccionado">
-                    
-                    <div class="row align-items-start">
-                        <div class="col-md-6">
-                            <p><strong>Equipo disponible:</strong> 
-                                <span id="contador-equipo-disponible">[ 0 ]</span>
-                            </p>
-                            <table class="table table-striped table-bordered" id="tabla-equipo-disponible">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Clave</th>
-                                        <th scope="col">Descripción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for equipo in equipos %}
-                                    <tr ondblclick="moverASeleccionadosequipo(this, '{{ equipo.descripcion }}', '{{ equipo.unidad }}')">
-                                        <td>{{ equipo.clave }}</td>
-                                        <td>{{ equipo.descripcion }}</td>
-                                        <td style="display: none;">{{ equipo.unidad }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="col-md-6">
-                            <p><strong>Equipo asignado:</strong> 
-                                <span id="contador-equipo-asignado">[ 0 ]</span>
-                            </p>
-                            <table class="table table-bordered table-hover table-hover" id="tabla-equipo-asignado">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Descripción</th>
-                                        <th scope="col">Unidad</th>
-                                        <th scope="col">Cantidad</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Se insertan con JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="row align-items-start">
+                    <div class="col-md-6">
+                        <p><strong>Equipo disponible:</strong>
+                            <span id="contador-equipo-disponible">[ 0 ]</span>
+                        </p>
+                        <table class="table table-striped table-bordered" id="tabla-equipo-disponible">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Clave</th>
+                                    <th scope="col">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for equipo in equipos %}
+                                <tr
+                                    ondblclick="moverASeleccionadosequipo(this, '{{ equipo.descripcion }}', '{{ equipo.unidad }}')">
+                                    <td>{{ equipo.clave }}</td>
+                                    <td>{{ equipo.descripcion }}</td>
+                                    <td style="display: none;">{{ equipo.unidad }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="d-flex justify-content-center gap-3 mt-3">
-                        <button type="submit" class="btn btn-primary" name="submit_equipo">Asignar</button>
-                        <a href="#" class="btn btn-secondary">Cancelar</a>
+                    <div class="col-md-6">
+                        <p><strong>Equipo asignado:</strong>
+                            <span id="contador-equipo-asignado">[ 0 ]</span>
+                        </p>
+                        <table class="table table-bordered table-hover table-hover" id="tabla-equipo-asignado">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Descripción</th>
+                                    <th scope="col">Unidad</th>
+                                    <th scope="col">Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for equipo in equipos_asignados %}
+                                <tr>
+                                    <td>{{ equipo.equipo.descripcion }}</td>
+                                    <td>{{ equipo.equipo.unidad }}</td>
+                                    <td><input type="number" value="{{ equipo.cantidad }}" class="form-control" /></td>                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                </form>
-            </div>    
+                </div>
+            </div>
         </div>
     </div>
 </body>

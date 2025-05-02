@@ -2,7 +2,7 @@
 
 <body>
     <div class="d-flex">
-        <div class="container py-5">
+        <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Materiales</h1>
                 {% csrf_token %}
@@ -49,7 +49,8 @@
                                     <tr>
                                         <td>{{ material.material }}</td>
                                         <td>{{ material.material.unidad }}</td>
-                                        <td><input type="number" value="{{ material.cantidad }}" class="form-control cantidad-material" /></td>                                    </tr>
+                                        <td><input type="number" value="{{ material.cantidad }}" class="form-control" /></td>                                    
+                                    </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
