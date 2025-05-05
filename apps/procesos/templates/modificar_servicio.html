@@ -14,83 +14,100 @@
 
     <div class="d-flex">
         <div class="container">
-            <form method="post" id="servicioForm" action="{% url 'guardar_todo' servicio.clave%}" enctype="multipart/form-data" novalidate>
+            <form method="post" id="servicioForm" action="{% url 'guardar_todo' servicio.clave%}"
+                enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
-                
+
                 <ul class="nav nav-tabs" id="mainTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="servicio-tab" data-bs-toggle="tab" data-bs-target="#servicio" type="button" role="tab" aria-controls="servicio" aria-selected="true">
+                        <button class="nav-link active" id="servicio-tab" data-bs-toggle="tab"
+                            data-bs-target="#servicio" type="button" role="tab" aria-controls="servicio"
+                            aria-selected="true">
                             <i class="fa-solid fa-file-lines me-2"></i>Servicio
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="unidad-tab" data-bs-toggle="tab" data-bs-target="#unidad" type="button" role="tab" aria-controls="unidad" aria-selected="false">
+                        <button class="nav-link" id="unidad-tab" data-bs-toggle="tab" data-bs-target="#unidad"
+                            type="button" role="tab" aria-controls="unidad" aria-selected="false">
                             <i class="fas fa-truck-medical me-2"></i>Unidad
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="paramedicos-tab" data-bs-toggle="tab" data-bs-target="#paramedicos" type="button" role="tab" aria-controls="paramedicos" aria-selected="false">
+                        <button class="nav-link" id="paramedicos-tab" data-bs-toggle="tab" data-bs-target="#paramedicos"
+                            type="button" role="tab" aria-controls="paramedicos" aria-selected="false">
                             <i class="fas fa-user-md me-2"></i>Paramédicos
                         </button>
                     </li>
                     {% if editar %}
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana4-tab" data-bs-toggle="tab" data-bs-target="#pestana4" type="button" role="tab" aria-controls="pestana4" aria-selected="false">
+                        <button class="nav-link" id="paciente-tab" data-bs-toggle="tab" data-bs-target="#paciente"
+                            type="button" role="tab" aria-controls="paciente" aria-selected="false">
                             <i class="fa-solid fa-user me-2"></i>Paciente
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana5-tab" data-bs-toggle="tab" data-bs-target="#pestana5" type="button" role="tab" aria-controls="pestana5" aria-selected="false">
+                        <button class="nav-link" id="embarazo-tab" data-bs-toggle="tab" data-bs-target="#embarazo"
+                            type="button" role="tab" aria-controls="embarazo" aria-selected="false">
                             <i class="fa-solid fa-baby-carriage me-2"></i>Embarazo
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana6-tab" data-bs-toggle="tab" data-bs-target="#pestana6" type="button" role="tab" aria-controls="pestana6" aria-selected="false">
+                        <button class="nav-link" id="procedimiento-tab" data-bs-toggle="tab" data-bs-target="#procedimiento"
+                            type="button" role="tab" aria-controls="procedimiento" aria-selected="false">
                             <i class="fa-solid fa-repeat me-2"></i>Procedimiento
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana7-tab" data-bs-toggle="tab" data-bs-target="#pestana7" type="button" role="tab" aria-controls="pestana7" aria-selected="false">
+                        <button class="nav-link" id="alergia-tab" data-bs-toggle="tab" data-bs-target="#alergia"
+                            type="button" role="tab" aria-controls="alergia" aria-selected="false">
                             <i class="fa-solid fa-bug me-2"></i>Alergía
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana8-tab" data-bs-toggle="tab" data-bs-target="#pestana8" type="button" role="tab" aria-controls="pestana8" aria-selected="false">
+                        <button class="nav-link" id="material-tab" data-bs-toggle="tab" data-bs-target="#material"
+                            type="button" role="tab" aria-controls="material" aria-selected="false">
                             <i class="fa-solid fa-syringe me-2"></i>Material
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana9-tab" data-bs-toggle="tab" data-bs-target="#pestana9" type="button" role="tab" aria-controls="pestana9" aria-selected="false">
+                        <button class="nav-link" id="ingerido-tab" data-bs-toggle="tab" data-bs-target="#ingerido"
+                            type="button" role="tab" aria-controls="ingerido" aria-selected="false">
                             <i class="fa-solid fa-flask me-2"></i>Ingerido
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana10-tab" data-bs-toggle="tab" data-bs-target="#pestana10" type="button" role="tab" aria-controls="pestana10" aria-selected="false">
+                        <button class="nav-link" id="administrado-tab" data-bs-toggle="tab" data-bs-target="#administrado"
+                            type="button" role="tab" aria-controls="administrado" aria-selected="false">
                             <i class="fa-solid fa-vial me-2"></i>Administrado
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana11-tab" data-bs-toggle="tab" data-bs-target="#pestana11" type="button" role="tab" aria-controls="pestana11" aria-selected="false">
+                        <button class="nav-link" id="equipo-tab" data-bs-toggle="tab" data-bs-target="#equipo"
+                            type="button" role="tab" aria-controls="equipo" aria-selected="false">
                             <i class="fa-solid fa-stethoscope me-2"></i>Equipo
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana12-tab" data-bs-toggle="tab" data-bs-target="#pestana12" type="button" role="tab" aria-controls="pestana12" aria-selected="false">
+                        <button class="nav-link" id="lesion-tab" data-bs-toggle="tab" data-bs-target="#lesion"
+                            type="button" role="tab" aria-controls="lesion" aria-selected="false">
                             <i class="fa-solid fa-user-injured me-2"></i>Lesión
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana13-tab" data-bs-toggle="tab" data-bs-target="#pestana13" type="button" role="tab" aria-controls="pestana13" aria-selected="false">
+                        <button class="nav-link" id="impacto-tab" data-bs-toggle="tab" data-bs-target="#impacto"
+                            type="button" role="tab" aria-controls="impacto" aria-selected="false">
                             <i class="fa-solid fa-car me-2"></i>Impacto
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana14-tab" data-bs-toggle="tab" data-bs-target="#pestana14" type="button" role="tab" aria-controls="pestana14" aria-selected="false">
+                        <button class="nav-link" id="testigo-tab" data-bs-toggle="tab" data-bs-target="#testigo"
+                            type="button" role="tab" aria-controls="testigo" aria-selected="false">
                             <i class="fa-solid fa-users me-2"></i>Testigos
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestana15-tab" data-bs-toggle="tab" data-bs-target="#pestana15" type="button" role="tab" aria-controls="pestana15" aria-selected="false">
+                        <button class="nav-link" id="parte-tab" data-bs-toggle="tab" data-bs-target="#parte"
+                            type="button" role="tab" aria-controls="parte" aria-selected="false">
                             <i class="fa-solid fa-comment me-2"></i>Partes
                         </button>
                     </li>
@@ -106,7 +123,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="tab-pane fade" id="unidad" role="tabpanel" aria-labelledby="unidad-tab">
                         {% include 'crear/unidad_asignado.html' %}
                         <div class="d-flex justify-content-between mt-3">
@@ -118,7 +135,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="tab-pane fade" id="paramedicos" role="tabpanel" aria-labelledby="paramedicos-tab">
                         {% include 'crear/paramedico_asignado.html' %}
                         <div class="d-flex justify-content-between mt-3">
@@ -126,7 +143,7 @@
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
                             {% if editar %}
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana4-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="paciente-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                             {% else %}
@@ -136,135 +153,134 @@
                             {% endif %}
                         </div>
                     </div>
-                    
+
                     {% if editar %}
-                    <div class="tab-pane fade" id="pestana4" role="tabpanel" aria-labelledby="pestana4-tab">
+                    <div class="tab-pane fade" id="paciente" role="tabpanel" aria-labelledby="pestana4-tab">
                         {% include 'crear/paciente.html' %}
 
                         <div class="d-flex justify-content-between mt-3">
                             <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paramedicos-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana5-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="embarazo-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="tab-pane fade" id="pestana5" role="tabpanel" aria-labelledby="pestana5-tab">
+
+                    <div class="tab-pane fade" id="embarazo" role="tabpanel" aria-labelledby="pestana5-tab">
                         {% include 'crear/embarazo.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana4-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paciente-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana6-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="procedimiento-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- Pestaña 6 -->
-                    <div class="tab-pane fade" id="pestana6" role="tabpanel" aria-labelledby="pestana6-tab">
+
+                    <div class="tab-pane fade" id="procedimiento" role="tabpanel" aria-labelledby="pestana6-tab">
                         {% include 'crear/procedimiento.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana5-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="embarazo-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana7-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="alergia-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="tab-pane fade" id="pestana7" role="tabpanel" aria-labelledby="pestana7-tab">
+
+                    <div class="tab-pane fade" id="alergia" role="tabpanel" aria-labelledby="pestana7-tab">
                         {% include 'crear/alergia.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana6-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="procedimiento-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana8-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="material-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="tab-pane fade" id="pestana8" role="tabpanel" aria-labelledby="pestana8-tab">
+
+                    <div class="tab-pane fade" id="material" role="tabpanel" aria-labelledby="pestana8-tab">
                         {% include 'crear/material.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana7-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="alergia-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana9-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="ingerido-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="tab-pane fade" id="pestana9" role="tabpanel" aria-labelledby="pestana9-tab">
+
+                    <div class="tab-pane fade" id="ingerido" role="tabpanel" aria-labelledby="pestana9-tab">
                         {% include 'crear/ingerido.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana8-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="material-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana10-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="administrado-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="tab-pane fade" id="pestana10" role="tabpanel" aria-labelledby="pestana10-tab">
+
+                    <div class="tab-pane fade" id="administrado" role="tabpanel" aria-labelledby="pestana10-tab">
                         {% include 'crear/administrado.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana9-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="ingerido-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana11-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="equipo-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Pestaña 11 -->
-                    <div class="tab-pane fade" id="pestana11" role="tabpanel" aria-labelledby="pestana11-tab">
+                    <div class="tab-pane fade" id="equipo" role="tabpanel" aria-labelledby="pestana11-tab">
                         {% include 'crear/equipo.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana10-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="administrado-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana12-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="lesion-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="pestana12" role="tabpanel" aria-labelledby="pestana12-tab">
+                    <div class="tab-pane fade" id="lesion" role="tabpanel" aria-labelledby="pestana12-tab">
                         {% include 'crear/lesion.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana11-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="equipo-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana13-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="impacto-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="pestana13" role="tabpanel" aria-labelledby="pestana13-tab">
+                    <div class="tab-pane fade" id="impacto" role="tabpanel" aria-labelledby="pestana13-tab">
                         {% include 'crear/impacto.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana12-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="lesion-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pestana14-tab">
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="testigo-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="pestana14" role="tabpanel" aria-labelledby="pestana14-tab">
+                    <div class="tab-pane fade" id="testigo" role="tabpanel" aria-labelledby="pestana14-tab">
                         {% include 'crear/testigos.html' %}
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="pestana13-tab">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="impacto-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
                             <button type="submit" class="btn btn-success" id="btnGuardar">
@@ -277,84 +293,8 @@
             </form>
         </div>
     </div>
-    
-    <script>
-        // Navegación entre pestañas
-        document.querySelectorAll('.next-tab').forEach(button => {
-            button.addEventListener('click', function() {
-                const nextTabId = this.getAttribute('data-next-tab');
-                const nextTab = document.getElementById(nextTabId);
-                const tabInstance = new bootstrap.Tab(nextTab);
-                tabInstance.show();
-            });
-        });
 
-        document.querySelectorAll('.prev-tab').forEach(button => {
-            button.addEventListener('click', function() {
-                const prevTabId = this.getAttribute('data-prev-tab');
-                const prevTab = document.getElementById(prevTabId);
-                const tabInstance = new bootstrap.Tab(prevTab);
-                tabInstance.show();
-            });
-        });
-
-        document.getElementById('servicioForm').addEventListener('submit', function(e) {
-            // Activar todos los campos ocultos antes de enviar
-            const allFields = this.querySelectorAll('input, select, textarea');
-            allFields.forEach(field => {
-                if (field.type === 'radio' || field.type === 'checkbox') {
-                    if (!field.checked) {
-                        // Crear un campo oculto para radios/checkboxes no seleccionados
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = field.name;
-                        hiddenInput.value = '';
-                        this.appendChild(hiddenInput);
-                    }
-                } else if (!field.name) {
-                    // Asegurar que todos los campos tengan nombre
-                    field.name = field.id;
-                }
-            });
-
-            // Deshabilitar botón para evitar múltiples envíos
-            const submitBtns = document.querySelectorAll('[type="submit"]');
-            submitBtns.forEach(btn => {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
-            });
-
-            return true;
-        });
-
-        function validarPestana(tabId) {
-            console.log(`Validando pestaña: ${tabId}`);
-            let isValid = true;
-            const currentTab = document.getElementById(tabId);
-            
-            // Verificar campos requeridos
-            currentTab.querySelectorAll('[required]').forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                } else {
-                    field.classList.remove('is-invalid');
-                }
-            });
-            
-            return isValid;
-        }
-
-        document.getElementById('mainTabs').addEventListener('click', function(e) {
-        if (e.target.classList.contains('nav-link') && !e.target.classList.contains('active')) {
-            const currentTab = document.querySelector('.tab-pane.active');
-            if (!validarPestana(currentTab.id)) {
-                e.preventDefault();
-                alert('Complete los campos requeridos antes de cambiar de pestaña');
-                return false;
-            }
-        }
-    });
-    </script>
+    <script src="{% static 'js/modificar.js' %}"></script>
 </body>
+
 </html>

@@ -82,7 +82,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Se llenará dinámicamente -->
+                                {% for impacto in impactos_asignados %}
+                                <tr>
+                                    <td>{{ impacto.impacto }}</td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
