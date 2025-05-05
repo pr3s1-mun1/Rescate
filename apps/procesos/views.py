@@ -17,12 +17,15 @@ import json
 def formulario_buscar(request):
     clave = request.POST.get('clave', '').strip() if request.method == 'POST' else ''
     servicios = Servicio.objects.filter(clave__icontains=clave) if clave else Servicio.objects.all()
+    servicios = servicios.order_by('clave')
+
     pacientes = PacientexServicio.objects.filter(servicio__in=servicios)
-    
+
     return render(request, 'buscador_servicios.html', {
         'servicios': servicios,
         'pacientes': pacientes
     })
+
 
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)

@@ -81,77 +81,7 @@
             </form>
         </div>
     </div>
-    
-    <script>
-        // Navegación entre pestañas
-        document.querySelectorAll('.next-tab').forEach(button => {
-            button.addEventListener('click', function() {
-                const nextTabId = this.getAttribute('data-next-tab');
-                const nextTab = document.getElementById(nextTabId);
-                const tabInstance = new bootstrap.Tab(nextTab);
-                tabInstance.show();
-            });
-        });
 
-        document.querySelectorAll('.prev-tab').forEach(button => {
-            button.addEventListener('click', function() {
-                const prevTabId = this.getAttribute('data-prev-tab');
-                const prevTab = document.getElementById(prevTabId);
-                const tabInstance = new bootstrap.Tab(prevTab);
-                tabInstance.show();
-            });
-        });
-
-        // Validación del formulario
-        document.getElementById('servicioForm').addEventListener('submit', function(e) {
-            // Validar la pestaña activa antes de enviar
-            const activeTab = document.querySelector('.tab-pane.active');
-            
-            if (!validarPestana(activeTab.id)) {
-                e.preventDefault();
-                alert('Por favor complete todos los campos requeridos en la pestaña actual');
-                return false;
-            }
-            
-            // Deshabilitar botón para evitar múltiples envíos
-            const submitBtn = document.getElementById('btnGuardar');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
-            
-            return true;
-        });
-
-        function validarPestana(tabId) {
-            // Implementa la validación específica para cada pestaña
-            console.log(`Validando pestaña: ${tabId}`);
-            
-            // Ejemplo básico de validación
-            let isValid = true;
-            const currentTab = document.getElementById(tabId);
-            
-            // Verificar campos requeridos
-            currentTab.querySelectorAll('[required]').forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                } else {
-                    field.classList.remove('is-invalid');
-                }
-            });
-            
-            return isValid;
-        }
-
-        // Validación al cambiar de pestaña (opcional)
-        document.getElementById('mainTabs').addEventListener('click', function(e) {
-            if (e.target.classList.contains('nav-link') && !e.target.classList.contains('active')) {
-                const currentTab = document.querySelector('.tab-pane.active');
-                if (!validarPestana(currentTab.id)) {
-                    e.preventDefault();
-                    alert('Complete los campos requeridos antes de cambiar de pestaña');
-                }
-            }
-        });
-    </script>
+    <script src="{% static 'js/create.js' %}"></script>
 </body>
 </html>

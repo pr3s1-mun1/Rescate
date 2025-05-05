@@ -1,0 +1,179 @@
+        /* Encabezado */
+        .header-section {
+            padding: 2rem 0;
+        }
+
+        .main-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        /* Tarjetas de servicio */
+        .servicios-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .servicio-card {
+            background: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .servicio-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-name {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .servicio-id {
+            font-size: 0.9rem;
+            padding: 0.35rem 0.5rem;
+            font-weight: bold;
+        }
+
+        .servicio-body {
+            padding: 1.5rem;
+        }
+
+        .servicio-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .info-icon {
+            margin-right: 1rem;
+            color: #3498db;
+            width: 24px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #7f8c8d;
+            display: block;
+            font-size: 0.85rem;
+        }
+
+        .info-value {
+            font-weight: 400;
+            color: #2c3e50;
+        }
+
+        .servicio-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            padding: 0.6rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bg-light-blue {
+            background-color: #e6f2ff;
+            color: #2980b9;
+        }
+
+        .bg-light-green {
+            background-color: #e6ffe6;
+            color: #27ae60;
+        }
+
+        .bg-light-yellow {
+            background-color: #fff9e6;
+            color: #f39c12;
+        }
+
+        .icon-detail {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-text {
+            font-weight: 500;
+        }
+
+        .servicio-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .btn-action {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-edit {
+            background-color: #f8f9fa;
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+
+        .btn-edit:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-report {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-report:hover {
+            background-color: #c0392b;
+        }
+
+        /* Sin resultados */
+        .no-resultados {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Estilo para cuando no hay paciente */
+        .no-paciente {
+            color: #e74c3c;
+            font-style: italic;
+        }

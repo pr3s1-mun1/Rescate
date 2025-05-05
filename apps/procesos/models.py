@@ -48,7 +48,7 @@ class UnidadxServicio(models.Model):
 class PacientexServicio(models.Model):
     #Servicio
     clave = models.IntegerField(primary_key=True)
-    servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True)
+    servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True, related_name='pacientes')
     ambulancia = models.ForeignKey(Ambulancias, on_delete=models.SET_NULL, null=True)
     base = models.ForeignKey(Bases, on_delete=models.SET_NULL, null=True)
     fecha_salida = models.DateTimeField()
