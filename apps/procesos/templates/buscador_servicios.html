@@ -4,89 +4,317 @@
 <html lang="es">
 
 <head>
-    <title>Buscar Servicios</title>
+    <style></style>
     <link rel="stylesheet" href="{% static 'css/servicio.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        /* Encabezado */
+        .header-section {
+            padding: 2rem 0;
+        }
+
+        .main-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        /* Tarjetas de servicio */
+        .servicios-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .servicio-card {
+            background: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .servicio-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-name {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .servicio-id {
+            font-size: 0.9rem;
+            padding: 0.35rem 0.5rem;
+            font-weight: bold;
+        }
+
+        .servicio-body {
+            padding: 1.5rem;
+        }
+
+        .servicio-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .info-icon {
+            margin-right: 1rem;
+            color: #3498db;
+            width: 24px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #7f8c8d;
+            display: block;
+            font-size: 0.85rem;
+        }
+
+        .info-value {
+            font-weight: 400;
+            color: #2c3e50;
+        }
+
+        .servicio-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            padding: 0.6rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bg-light-blue {
+            background-color: #e6f2ff;
+            color: #2980b9;
+        }
+
+        .bg-light-green {
+            background-color: #e6ffe6;
+            color: #27ae60;
+        }
+
+        .bg-light-yellow {
+            background-color: #fff9e6;
+            color: #f39c12;
+        }
+
+        .icon-detail {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-text {
+            font-weight: 500;
+        }
+
+        .servicio-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .btn-action {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-edit {
+            background-color: #f8f9fa;
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+
+        .btn-edit:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-report {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-report:hover {
+            background-color: #c0392b;
+        }
+
+        /* Sin resultados */
+        .no-resultados {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+    </style>
 </head>
 
 <body>
     {% include 'navbar.html' %}
 
     <div class="d-flex">
+        <div class="container">
+            <!-- Encabezado con efecto visual -->
+            <div class="header-section text-center mb-5">
+                <h1 class="main-title">Buscador de Servicios Médicos</h1>
+            </div>
 
-        <div class="container py-5">
-            <div class="form-container bg-light p-4 rounded shadow-sm">
-
-                <h1 class="text-center mb-4">Buscador de Servicios</h1>
-
-                <form method="post" class="mb-4">
+            <!-- Tarjeta de búsqueda con sombra y efecto hover -->
+            <div class="search-card bg-white rounded-lg shadow-sm mb-5">
+                <form method="post" class="mb-0">
                     {% csrf_token %}
-                    <div class="input-group">
-                        <input type="text" name="clave" class="form-control" placeholder="Buscar por clave o nombre...">
-                        <button type="submit" class="btn btn-primary">Buscar</button>
+                    <div class="input-group search-bar">
+                        <span class="input-group-text bg-primary text-white">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="clave" class="form-control form-control-lg"
+                            placeholder="Buscar por clave, nombre o ubicación...">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search me-2"></i> Buscar
+                        </button>
                     </div>
                 </form>
-                
-                {% load static %}
+            </div>
 
-                <div class="servicios-container">
-                    {% for servicio in servicios %}
-                    <div class="servicio-card">
-                        <div class="servicio-header">
-                            <h3>{{ servicio.nombre_persona_reporta }}</h3>
-                            <span class="servicio-id">#{{ servicio.clave }}</span>
-                        </div>
-                        
-                        <div class="servicio-body">
-                            <div class="servicio-info">
+            <!-- Contenedor de resultados -->
+            <div class="servicios-container">
+                {% for servicio in servicios %}
+                <!-- Tarjeta de servicio con efecto hover -->
+                <div class="servicio-card shadow-sm rounded-lg">
+                    <div class="servicio-header bg-primary text-white rounded-top">
+                        {% for paciente in pacientes %}
+                        {% if paciente.servicio.clave == servicio.clave %}
+                        <h3 class="patient-name" style="color: white; font-weight: bold;">
+                            <i class="fas fa-user me-2"></i>
+                            {{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}
+                        </h3>
+
+                        <span class="servicio-id badge bg-light text-primary">#{{ servicio.clave }}</span>
+                    </div>
+
+                    <div class="servicio-body">
+                        <div class="servicio-info">
+                            <div class="info-item">
+                                <span class="info-icon"><i class="fas fa-calendar-alt"></i></span>
                                 <div>
                                     <span class="info-label">Fecha:</span>
-                                    <span>{{ servicio.fecha|date:"l, j F Y" }}</span>
+                                    <span class="info-value">{{ servicio.fecha|date:"l, j F Y" }}</span>
                                 </div>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon"><i class="fas fa-user-tag"></i></span>
                                 <div>
                                     <span class="info-label">Edad/Sexo:</span>
-                                    <span>{{ servicio.edad_persona_reporta }} años / {{ servicio.sexo_persona_reporta }}</span>
+                                    <span class="info-value">
+                                        {{ paciente.edad }} años /
+                                        {% if paciente.sexo == 2 %}
+                                        Masculino
+                                        {% else %}
+                                        Femenino
+                                        {% endif %}
+                                    </span>
                                 </div>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
                                 <div>
                                     <span class="info-label">Ubicación:</span>
-                                    <span>{{ servicio.direccion_emergencia.calle|truncatechars:25 }}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="servicio-details">
-                                <div class="detail-item">
-                                    <i class="icon-ambulancia"></i>
-                                    <span>{{ servicio.ambulancia }}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="icon-hospital"></i>
-                                    <span>{{ servicio.hospital }}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="icon-servicio"></i>
-                                    <span>{{ servicio.tipo_servicio_realizado.descripcion|default:"Urgencia" }}</span>
+                                    <span class="info-value">{{ servicio.direccion_emergencia.calle|truncatechars:30
+                                        }}</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="servicio-actions">
-                            <form action="{% url 'carga_modifica' servicio.clave  %}" method="post">
-                                {% csrf_token %}
-                                <button class="btn-ver" type="submit">Modificar</button>
-                            </form>
 
-                            <form method="post" action="{% url 'reporte_servicio' servicio.clave %}" target="_blank">
-                                {% csrf_token %}
-                                <button class="btn-ver" type="submit">Generar Reporte</button>
-                            </form>
+                        <div class="servicio-details">
+                            <div class="detail-item bg-light-blue">
+                                <i class="fas fa-ambulance icon-detail"></i>
+                                <span class="detail-text">{{ paciente.ambulancia|default:"No especificada" }}</span>
+                            </div>
+                            <div class="detail-item bg-light-green">
+                                <i class="fas fa-hospital icon-detail"></i>
+                                <span class="detail-text">{{ paciente.hospital|default:"No especificado" }}</span>
+                            </div>
+                            <div class="detail-item bg-light-yellow">
+                                <i class="fas fa-procedures icon-detail"></i>
+                                <span class="detail-text">{{ paciente.enfermedad|default:"Urgencia" }}</span>
+                            </div>
                         </div>
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <div class="no-resultados">
-                        <p>No se encontraron servicios registrados</p>
+
+                    <div class="servicio-actions">
+                        <form action="{% url 'carga_modifica' servicio.clave %}" method="post">
+                            {% csrf_token %}
+                            <button class="btn-action btn-edit mt-3" type="submit">
+                                <i class="fas fa-edit me-2"></i> Modificar
+                            </button>
+                        </form>
+
+                        <form method="post" action="{% url 'reporte_servicio' servicio.clave %}" target="_blank">
+                            {% csrf_token %}
+                            <button class="btn-action btn-report mt-3" type="submit">
+                                <i class="fas fa-file-pdf me-2"></i> Generar Reporte
+                            </button>
+                        </form>
                     </div>
-                    {% endfor %}
                 </div>
-
+                {% empty %}
+                <div class="no-resultados text-center py-5">
+                    <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                    <h3 class="text-muted">No se encontraron servicios</h3>
+                    <p class="text-muted">Intenta con otros términos de búsqueda</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
