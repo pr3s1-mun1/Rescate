@@ -17,7 +17,7 @@ import json
 def formulario_buscar(request):
     clave = request.POST.get('clave', '').strip() if request.method == 'POST' else ''
     servicios = Servicio.objects.filter(clave__icontains=clave) if clave else Servicio.objects.all()
-    servicios = servicios.order_by('clave')
+    servicios = servicios.order_by('clave')  # ← Aquí aplicamos el orden
 
     pacientes = PacientexServicio.objects.filter(servicio__in=servicios)
 
@@ -59,14 +59,12 @@ def crear_servicio(request):
         servicio_form = ServicioForm(request.POST)
 
         if servicio_form.is_valid():
-            print("El formulario de servicio es válido")
             servicio = servicio_form.save()
 
             # Manejo de unidades asignadas
             unidades_asignadas = []
             for clave, valor in request.POST.items():
                 if clave.startswith('unidades['):
-                    print(f"Clave: {clave}, Valor: {valor}")
                     clave_unidad = clave.split('[')[1].split(']')[0]
                     campo = clave.split('[')[2].split(']')[0]
                     unidad = next((u for u in unidades_asignadas if u.get('clave') == clave_unidad), None)
@@ -86,21 +84,24 @@ def crear_servicio(request):
                         agente_nombre=unidad.get('agente')
                     )
                     unidad_asignado.save()
-                    print("Unidad asignada guardada correctamente")
                 except Exception as e:
-                    print(f"Error al guardar unidad asignada: {e}")
-
+                    pass
             # Manejo de paramédicos asignados
             paramedicos_asignados = []
+
             for clave, valor in request.POST.items():
                 if clave.startswith('paramedicos['):
-                    print(f"Clave: {clave}, Valor: {valor}")
-                    clave_paramedico = clave.split('[')[1].split(']')[0]
-                    paramedico = next((p for p in paramedicos_asignados if p.get('clave') == clave_paramedico), None)
+                    partes = clave.split('[')
+                    if len(partes) < 3:
+                        continue
+                    indice = partes[1].rstrip(']')
+                    campo = partes[2].rstrip(']')
+                    paramedico = next((p for p in paramedicos_asignados if p.get('indice') == indice), None)
                     if paramedico is None:
-                        paramedico = {'clave': clave_paramedico}
+                        paramedico = {'indice': indice}
                         paramedicos_asignados.append(paramedico)
-                    paramedico['valor'] = valor  # Guardar el valor como 'valor' o el campo adecuado
+
+                    paramedico[campo] = valor
 
             # Guardar los paramédicos asignados
             for paramedico in paramedicos_asignados:
@@ -111,17 +112,13 @@ def crear_servicio(request):
                         paramedico=paramedico_obj
                     )
                     paramedico_asignado.save()
-                    print("Paramédico asignado guardado correctamente")
                 except Exception as e:
-                    print(f"Error al guardar paramédico asignado: {e}")
+                    pass
 
             if servicio:
                 return redirect('carga_modifica', pk=servicio.clave)
             else:
-                return redirect('pagina_error')  # O cualquier otra página de error que tengas definida
-
-        else:
-            print("Errores en el formulario de servicio:", servicio_form.errors)
+                pass
     else:
         servicio_form = ServicioForm()
 
@@ -175,9 +172,6 @@ def carga_modifica(request, pk):
     }
 
     return render(request, 'modificar_servicio.html', context)
-
-
-
 
 def guardar_todo(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)

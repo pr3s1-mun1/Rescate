@@ -42,34 +42,34 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
         fields = '__all__'
         widgets = {
             'mando': forms.Select(choices=[
-                ('P', 'CAPITAN'),
-                ('T', 'COMANDANTE'),
-                ('C', 'TENIENTE'),
-                ('', 'PARAMEDICO'),
-                ('', 'SARGENTO'),
-                ('', 'ADMINISTRATIVO'),
+                ('C', 'CAPITAN'),
+                ('O', 'COMANDANTE'),
+                ('T', 'TENIENTE'),
+                ('P', 'PARAMEDICO'),
+                ('S', 'SARGENTO'),
+                ('A', 'ADMINISTRATIVO'),
             ]),
             'conocimiento': forms.Select(choices=[
-                ('', 'BASICO'),
-                ('', 'INTERMEDIO'),
-                ('', 'PARAMEDICO'),
-                ('', 'EMPLEADO'),
+                ('B', 'BASICO'),
+                ('I', 'INTERMEDIO'),
+                ('P', 'PARAMEDICO'),
+                ('E', 'EMPLEADO'),
 
             ]),
             'tipo': forms.Select(choices=[
-                ('', 'USUARIO'),
-                ('', 'PARAMEDICO'),
-                ('', 'ADMINISTRATIVO'),               
+                ('U', 'USUARIO'),
+                ('P', 'PARAMEDICO'),
+                ('A', 'ADMINISTRATIVO'),               
             ]),
             'estatus': forms.Select(choices=[
-                ('', 'INCAPACIDAD'),
-                ('', 'SUSPENSION'),
-                ('', 'DESCANSO'),
-                ('', 'BASICO'),
-                ('', 'BAJA'),
-                ('', 'ACTIVO'),
-                ('', 'VACACIONES'),
-                ('', 'DESCANSO ADICIONAL'),
+                ('I', 'INCAPACIDAD'),
+                ('S', 'SUSPENSION'),
+                ('D', 'DESCANSO'),
+                ('B', 'BASICO'),
+                ('F', 'BAJA'),
+                ('A', 'ACTIVO'),
+                ('V', 'VACACIONES'),
+                ('D', 'DESCANSO ADICIONAL'),
             ])
         }
 

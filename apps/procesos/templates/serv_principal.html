@@ -8,20 +8,6 @@
                 
                 <div class="row">
                     <div class="col-md-6 mb-4">
-                        <a href="{% url 'formulario_buscar' %}" class="text-decoration-none">
-                            <div class="card option-card text-center p-4">
-                                <div class="option-icon">
-                                    <i class="fas fa-tasks"></i>
-                                </div>
-                                <h3>Gestionar Servicios</h3>
-                                <p class="text-muted">Ver, editar y administrar todos los servicios existentes</p>
-                                <div class="mt-3">
-                                    <span class="badge bg-primary">Total: {{ total_servicios }} servicios</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-4">
                         <a href="{% url 'formulario_servicio' %}" class="text-decoration-none">
                             <div class="card option-card text-center p-4">
                                 <div class="option-icon">
@@ -31,6 +17,20 @@
                                 <p class="text-muted">Generar una nueva hoja de servicio para atención médica</p>
                                 <div class="mt-3">
                                     <span class="badge bg-success">Nuevo</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <a href="{% url 'formulario_buscar' %}" class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <h3>Gestionar Servicios</h3>
+                                <p class="text-muted">Ver, editar y administrar todos los servicios existentes</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-primary">Total: {{ total_servicios }} servicios</span>
                                 </div>
                             </div>
                         </a>

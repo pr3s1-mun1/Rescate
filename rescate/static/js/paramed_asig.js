@@ -16,10 +16,13 @@ function moverASeleccionados(fila, clave, nombre) {
     const celdaNombre = nuevaFila.insertCell(1);
     celdaNombre.textContent = nombre;
 
+    const total = document.querySelectorAll('input[name^="paramedicos["]').length;
+    console.log("Número de listas: " + total)
     const inputParamedico = document.createElement("input");
     inputParamedico.type = "hidden";
-    inputParamedico.name = `paramedicos[${1}][clave]`;
+    inputParamedico.name = `paramedicos[${total}][clave]`;
     inputParamedico.value = clave;
+    inputParamedico.setAttribute("data-clave", clave); // Para poder eliminarlo después
     document.forms[0].appendChild(inputParamedico);
 
     fila.remove();
@@ -43,7 +46,7 @@ function moverAOriginales(fila, clave, nombre) {
     const celdaNombre = nuevaFila.insertCell(1);
     celdaNombre.textContent = nombre;
 
-    const inputParamedico = document.querySelector(`input[name="paramedicos[${clave}][clave]"]`);
+    const inputParamedico = document.querySelector(`input[type="hidden"][data-clave="${clave}"]`);
     if (inputParamedico) {
         inputParamedico.remove();
     }
@@ -58,4 +61,3 @@ document.addEventListener("DOMContentLoaded", function () {
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
 });
-
