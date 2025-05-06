@@ -1,77 +1,86 @@
 function moverASeleccionados(fila, clave, nombre) {
-    // Verificar si la fila ya está en la tabla de asignados
     const yaSeleccionado = document.querySelector(`#tabla-paramedicos-asignados tbody tr[data-clave="${clave}"]`);
-    if (yaSeleccionado) return; // Evitar que se mueva si ya está asignado
+    if (yaSeleccionado) return;
 
     const tablaAsignados = document.querySelector("#tabla-paramedicos-asignados tbody");
     const nuevaFila = tablaAsignados.insertRow();
     nuevaFila.setAttribute("data-clave", clave);
 
-    // Verificar si el evento ya existe antes de asignarlo
-    if (!nuevaFila.ondblclick) {
-        nuevaFila.ondblclick = function () {
-            moverAOriginales(this, clave, nombre);
-        };
-    }
+    nuevaFila.ondblclick = function () {
+        moverAOriginales(this, clave, nombre);
+    };
 
-    const celdaClave = nuevaFila.insertCell(0);
-    celdaClave.textContent = clave;
+    nuevaFila.insertCell(0).textContent = clave;
+    nuevaFila.insertCell(1).textContent = nombre;
 
-    const celdaNombre = nuevaFila.insertCell(1);
-    celdaNombre.textContent = nombre;
-
-    const total = document.querySelectorAll('input[name^="paramedicos["]').length;
-    console.log("Número de listas: " + total);
-    
-    const inputParamedico = document.createElement("input");
-    inputParamedico.type = "hidden";
-    inputParamedico.name = `paramedicos[${total}][clave]`;
-    inputParamedico.value = clave;
-    inputParamedico.setAttribute("data-clave", clave); // Para poder eliminarlo después
-    document.forms[0].appendChild(inputParamedico);
-
-    fila.remove(); // Eliminar de la tabla original
+    fila.remove();
 
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
+
+    actualizarInputParamedicos();
 }
 
-
 function moverAOriginales(fila, clave, nombre) {
-    // Verificar si la fila ya está en la tabla de disponibles
     const yaDisponible = document.querySelector(`#tabla-paramedicos-disponibles tbody tr[data-clave="${clave}"]`);
-    if (yaDisponible) return; // Evitar que se mueva si ya está disponible
+    if (yaDisponible) return;
 
     const tablaDisponibles = document.querySelector("#tabla-paramedicos-disponibles tbody");
     const nuevaFila = tablaDisponibles.insertRow();
     nuevaFila.setAttribute("data-clave", clave);
 
-    // Verificar si el evento ya existe antes de asignarlo
-    if (!nuevaFila.ondblclick) {
-        nuevaFila.ondblclick = function () {
-            moverASeleccionados(this, clave, nombre);
-        };
-    }
+    nuevaFila.ondblclick = function () {
+        moverASeleccionados(this, clave, nombre);
+    };
 
-    const celdaClave = nuevaFila.insertCell(0);
-    celdaClave.textContent = clave;
+    nuevaFila.insertCell(0).textContent = clave;
+    nuevaFila.insertCell(1).textContent = nombre;
 
-    const celdaNombre = nuevaFila.insertCell(1);
-    celdaNombre.textContent = nombre;
-
-    const inputParamedico = document.querySelector(`input[type="hidden"][data-clave="${clave}"]`);
-    if (inputParamedico) {
-        inputParamedico.remove();
-    }
-
-    fila.remove(); // Eliminar de la tabla asignada
+    fila.remove();
 
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
+
+    actualizarInputParamedicos();
+}
+
+function actualizarInputParamedicos() {
+    const filas = document.querySelectorAll("#tabla-paramedicos-asignados tbody tr");
+    const paramedicos = [];
+
+    filas.forEach(fila => {
+        const clave = fila.cells[0].textContent.trim();
+        const nombre = fila.cells[1].textContent.trim();
+        paramedicos.push({ clave, nombre });
+    });
+
+    document.getElementById("input-paramedicos").value = JSON.stringify(paramedicos);
+}
+
+function eliminarSeleccionados() {
+    const asignados = document.querySelectorAll("#tabla-paramedicos-asignados tbody tr");
+    const disponibles = document.querySelector("#tabla-paramedicos-disponibles tbody");
+
+    asignados.forEach(filaAsignado => {
+        const claveAsignado = filaAsignado.cells[0]?.textContent.trim();
+
+        const filasDisponibles = disponibles.querySelectorAll("tr");
+        filasDisponibles.forEach(filaDisponible => {
+            const claveDisponible = filaDisponible.cells[0]?.textContent.trim();
+            if (claveDisponible === claveAsignado) {
+                filaDisponible.remove();
+            }
+        });
+    });
+
+    actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
 }
 
 
+
 document.addEventListener("DOMContentLoaded", function () {
+    actualizarInputParamedicos();
+    eliminarSeleccionados();
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
 });

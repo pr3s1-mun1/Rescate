@@ -53,6 +53,12 @@ def vista_principal(request):
     })
 
 #Función para guardar formulario y pestañas de creación (Primera Parte)
+from django.shortcuts import render, redirect
+from django.http import Http404
+import json
+from .forms import ServicioForm
+from .models import Servicio, TipoUnidad, Paramedicos, UnidadxServicio, ParamedicoxPaciente
+
 def crear_servicio(request):
     servicio = None
     if request.method == 'POST':
@@ -65,55 +71,49 @@ def crear_servicio(request):
             unidades = json.loads(request.POST.get('unidades', '[]'))
             for u in unidades:
                 if u.get('clave') and u.get('id_unidad'):
-                    UnidadxServicio.objects.create(
-                        servicio=servicio,
-                        unidad=TipoUnidad.objects.get(clave=u['clave']),
-                        numero_unidad=u['id_unidad'],
-                        agente_nombre=u.get('agente', '')
-                    )
-
+                    try:
+                        unidad = TipoUnidad.objects.get(clave=u['clave'])
+                        UnidadxServicio.objects.create(
+                            servicio=servicio,
+                            unidad=unidad,
+                            numero_unidad=u['id_unidad'],
+                            agente_nombre=u.get('agente', '')
+                        )
+                    except TipoUnidad.DoesNotExist:
+                        print(f"Unidad con clave {u['clave']} no encontrada.")
+            
             # Manejo de paramédicos asignados
-            paramedicos_asignados = []
-
-            for clave, valor in request.POST.items():
-                if clave.startswith('paramedicos['):
-                    partes = clave.split('[')
-                    if len(partes) < 3:
-                        continue
-                    indice = partes[1].rstrip(']')
-                    campo = partes[2].rstrip(']')
-                    paramedico = next((p for p in paramedicos_asignados if p.get('indice') == indice), None)
-                    if paramedico is None:
-                        paramedico = {'indice': indice}
-                        paramedicos_asignados.append(paramedico)
-
-                    paramedico[campo] = valor
-
-            # Guardar los paramédicos asignados
-            for paramedico in paramedicos_asignados:
+            paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
+            for item in paramedicos:
+                clave = item.get("clave")
                 try:
-                    paramedico_obj = Paramedicos.objects.get(clave=paramedico['clave'])
-                    paramedico_asignado = ParamedicoxPaciente(
-                        servicio=servicio,
-                        paramedico=paramedico_obj
-                    )
-                    paramedico_asignado.save()
-                except Exception as e:
-                    pass
+                    paramedico = Paramedicos.objects.get(clave=clave)
+                    ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
+                except Paramedicos.DoesNotExist:
+                    print(f"Paramédico con clave {clave} no encontrado.")
+            
+            return redirect('carga_modifica', pk=servicio.pk)
 
-            if servicio:
-                return redirect('carga_modifica', pk=servicio.clave)
-            else:
-                pass
+        else:
+            context = {
+                'servicio_form': servicio_form,
+                'unidades': TipoUnidad.objects.all(),
+                'paramedicos': Paramedicos.objects.all(),
+                'errores': servicio_form.errors,  
+            }
+            return render(request, 'modificar_servicio.html', context)
+    
     else:
         servicio_form = ServicioForm()
 
-    return render(request, 'modificar_servicio.html', {
+    context = {
         'servicio_form': servicio_form,
         'unidades': TipoUnidad.objects.all(),
         'paramedicos': Paramedicos.objects.all(),
-        'pk': servicio.clave if servicio else None
-    })
+    }
+
+    return render(request, 'modificar_servicio.html', context)
+
 
 
 
@@ -229,8 +229,10 @@ def guardar_unidades(request, servicio):
 
 def guardar_paramedicos(request, servicio):
     ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
-    paramedicos_claves = [valor for clave, valor in request.POST.items() if clave.startswith('paramedicos[')]
-    for clave in paramedicos_claves:
+    paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
+    print(paramedicos)
+    for item in paramedicos:
+        clave = item.get("clave")
         paramedico = Paramedicos.objects.get(clave=clave)
         ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
 
