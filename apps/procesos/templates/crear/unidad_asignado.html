@@ -46,12 +46,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for unidad_asignada in unidades_asignadas %}
+                                {% for unidad in unidades_asignadas %}
                                 <tr>
-                                    <td>{{ unidad_asignada.unidad.descripcion }}</td>
-                                    <td><input type="text" value="{{ unidad_asignada.numero_unidad }}"
+                                    <td hidden="true">{{ unidad.unidad_id }}</td>
+                                    <td>{{ unidad.unidad.descripcion }}</td>
+                                    <td><input type="text" value="{{ unidad.numero_unidad }}"
                                             class="form-control" /></td>
-                                    <td><input type="text" value="{{ unidad_asignada.agente_nombre }}"
+                                    <td><input type="text" value="{{ unidad.agente_nombre }}"
                                             class="form-control" /></td>
                                 </tr>
                                 {% endfor %}
@@ -64,6 +65,7 @@
         </div>
     </div>
 
+    <input type="hidden" name="unidades" id="input-unidades">
 </body>
 
 <script src="{% static 'js/unidad_asig.js' %}"></script>

@@ -62,30 +62,16 @@ def crear_servicio(request):
             servicio = servicio_form.save()
 
             # Manejo de unidades asignadas
-            unidades_asignadas = []
-            for clave, valor in request.POST.items():
-                if clave.startswith('unidades['):
-                    clave_unidad = clave.split('[')[1].split(']')[0]
-                    campo = clave.split('[')[2].split(']')[0]
-                    unidad = next((u for u in unidades_asignadas if u.get('clave') == clave_unidad), None)
-                    if unidad is None:
-                        unidad = {'clave': clave_unidad}
-                        unidades_asignadas.append(unidad)
-                    unidad[campo] = valor
-
-            # Guardar las unidades asignadas
-            for unidad in unidades_asignadas:
-                try:
-                    tipo_unidad = TipoUnidad.objects.get(clave=unidad.get('clave'))
-                    unidad_asignado = UnidadxServicio(
+            unidades = json.loads(request.POST.get('unidades', '[]'))
+            for u in unidades:
+                if u.get('clave') and u.get('id_unidad'):
+                    UnidadxServicio.objects.create(
                         servicio=servicio,
-                        unidad=tipo_unidad,
-                        numero_unidad=unidad.get('id_unidad'),
-                        agente_nombre=unidad.get('agente')
+                        unidad=TipoUnidad.objects.get(clave=u['clave']),
+                        numero_unidad=u['id_unidad'],
+                        agente_nombre=u.get('agente', '')
                     )
-                    unidad_asignado.save()
-                except Exception as e:
-                    pass
+
             # Manejo de paramédicos asignados
             paramedicos_asignados = []
 
@@ -206,8 +192,8 @@ def guardar_todo(request, pk):
         paciente.servicio = servicio
         paciente.save()
 
-        guardar_paramedicos(request, servicio)
         guardar_unidades(request, servicio)
+        guardar_paramedicos(request, servicio)
         guardar_procedimientos(request, paciente)
         guardar_alergias(request, paciente)
         guardar_materiales(request, paciente)
@@ -228,25 +214,25 @@ def guardar_todo(request, pk):
             'editar': True
         })
 
+def guardar_unidades(request, servicio):
+    UnidadxServicio.objects.filter(servicio=servicio).delete()
+    unidades = json.loads(request.POST.get('unidades', '[]'))
+    print(unidades)
+    for u in unidades:
+        if u.get('clave') and u.get('id_unidad'):
+            UnidadxServicio.objects.create(
+                servicio=servicio,
+                unidad=TipoUnidad.objects.get(clave=u['clave']),
+                numero_unidad=u['id_unidad'],
+                agente_nombre=u.get('agente', '')
+            )
+
 def guardar_paramedicos(request, servicio):
     ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
     paramedicos_claves = [valor for clave, valor in request.POST.items() if clave.startswith('paramedicos[')]
     for clave in paramedicos_claves:
         paramedico = Paramedicos.objects.get(clave=clave)
         ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
-
-def guardar_unidades(request, servicio):
-    UnidadxServicio.objects.filter(servicio=servicio).delete()
-    unidades_data = {clave.split('[')[1].split(']')[0]: valor for clave, valor in request.POST.items() if clave.startswith('unidades[') and 'id_unidad' in clave}
-    for clave_unidad, numero_unidad in unidades_data.items():
-        unidad = TipoUnidad.objects.get(clave=clave_unidad)
-        agente = request.POST.get(f'unidades[{clave_unidad}][agente]', '')
-        UnidadxServicio.objects.create(
-            servicio=servicio,
-            unidad=unidad,
-            numero_unidad=numero_unidad,
-            agente_nombre=agente
-        )
 
 def guardar_procedimientos(request, paciente):
     procedimientos_claves = [clave.split('[')[1].split(']')[0] for clave, valor in request.POST.items() if clave.startswith('procedimientos[') and 'clave' in clave]
