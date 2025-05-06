@@ -5,59 +5,58 @@
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Alergias</h1>
-        
-                    {% csrf_token %}
-                    <input type="hidden" name="alergias_seleccionadas" id="input-alergias-seleccionadas">
-                    
-                    <div class="row align-items-start">
-                        <div class="col-md-6">
-                            <p><strong>Alergias disponibles:</strong> 
-                                <span id="contador-alergias-disponibles">0</span>
-                            </p>
-                            <table class="table table-striped table-bordered" id="tabla-alergias-disponibles">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Clave</th>
-                                        <th scope="col">Descripción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for alergia in alergias %}
-                                    <tr ondblclick="moverASeleccionadosAlergia(this, '{{ alergia.clave }}', '{{ alergia.descripcion }}')">
-                                        <td>{{ alergia.clave }}</td>
-                                        <td>{{ alergia.descripcion }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    
-                        <div class="col-md-6">
-                            <p><strong>Alergias asignadas:</strong> 
-                                <span id="contador-alergias-asignadas">{{ alergias_asignados.count }}</span>
-                            </p>
-                            <table class="table table-bordered table-hover" id="tabla-alergias-asignadas">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Clave</th>
-                                        <th scope="col">Descripción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for alergia in alergias_asignados %}
-                                        <tr>
-                                            <td>{{ alergia.alergia_id }}</td>
-                                            <td>{{ alergia.alergia.descripcion }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        
+                <div class="row align-items-start">
+                    <div class="col-md-6">
+                        <p><strong>Alergias disponibles:</strong>
+                            <span id="contador-alergias-disponibles">0</span>
+                        </p>
+                        <table class="table table-striped table-bordered" id="tabla-alergias-disponibles">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Clave</th>
+                                    <th scope="col">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alergia in alergias %}
+                                <tr
+                                    ondblclick="moverASeleccionadosAlergia(this, '{{ alergia.clave }}', '{{ alergia.descripcion }}')">
+                                    <td>{{ alergia.clave }}</td>
+                                    <td>{{ alergia.descripcion }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-            </div>    
+
+                    <div class="col-md-6">
+                        <p><strong>Alergias asignadas:</strong>
+                            <span id="contador-alergias-asignadas">{{ alergias_asignados.count }}</span>
+                        </p>
+                        <table class="table table-bordered table-hover" id="tabla-alergias-asignadas">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Clave</th>
+                                    <th scope="col">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alergia in alergias_asignados %}
+                                <tr>
+                                    <td>{{ alergia.alergia_id }}</td>
+                                    <td>{{ alergia.alergia.descripcion }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
+    <input type="hidden" name="alergias" id="input-alergias">
 </body>
 
 <script src="{% static 'js/alergias_asign.js' %}"></script>
+<script src="{% static 'js/general_asig.js'%}"></script>

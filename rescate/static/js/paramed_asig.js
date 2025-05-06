@@ -57,7 +57,7 @@ function actualizarInputParamedicos() {
     document.getElementById("input-paramedicos").value = JSON.stringify(paramedicos);
 }
 
-function eliminarSeleccionados() {
+function eliminarSeleccionadosParamedicos() {
     const asignados = document.querySelectorAll("#tabla-paramedicos-asignados tbody tr");
     const disponibles = document.querySelector("#tabla-paramedicos-disponibles tbody");
 
@@ -76,11 +76,9 @@ function eliminarSeleccionados() {
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
 }
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
     actualizarInputParamedicos();
-    eliminarSeleccionados();
+    eliminarSeleccionadosParamedicos();
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
 });

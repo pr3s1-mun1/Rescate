@@ -1,81 +1,98 @@
-let materialesDisponibles = document.querySelector("#tabla-materiales-disponibles tbody");
-let materialesAsignados = document.querySelector("#tabla-materiales-asignados tbody");
-let inputMateriales = document.querySelector("#input-materiales-seleccionados");
-
 function moverASeleccionadosMaterial(row, clave, descripcion, unidad) {
-    row.remove();
+    const yaSeleccionado = document.querySelector(`#tabla-materiales-asignados tbody tr[data-clave="${clave}"]`);
+    if (yaSeleccionado) return;
 
-    let nuevaFila = document.createElement("tr");
-    nuevaFila.innerHTML = `
-        <td>${descripcion}</td>
-        <td>${unidad}</td>
-        <td><input type="number" value="1" class="form-control cantidad-material" /></td>
-    `;
-
-    const cantidadInput = nuevaFila.querySelector(".cantidad-material");
-    cantidadInput.addEventListener("input", function() {
-        inputCantidadMaterial.value = cantidadInput.value;
-    });
-
-    const inputClaveMaterial = document.createElement("input");
-    inputClaveMaterial.type = "hidden";
-    inputClaveMaterial.name = `materiales[${clave}][clave]`;
-    inputClaveMaterial.value = clave;
-    document.forms[0].appendChild(inputClaveMaterial);
-
-    const inputDescripcionMaterial = document.createElement("input");
-    inputDescripcionMaterial.type = "hidden";
-    inputDescripcionMaterial.name = `materiales[${clave}][descripcion]`;
-    inputDescripcionMaterial.value = descripcion; 
-    document.forms[0].appendChild(inputDescripcionMaterial);
-
-    const inputCantidadMaterial = document.createElement("input");
-    inputCantidadMaterial.type = "hidden";
-    inputCantidadMaterial.name = `materiales[${clave}][cantidad]`;
-    inputCantidadMaterial.value = cantidadInput.value;; 
-    document.forms[0].appendChild(inputCantidadMaterial);
+    const nuevaFila = document.querySelector("#tabla-materiales-asignados tbody").insertRow();
+    nuevaFila.setAttribute("data-clave", clave);
 
     nuevaFila.ondblclick = function () {
         moverADisponiblesMaterial(nuevaFila, clave, descripcion, unidad);
     };
 
-    materialesAsignados.appendChild(nuevaFila);
+    const celdaClave = nuevaFila.insertCell(0);
+    celdaClave.textContent = clave;
+    celdaClave.hidden = true;
+
+    nuevaFila.insertCell(1).textContent = descripcion;
+    nuevaFila.insertCell(2).textContent = unidad;
+    
+    const celdaCantidad = nuevaFila.insertCell(3);
+    const inputCantidad = document.createElement("input");
+    inputCantidad.type = "number";
+    inputCantidad.className = "form-control";
+    inputCantidad.value = "1";
+    celdaCantidad.appendChild(inputCantidad);
+
+    row.remove();
+
+    actualizarContador("tabla-materiales-disponibles", "contador-materiales-disponibles");
+    actualizarContador("tabla-materiales-asignados", "contador-materiales-asignados");
+
     actualizarInputMateriales();
-    actualizarContadores();
 }
 
 function moverADisponiblesMaterial(row, clave, descripcion, unidad) {
-    row.remove();
+    const yaDisponible = document.querySelector(`#tabla-materiales-disponibles tbody tr[data-clave="${clave}"]`);
+    if (yaDisponible) return;
 
-    let nuevaFila = document.createElement("tr");
-    nuevaFila.innerHTML = `
-        <td>${clave}</td>
-        <td>${descripcion}</td>
-    `;
-    
+    const nuevaFila = document.querySelector("#tabla-materiales-disponibles tbody").insertRow();
+    nuevaFila.setAttribute("data-clave", clave);
+
     nuevaFila.ondblclick = function () {
         moverASeleccionadosMaterial(nuevaFila, clave, descripcion, unidad);
     };
 
-    materialesDisponibles.appendChild(nuevaFila);
+    nuevaFila.insertCell(0).textContent = clave;
+    nuevaFila.insertCell(1).textContent = descripcion;
+    const celdaUnidad = nuevaFila.insertCell(2);
+    celdaUnidad.textContent = unidad;
+    celdaUnidad.hidden = true;
+    
+    row.remove();
+
+    actualizarContador("tabla-materiales-disponibles", "contador-materiales-disponibles");
+    actualizarContador("tabla-materiales-asignados", "contador-materiales-asignados");
+
     actualizarInputMateriales();
-    actualizarContadores();
 }
 
 function actualizarInputMateriales() {
-    let datos = Array.from(materialesAsignados.querySelectorAll("tr")).map(row => {
-        let clave = row.children[0].textContent.trim();
-        let unidad = row.children[1].textContent.trim();
-        let cantidad = row.children[2].querySelector("input").value;
-        return { clave, unidad, cantidad };
+    const filas = document.querySelectorAll("#tabla-materiales-asignados tbody tr");
+    const materiales = [];
+
+    filas.forEach(fila => {
+        const clave = fila.cells[0].textContent.trim();
+        const descripcion = fila.cells[1].textContent.trim();
+        const unidad = fila.cells[2].textContent.trim();
+        const cantidad = fila.cells[3].querySelector("input")?.value || "0";
+        materiales.push({ clave, descripcion, unidad, cantidad });
     });
 
-    inputMateriales.value = JSON.stringify(datos);
+    document.getElementById("input-materiales").value = JSON.stringify(materiales);
 }
 
-function actualizarContadores() {
-    document.getElementById("contador-materiales-disponibles").textContent = "[ " + materialesDisponibles.children.length + " ]";
-    document.getElementById("contador-materiales-asignados").textContent = "[ " + materialesAsignados.children.length + " ]";
+function eliminarSeleccionadosMateriales() {
+    const asignados = document.querySelectorAll("#tabla-materiales-asignados tbody tr");
+    const disponibles = document.querySelector("#tabla-materiales-disponibles tbody");
+
+    asignados.forEach(filaAsignado => {
+        const claveAsignado = filaAsignado.cells[0]?.textContent.trim();
+
+        const filasDisponibles = disponibles.querySelectorAll("tr");
+        filasDisponibles.forEach(filaDisponible => {
+            const claveDisponible = filaDisponible.cells[0]?.textContent.trim();
+            if (claveDisponible === claveAsignado) {
+                filaDisponible.remove();
+            }
+        });
+    });
+
+    actualizarContador("tabla-materiales-disponibles", "contador-materiales-disponibles");
 }
 
-document.addEventListener("DOMContentLoaded", actualizarContadores);
+document.addEventListener("DOMContentLoaded", function () {
+    actualizarInputMateriales();
+    eliminarSeleccionadosMateriales();
+    actualizarContador("tabla-materiales-disponibles", "contador-materiales-disponibles");
+    actualizarContador("tabla-materiales-asignados", "contador-materiales-asignados");
+});

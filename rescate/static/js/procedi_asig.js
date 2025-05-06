@@ -10,37 +10,16 @@ function moverASeleccionadosProcedimiento(fila, clave, nombre, protocolo) {
         moverAOriginalesProcedimiento(this, clave, nombre, protocolo);
     };
 
-    const celdaClave = nuevaFila.insertCell(0);
-    celdaClave.textContent = clave;
-
-    const celdaNombre = nuevaFila.insertCell(1);
-    celdaNombre.textContent = nombre;
-
-    const celdaProtocolo = nuevaFila.insertCell(2);
-    celdaProtocolo.textContent = protocolo; 
-
-    const inputClaveProcedimiento = document.createElement("input");
-    inputClaveProcedimiento.type = "hidden";
-    inputClaveProcedimiento.name = `procedimientos[${clave}][clave]`;
-    inputClaveProcedimiento.value = clave;
-    document.forms[0].appendChild(inputClaveProcedimiento);
-
-    const inputNombreProcedimiento = document.createElement("input");
-    inputNombreProcedimiento.type = "hidden";
-    inputNombreProcedimiento.name = `procedimientos[${clave}][descripcion]`;
-    inputNombreProcedimiento.value = nombre;
-    document.forms[0].appendChild(inputNombreProcedimiento);
-
-    const inputProtocoloProcedimiento = document.createElement("input");
-    inputProtocoloProcedimiento.type = "hidden";
-    inputProtocoloProcedimiento.name = `procedimientos[${clave}][protocolo]`;
-    inputProtocoloProcedimiento.value = protocolo;
-    document.forms[0].appendChild(inputProtocoloProcedimiento);
+    nuevaFila.insertCell(0).textContent = clave;
+    nuevaFila.insertCell(1).textContent = nombre;
+    nuevaFila.insertCell(2).textContent = protocolo;
 
     fila.remove();
 
-    actualizarContadorProcedimiento("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
-    actualizarContadorProcedimiento("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
+    actualizarContador("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
+    actualizarContador("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
+
+    actualizarInputProcedmientos();
 }
 
 function moverAOriginalesProcedimiento(fila, clave, nombre, protocolo) {
@@ -52,47 +31,55 @@ function moverAOriginalesProcedimiento(fila, clave, nombre, protocolo) {
         moverASeleccionadosProcedimiento(this, clave, nombre, protocolo);
     };
 
-    const celdaClave = nuevaFila.insertCell(0);
-    celdaClave.textContent = clave;
-
-    const celdaNombre = nuevaFila.insertCell(1);
-    celdaNombre.textContent = nombre;
-
-    const celdaProtocolo = nuevaFila.insertCell(2);
-    celdaProtocolo.textContent = protocolo;  
+    nuevaFila.insertCell(0).textContent = clave;
+    nuevaFila.insertCell(1).textContent = nombre;
+    nuevaFila.insertCell(2).textContent = protocolo;
 
     fila.remove();
 
-    actualizarContadorProcedimiento("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
-    actualizarContadorProcedimiento("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
+    actualizarContador("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
+    actualizarContador("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
+
+    actualizarInputProcedmientos();
 }
 
-function actualizarContadorProcedimiento(idTabla, idContador) {
-    const totalFilas = document.querySelectorAll(`#${idTabla} tbody tr:not(.d-none)`).length;
-    document.getElementById(idContador).textContent = "[ " + totalFilas + " ]";
+function actualizarInputProcedmientos() {
+    const filas = document.querySelectorAll("#tabla-procedimientos-asignados tbody tr");
+    const procedimientos = [];
+
+    filas.forEach(fila => {
+        const clave = fila.cells[0].textContent.trim();
+        const nombre = fila.cells[1].textContent.trim();
+        const protocolo = fila.cells[2].textContent.trim();
+        procedimientos.push({ clave, nombre, protocolo });
+    });
+
+    // Aquí se debe usar 'procedimientos' en lugar de 'paramedicos'
+    document.getElementById("input-procedimientos").value = JSON.stringify(procedimientos);
+}
+
+function eliminarSeleccionados() {
+    const asignados = document.querySelectorAll("#tabla-procedimientos-asignados tbody tr");
+    const disponibles = document.querySelector("#tabla-procedimientos-disponibles tbody");
+
+    asignados.forEach(filaAsignado => {
+        const claveAsignado = filaAsignado.cells[0]?.textContent.trim();
+
+        const filasDisponibles = disponibles.querySelectorAll("tr");
+        filasDisponibles.forEach(filaDisponible => {
+            const claveDisponible = filaDisponible.cells[0]?.textContent.trim();
+            if (claveDisponible === claveAsignado) {
+                filaDisponible.remove();
+            }
+        });
+    });
+
+    actualizarContador("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const filasDisponibles = document.querySelectorAll("#tabla-procedimientos-disponibles tbody tr");
-    filasDisponibles.forEach(fila => {
-        fila.addEventListener("dblclick", function () {
-            const clave = this.cells[0].textContent.trim();
-            const nombre = this.cells[1].textContent.trim();
-            const protocolo = this.cells[2].textContent.trim(); // Obtener el protocolo
-            moverASeleccionadosProcedimiento(this, clave, nombre, protocolo);
-        });
-    });
-
-    const filasAsignados = document.querySelectorAll("#tabla-procedimientos-asignados tbody tr");
-    filasAsignados.forEach(fila => {
-        fila.addEventListener("dblclick", function () {
-            const clave = this.cells[0].textContent.trim();
-            const nombre = this.cells[1].textContent.trim();
-            const protocolo = this.cells[2].textContent.trim(); // Obtener el protocolo
-            moverAOriginalesProcedimiento(this, clave, nombre, protocolo);
-        });
-    });
-
-    actualizarContadorProcedimiento("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
-    actualizarContadorProcedimiento("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
+    actualizarInputProcedmientos();
+    eliminarSeleccionados();
+    actualizarContador("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
+    actualizarContador("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
 });

@@ -5,9 +5,6 @@
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Administrado</h1>
-
-                <input type="hidden" name="administrado" id="input-administrado-seleccionado">
-
                 <div class="row align-items-start">
                     <div class="col-md-6">
                         <p><strong>Administrado disponible:</strong>
@@ -23,7 +20,7 @@
                             <tbody>
                                 {% for medicamento in medicamentos %}
                                 <tr
-                                    ondblclick="moverASeleccionadosadministrado(this, '{{ medicamento.descripcion }}', '{{ medicamento.unidad }}')">
+                                    ondblclick="moverASeleccionadosAdministrado(this, '{{ medicamento.clave }}', '{{ medicamento.descripcion }}', '{{ medicamento.unidad }}')">
                                     <td>{{ medicamento.clave }}</td>
                                     <td>{{ medicamento.descripcion }}</td>
                                     <td style="display: none;">{{ medicamento.unidad }}</td>
@@ -48,6 +45,7 @@
                             <tbody>
                                 {% for administrado in administrados_asignados %}
                                 <tr>
+                                    <td hidden="true">{{ administrado.medicamento_id }}</td>
                                     <td>{{ administrado.medicamento.descripcion }}</td>
                                     <td>{{ administrado.medicamento.unidad }}</td>
                                     <td><input type="number" value="{{ administrado.cantidad }}" class="form-control" /></td>
@@ -60,6 +58,8 @@
             </div>
         </div>
     </div>
+    <input type="hidden" name="administrado" id="input-administrado">
+
 </body>
 
 <script src="{% static 'js/admini_asign.js' %}"></script>

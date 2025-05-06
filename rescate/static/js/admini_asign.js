@@ -1,103 +1,98 @@
-let administradoDisponibles = document.querySelector("#tabla-administrado-disponible tbody");
-let administradoAsignados = document.querySelector("#tabla-administrado-asignado tbody");
-let inputadministrado = document.querySelector("#input-administrado-seleccionado");
+function moverASeleccionadosAdministrado(row, clave, descripcion, unidad) {
+    const yaSeleccionado = document.querySelector(`#tabla-administrado-asignado tbody tr[data-clave="${clave}"]`);
+    if (yaSeleccionado) return;
 
-function moverASeleccionadosadministrado(row, clave, descripcion, unidad) {
-    row.remove();
-
-    let nuevaFila = document.createElement("tr");
-    nuevaFila.innerHTML = `
-        <td>${descripcion}</td>
-        <td>${unidad}</td>
-        <td>
-            <input type="number" class="form-control form-control-sm" value="1" min="1">
-        </td>
-    `;
-
-    const cantidadInput = nuevaFila.querySelector("input");
-
-    const inputClave = document.createElement("input");
-    inputClave.type = "hidden";
-    inputClave.name = `administrados[${clave}][clave]`;
-    inputClave.value = clave;
-    inputClave.classList.add(`administrado-hidden-${clave}`);
-    document.forms[0].appendChild(inputClave);
-
-    const inputDescripcion = document.createElement("input");
-    inputDescripcion.type = "hidden";
-    inputDescripcion.name = `administrados[${clave}][descripcion]`;
-    inputDescripcion.value = descripcion;
-    inputDescripcion.classList.add(`administrado-hidden-${clave}`);
-    document.forms[0].appendChild(inputDescripcion);
-
-    const inputCantidad = document.createElement("input");
-    inputCantidad.type = "hidden";
-    inputCantidad.name = `administrados[${clave}][cantidad]`;
-    inputCantidad.value = cantidadInput.value;
-    inputCantidad.classList.add(`administrado-hidden-${clave}`);
-    document.forms[0].appendChild(inputCantidad);
-
-    cantidadInput.addEventListener("input", function () {
-        inputCantidad.value = cantidadInput.value;
-        actualizarInputAdministrado();
-    });
+    const nuevaFila = document.querySelector("#tabla-administrado-asignado tbody").insertRow();
+    nuevaFila.setAttribute("data-clave", clave);
 
     nuevaFila.ondblclick = function () {
-        moverADisponiblesadministrado(nuevaFila, clave, descripcion, unidad);
+        moverADisponiblesAdministrado(nuevaFila, clave, descripcion, unidad);
     };
 
-    administradoAsignados.appendChild(nuevaFila);
+    const celdaClave = nuevaFila.insertCell(0);
+    celdaClave.textContent = clave;
+    celdaClave.hidden = true;
+
+    nuevaFila.insertCell(1).textContent = descripcion;
+    nuevaFila.insertCell(2).textContent = unidad;
+
+    const celdaCantidad = nuevaFila.insertCell(3);
+    const inputCantidad = document.createElement("input");
+    inputCantidad.type = "number";
+    inputCantidad.className = "form-control";
+    inputCantidad.value = "1";
+    celdaCantidad.appendChild(inputCantidad);
+
+    row.remove();
+
+    actualizarContador("tabla-administrado-disponible", "contador-administrado-disponible");
+    actualizarContador("tabla-administrado-asignado", "contador-administrado-asignado");
+
     actualizarInputAdministrado();
-    actualizarContadoresadministrado();
 }
 
-function moverADisponiblesadministrado(row, clave, descripcion, unidad) {
-    row.remove();
+function moverADisponiblesAdministrado(row, clave, descripcion, unidad) {
+    const yaDisponible = document.querySelector(`#tabla-administrado-disponible tbody tr[data-clave="${clave}"]`);
+    if (yaDisponible) return;
 
-    // Eliminar inputs ocultos
-    document.querySelectorAll(`.administrado-hidden-${clave}`).forEach(input => input.remove());
-
-    let nuevaFila = document.createElement("tr");
-    nuevaFila.innerHTML = `
-        <td>${clave}</td>
-        <td>${descripcion}</td>
-        <td style="display: none;">${unidad || ''}</td>
-    `;
+    const nuevaFila = document.querySelector("#tabla-administrado-disponible tbody").insertRow();
+    nuevaFila.setAttribute("data-clave", clave);
 
     nuevaFila.ondblclick = function () {
-        moverASeleccionadosadministrado(nuevaFila, clave, descripcion, unidad);
+        moverASeleccionadosAdministrado(nuevaFila, clave, descripcion, unidad);
     };
 
-    administradoDisponibles.appendChild(nuevaFila);
+    nuevaFila.insertCell(0).textContent = clave;
+    nuevaFila.insertCell(1).textContent = descripcion;
+    const celdaUnidad = nuevaFila.insertCell(2);
+    celdaUnidad.textContent = unidad;
+    celdaUnidad.hidden = true;
+
+    row.remove();
+
+    actualizarContador("tabla-administrado-disponible", "contador-administrado-disponible");
+    actualizarContador("tabla-administrado-asignado", "contador-administrado-asignado");
+
     actualizarInputAdministrado();
-    actualizarContadoresadministrado();
 }
 
 function actualizarInputAdministrado() {
-    let datos = Array.from(administradoAsignados.querySelectorAll("tr")).map(row => {
-        let descripcion = row.children[0].textContent.trim();
-        let unidad = row.children[1].textContent.trim();
-        let cantidad = row.children[2].querySelector("input").value;
-        return { descripcion, unidad, cantidad };
+    const filas = document.querySelectorAll("#tabla-administrado-asignado tbody tr");
+    const administrados = [];
+
+    filas.forEach(fila => {
+        const clave = fila.cells[0].textContent.trim();
+        const descripcion = fila.cells[1].textContent.trim();
+        const unidad = fila.cells[2].textContent.trim();
+        const cantidad = fila.cells[3].querySelector("input")?.value || "0";
+        administrados.push({ clave, descripcion, unidad, cantidad });
     });
 
-    inputadministrado.value = JSON.stringify(datos);
+    document.getElementById("input-administrado").value = JSON.stringify(administrados);
 }
 
-function actualizarContadoresadministrado() {
-    document.getElementById("contador-administrado-disponible").textContent = "[ " + administradoDisponibles.children.length + " ]";
-    document.getElementById("contador-administrado-asignado").textContent = "[ " + administradoAsignados.children.length + " ]";
-}
+function eliminarSeleccionadosAdministrado() {
+    const asignados = document.querySelectorAll("#tabla-administrado-asignado tbody tr");
+    const disponibles = document.querySelector("#tabla-administrado-disponible tbody");
 
-document.addEventListener("DOMContentLoaded", () => {
-    Array.from(administradoDisponibles.querySelectorAll("tr")).forEach(row => {
-        const clave = row.children[0].textContent.trim();
-        const descripcion = row.children[1].textContent.trim();
-        const unidad = row.children[2]?.textContent.trim() || '';
-        row.ondblclick = function () {
-            moverASeleccionadosadministrado(row, clave, descripcion, unidad);
-        };
+    asignados.forEach(filaAsignado => {
+        const claveAsignado = filaAsignado.cells[0]?.textContent.trim();
+
+        const filasDisponibles = disponibles.querySelectorAll("tr");
+        filasDisponibles.forEach(filaDisponible => {
+            const claveDisponible = filaDisponible.cells[0]?.textContent.trim();
+            if (claveDisponible === claveAsignado) {
+                filaDisponible.remove();
+            }
+        });
     });
 
-    actualizarContadoresadministrado();
+    actualizarContador("tabla-administrado-disponible", "contador-administrado-disponible");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    actualizarInputAdministrado();
+    eliminarSeleccionadosAdministrado();
+    actualizarContador("tabla-administrado-disponible", "contador-administrado-disponible");
+    actualizarContador("tabla-administrado-asignado", "contador-administrado-asignado");
 });

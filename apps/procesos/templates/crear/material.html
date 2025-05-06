@@ -4,10 +4,7 @@
     <div class="d-flex">
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
-                <h1 class="text-center mb-4">Materiales</h1>
-                {% csrf_token %}
-                    <input type="hidden" name="materiales_seleccionados" id="input-materiales-seleccionados">
-                    
+                <h1 class="text-center mb-4">Materiales</h1>                    
                     <div class="row align-items-start">
                         <div class="col-md-6">
                             <p><strong>Materiales disponibles:</strong> 
@@ -47,6 +44,7 @@
                                 <tbody>
                                     {% for material in materiales_asignados %}
                                     <tr>
+                                        <td hidden="true">{{ material.material_id }}</td>
                                         <td>{{ material.material }}</td>
                                         <td>{{ material.material.unidad }}</td>
                                         <td><input type="number" value="{{ material.cantidad }}" class="form-control" /></td>                                    
@@ -59,6 +57,9 @@
             </div>    
         </div>
     </div>
+    <input type="hidden" name="materiales" id="input-materiales">
+
 </body>
 
 <script src="{% static 'js/material_asign.js' %}"></script>
+<script src="{% static 'js/general_asig.js' %}"></script>

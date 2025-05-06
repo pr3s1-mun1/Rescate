@@ -237,86 +237,52 @@ def guardar_paramedicos(request, servicio):
         ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
 
 def guardar_procedimientos(request, paciente):
-    procedimientos_claves = [clave.split('[')[1].split(']')[0] for clave, valor in request.POST.items() if clave.startswith('procedimientos[') and 'clave' in clave]
-    for clave_procedimiento in procedimientos_claves:
-        procedimiento = Procedimiento.objects.get(clave=clave_procedimiento)
-        ProcedimientoxPaciente.objects.create(procedimiento=procedimiento, paciente=paciente)
+        ProcedimientoxPaciente.objects.filter(paciente=paciente).delete()
+        procedimientos = json.loads(request.POST.get('procedimientos', '[]'))
+        print(procedimientos)
+        for i in procedimientos:
+            clave = i.get("clave")
+            procedimiento = Procedimiento.objects.get(clave=clave)
+            ProcedimientoxPaciente.objects.create(procedimiento=procedimiento, paciente=paciente)
 
 def guardar_alergias(request, paciente):
     AlergiaxPaciente.objects.filter(paciente=paciente).delete()
-    alergias_claves = [clave.split('[')[1].split(']')[0] for clave in request.POST if clave.startswith('alergias[') and 'clave' in clave]
-    for clave_alergia in alergias_claves:
-        try:
-            alergia = Alergia.objects.get(clave=clave_alergia)
-            AlergiaxPaciente.objects.create(alergia=alergia, paciente=paciente)
-        except Alergia.DoesNotExist:
-            print(f"Alergia con clave {clave_alergia} no encontrada.")
+    alergias = json.loads(request.POST.get('alergias', '[]'))
+    print(alergias)
+    for i in alergias:
+        clave = i.get('clave')
+        alergia = Alergia.objects.get(clave=clave)
+        AlergiaxPaciente.objects.create(alergia=alergia, paciente=paciente)
 
 def guardar_materiales(request, paciente):
-    materiales_data = {}
-    for clave in request.POST:
-        if clave.startswith('materiales[') and '][cantidad]' in clave:
-            clave_material = clave.split('[')[1].split(']')[0]
-            cantidad = request.POST.get(clave)
-            if cantidad is not None and cantidad.strip() != '':
-                materiales_data[clave_material] = cantidad
-    
-    for clave_material, cantidad in materiales_data.items():
-        try:
-            material = Material.objects.get(clave=clave_material)
-            MaterialxPaciente.objects.create(
-                paciente=paciente, 
-                material=material, 
-                cantidad=cantidad, 
-                costo=0
-            )
-        except Material.DoesNotExist:
-            print(f"Material con clave {clave_material} no encontrado.")
-        except Exception as e:
-            print(f"Ocurrió un error con material {clave_material}: {e}")
+    MaterialxPaciente.objects.filter(paciente=paciente).delete()
+    materiales = json.loads(request.POST.get('materiales', '[]'))
+    print(materiales)
+    for i in materiales:
+        clave = i.get('clave')
+        cantidad = i.get('cantidad')
+        material = Material.objects.get(clave=clave)
+        MaterialxPaciente.objects.create(paciente=paciente, material=material, cantidad=cantidad, costo=0)
 
 def guardar_ingeridos(request, paciente):
-    ingeridos_data = {}
-    for clave in request.POST:
-        if clave.startswith('ingeridos[') and '][cantidad]' in clave:
-            clave_ingerido = clave.split('[')[1].split(']')[0]
-            cantidad = request.POST.get(clave)
-            if cantidad is not None and cantidad.strip() != '':
-                ingeridos_data[clave_ingerido] = cantidad
-    
-    for clave_ingerido, cantidad in ingeridos_data.items():
-        try:
-            medicamento = Medicamento.objects.get(clave=clave_ingerido)
-            MedIngeridoxPaciente.objects.create(
-                paciente=paciente, 
-                medicamento=medicamento, 
-                cantidad=cantidad
-            )
-        except Medicamento.DoesNotExist:
-            print(f"Error: Medicamento con clave {clave_ingerido} no encontrado.")
-        except Exception as e:
-            print(f"Ocurrió un error al asignar el ingerido: {str(e)}")
+    MedIngeridoxPaciente.objects.filter(paciente=paciente).delete()
+    ingeridos = json.loads(request.POST.get('ingeridos', '[]'))
+    print(ingeridos)
+    for i in ingeridos:
+        clave = i.get('clave')
+        cantidad = i.get('cantidad')
+        ingerido = Medicamento.objects.get(clave=clave)
+        MedIngeridoxPaciente.objects.create(paciente=paciente, medicamento=ingerido, cantidad=cantidad)
 
 def guardar_administrados(request, paciente):
-    administrados_data = {}
-    for clave in request.POST:
-        if clave.startswith('administrados[') and '][cantidad]' in clave:
-            clave_administrados = clave.split('[')[1].split(']')[0]
-            cantidad = request.POST.get(clave)
-            if cantidad is not None and cantidad.strip() != '':
-                administrados_data[clave_administrados] = cantidad
-    for clave_administrados, cantidad in administrados_data.items():
-        try:
-            medicamento = Medicamento.objects.get(clave=clave_administrados)
-            MedAdministradoxPaciente.objects.create(
-                paciente=paciente, 
-                medicamento=medicamento, 
-                cantidad=cantidad
-            )
-        except Medicamento.DoesNotExist:
-            print(f"Error: Medicamento con clave {clave_administrados} no encontrado.")
-        except Exception as e:
-            print(f"Ocurrió un error al asignar el administrado: {str(e)}")
+    MedAdministradoxPaciente.objects.filter(paciente=paciente).delete()
+    administrados = json.loads(request.POST.get('administrado', '[]'))
+    print(administrados)
+    for i in administrados:
+        clave = i.get('clave')
+        cantidad = i.get('cantidad')
+        administrado = Medicamento.objects.get(clave=clave)
+        MedAdministradoxPaciente.objects.create(paciente=paciente, medicamento=administrado, cantidad=cantidad, costo=0)
 
 def guardar_equipos(request, paciente):
     equipos_data = {}
