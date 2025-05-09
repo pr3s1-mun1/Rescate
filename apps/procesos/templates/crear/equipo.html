@@ -5,8 +5,6 @@
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Equipo</h1>
-                <input type="hidden" name="equipo" id="input-equipo-seleccionado">
-
                 <div class="row align-items-start">
                     <div class="col-md-6">
                         <p><strong>Equipo disponible:</strong>
@@ -22,7 +20,7 @@
                             <tbody>
                                 {% for equipo in equipos %}
                                 <tr
-                                    ondblclick="moverASeleccionadosequipo(this, '{{ equipo.descripcion }}', '{{ equipo.unidad }}')">
+                                    ondblclick="moverASeleccionadosequipo(this, '{{ equipo.clave }}', '{{ equipo.descripcion }}', '{{ equipo.unidad }}')">
                                     <td>{{ equipo.clave }}</td>
                                     <td>{{ equipo.descripcion }}</td>
                                     <td style="display: none;">{{ equipo.unidad }}</td>
@@ -47,9 +45,10 @@
                             <tbody>
                                 {% for equipo in equipos_asignados %}
                                 <tr>
+                                    <td hidden="true">{{ equipo.equipo_id }}</td>
                                     <td>{{ equipo.equipo.descripcion }}</td>
                                     <td>{{ equipo.equipo.unidad }}</td>
-                                    <td><input type="number" value="{{ equipo.cantidad }}" class="form-control" /></td>                                    
+                                    <td><input type="number" value="{{ equipo.cantidad }}" class="form-control" /></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -59,6 +58,7 @@
             </div>
         </div>
     </div>
+    <input type="hidden" name="equipo" id="input-equipo">
 </body>
 
 <script src="{% static 'js/equipo_asign.js' %}"></script>

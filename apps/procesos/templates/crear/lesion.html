@@ -5,8 +5,6 @@
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Selección de Partes Corporales</h1>
-                <input type="hidden" id="input-partes-seleccionadas" name="lesiones">
-
                 <div class="row align-items-start">
                     <!-- Columna izquierda - Figura humana posterior -->
                     <div class="col-md-4 human-body-container">
@@ -15,7 +13,7 @@
                             <!-- Cabeza circular dividida en 4 cuadrantes -->
                             <path class="parte-cuerpo parte-cabeza" id="head-ul"
                                 d="M150,60 L150,30 A30,30 0 0,0 120,60 L150,60 Z" fill="#f8f9fa" stroke="#333"
-                                stroke-width="1.5" data-parte="CABEZA POST. SUP. IZQUIERDA" data-valor="18" />
+                                stroke-width="1.5" data-parte="CABEZA POST. SUP. IZQUIERDA" data-valor="18.00" />
                             <path class="parte-cuerpo parte-cabeza" id="head-ur"
                                 d="M150,60 L180,60 A30,30 0 0,0 150,30 L150,60 Z" fill="#f8f9fa" stroke="#333"
                                 stroke-width="1.5" data-parte="CABEZA POST. SUP. DERECHA" data-valor="" />
@@ -84,7 +82,7 @@
                             <!-- Cabeza circular dividida en 4 cuadrantes -->
                             <path class="parte-cuerpo parte-cabeza" id="head-ul"
                                 d="M150,60 L150,30 A30,30 0 0,0 120,60 L150,60 Z" fill="#f8f9fa" stroke="#333"
-                                stroke-width="1.5" data-parte="CABEZA FRONT. SUP. IZQUIERDA" data-valor="18" />
+                                stroke-width="1.5" data-parte="CABEZA FRONT. SUP. IZQUIERDA" data-valor="18.00" />
                             <path class="parte-cuerpo parte-cabeza" id="head-ur"
                                 d="M150,60 L180,60 A30,30 0 0,0 150,30 L150,60 Z" fill="#f8f9fa" stroke="#333"
                                 stroke-width="1.5" data-parte="CABEZA FRONT. SUP. DERECHA" data-valor="" />
@@ -183,10 +181,10 @@
                                 </thead>
                                 <tbody>
                                     {% for lesion in lesiones_asignados %}
-                                        <tr>
-                                            <td>{{ lesion.lesion }}</td>
-                                            <td>{{ lesion.valor }}</td>
-                                        </tr>
+                                    <tr>
+                                        <td>{{ lesion.lesion }}</td>
+                                        <td>{{ lesion.valor }}</td>
+                                    </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -196,8 +194,8 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="input-partes-seleccionadas" name="lesiones">
 
-    <script src="{% static 'js/lesion_asign.js'%}"></script>
 </body>
-
-</html>
+<script src="{% static 'js/lesion_asign.js'%}"></script>
+<script src="{% static 'js/general_asig.js'%}"></script>

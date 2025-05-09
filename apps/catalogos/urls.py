@@ -12,4 +12,5 @@ urlpatterns = [
     path('delete/<str:tipo>/<str:clave>/', delete_catalogo, name='delete_catalogo'),
 
     path('agregar/<str:tipo>/', add_catalogo, name='add_catalogo'),
+
 ]

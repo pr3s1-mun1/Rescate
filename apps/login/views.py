@@ -7,6 +7,7 @@ def login_view(request):
     if request.method == "POST":
         usuario = request.POST.get("usuario", "").strip()
         contrasena = request.POST.get("contrasena", "").strip()
+        tipo = request.POST.get("tipo", "").strip()
 
         if not usuario or not contrasena:
             messages.warning(request, "Por favor, completa todos los campos.")
@@ -16,6 +17,7 @@ def login_view(request):
             paramedico = Paramedicos.objects.get(usuario=usuario, contrasena=contrasena)
             request.session["clave"] = paramedico.clave
             request.session["user"] = paramedico.nombre
+            request.session["tipo"] = paramedico.tipo
             return redirect("catalogo_general", "alergias")
         except Paramedicos.DoesNotExist:
             messages.error(request, "Usuario o contraseña incorrectos.")

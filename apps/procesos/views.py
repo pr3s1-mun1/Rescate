@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from apps.catalogos.forms import *
-from .forms import ParamedicosForm, ServicioForm, PacientesForm, UnidadAsignadoForm, ParamedicoAsignadoForm
+from apps.catalogos.views import requiere_tipo_paramedico
+from .forms import ServicioForm, PacientesForm
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -29,6 +30,7 @@ def formulario_buscar(request):
 
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
+@requiere_tipo_paramedico('P', 'A')
 def formulario_servicio(request):    
     context = {
         'form': ServicioForm(initial={'clave': Servicio.obtener_siguiente_numero()}),
@@ -53,12 +55,6 @@ def vista_principal(request):
     })
 
 #Función para guardar formulario y pestañas de creación (Primera Parte)
-from django.shortcuts import render, redirect
-from django.http import Http404
-import json
-from .forms import ServicioForm
-from .models import Servicio, TipoUnidad, Paramedicos, UnidadxServicio, ParamedicoxPaciente
-
 def crear_servicio(request):
     servicio = None
     if request.method == 'POST':
@@ -69,30 +65,24 @@ def crear_servicio(request):
 
             # Manejo de unidades asignadas
             unidades = json.loads(request.POST.get('unidades', '[]'))
+            print(unidades)
             for u in unidades:
                 if u.get('clave') and u.get('id_unidad'):
-                    try:
-                        unidad = TipoUnidad.objects.get(clave=u['clave'])
-                        UnidadxServicio.objects.create(
-                            servicio=servicio,
-                            unidad=unidad,
-                            numero_unidad=u['id_unidad'],
-                            agente_nombre=u.get('agente', '')
-                        )
-                    except TipoUnidad.DoesNotExist:
-                        print(f"Unidad con clave {u['clave']} no encontrada.")
+                    UnidadxServicio.objects.create(
+                        servicio=servicio,
+                        unidad=TipoUnidad.objects.get(clave=u['clave']),
+                        numero_unidad=u['id_unidad'],
+                        agente_nombre=u.get('agente', '')
+                    )
             
             # Manejo de paramédicos asignados
+            ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
             paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
+            print(paramedicos)
             for item in paramedicos:
                 clave = item.get("clave")
-                try:
-                    paramedico = Paramedicos.objects.get(clave=clave)
-                    ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
-                except Paramedicos.DoesNotExist:
-                    print(f"Paramédico con clave {clave} no encontrado.")
-            
-            return redirect('carga_modifica', pk=servicio.pk)
+                paramedico = Paramedicos.objects.get(clave=clave)
+                ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
 
         else:
             context = {
@@ -114,10 +104,7 @@ def crear_servicio(request):
 
     return render(request, 'modificar_servicio.html', context)
 
-
-
-
-
+@requiere_tipo_paramedico('P', 'A')
 def carga_modifica(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
     form_servicio = ServicioForm(instance=servicio)
@@ -285,81 +272,34 @@ def guardar_administrados(request, paciente):
         MedAdministradoxPaciente.objects.create(paciente=paciente, medicamento=administrado, cantidad=cantidad, costo=0)
 
 def guardar_equipos(request, paciente):
-    equipos_data = {}
-    for clave in request.POST:
-        if clave.startswith('equipos[') and '][cantidad]' in clave:
-            clave_equipos = clave.split('[')[1].split(']')[0]
-            cantidad = request.POST.get(clave)
-            if cantidad is not None and cantidad.strip() != '':
-                equipos_data[clave_equipos] = cantidad
-    for clave_equipos, cantidad in equipos_data.items():
-        try:
-            equipo = Equipo.objects.get(clave=clave_equipos)
-            EquipoxPaciente.objects.create(
-                paciente=paciente, 
-                equipo=equipo, 
-                cantidad=cantidad
-            )
-        except Equipo.DoesNotExist:
-            print(f"Error: Equipo con clave {clave_equipos} no encontrado.")
-        except Exception as e:
-            print(f"Ocurrió un error al asignar el equipos: {str(e)}")
+    EquipoxPaciente.objects.filter(paciente=paciente).delete()
+    equipos = json.loads(request.POST.get('equipo', '[]'))
+    print(equipos)
+    for i in equipos:
+        clave = i.get('clave')
+        cantidad = i.get('cantidad')
+        equipo = Equipo.objects.get(clave=clave)
+        EquipoxPaciente.objects.create(paciente=paciente, equipo=equipo, cantidad=cantidad)
 
 def guardar_lesiones(request, paciente):
     LesionxPaciente.objects.filter(paciente=paciente).delete()
-
-    # Obtener el JSON de lesiones desde el POST
-    lesiones_json = request.POST.get('lesiones', '[]')
-    print("JSON recibido:", lesiones_json)  # Debug
-
-    try:
-        lesiones = json.loads(lesiones_json)
-    except json.JSONDecodeError as e:
-        print("Error al decodificar JSON:", e)
-        lesiones = []
-
-    if not isinstance(lesiones, list):
-        print("El JSON no es una lista de objetos.")
-        return
-    
-    # Guardar cada lesión
-    for lesion_data in lesiones:
-        if not isinstance(lesion_data, dict):
-            print("Formato inválido para lesión:", lesion_data)
-            continue
-
-        descripcion = lesion_data.get('descripcion', '').strip()
-        valor_raw = lesion_data.get('valor', 0)
-
-        try:
-            valor = float(valor_raw)
-        except (TypeError, ValueError):
-            print(f"Valor inválido para la lesión '{descripcion}':", valor_raw)
-            valor = 0
-
-        if descripcion:
-            print(f"Guardando lesión: {descripcion} | Valor: {valor}")
-            LesionxPaciente.objects.create(
-                paciente=paciente,
-                lesion=descripcion,
-                valor=valor
-            )
-        else:
-            print("Descripción vacía, no se guarda esta lesión.")
+    lesiones = json.loads(request.POST.get('lesiones', '[]'))
+    print(lesiones)
+    for i in lesiones:
+        descripcion = i.get('descripcion')
+        cantidad = i.get('valor') or '0'
+        val_formato = float(cantidad.replace(',', '.'))
+        LesionxPaciente.objects.create(paciente=paciente, lesion=descripcion, valor=val_formato)
 
 def guardar_impactos(request, paciente):
     ImpactoxVehiculo.objects.filter(paciente=paciente).delete()
-    impacto_str = request.POST.get('impacto', '[]')
-    impactos = json.loads(impacto_str)
-    if isinstance(impactos, list):
-        for impacto_data in impactos:
-            if isinstance(impacto_data, dict):
-                descripcion_impacto = impacto_data.get('descripcion', '').strip()
-                if descripcion_impacto:
-                    ImpactoxVehiculo.objects.create(
-                        paciente=paciente,
-                        impacto=descripcion_impacto
-                    )
+    impactos = json.loads(request.POST.get('impacto', '[]'))
+    print(impactos)
+    for i in impactos:
+        descripcion = i.get('descripcion')
+        ImpactoxVehiculo.objects.create(paciente=paciente, impacto=descripcion)
+
+                    
 
 def reporte_servicio(request, clave):
     # Obtener datos principales

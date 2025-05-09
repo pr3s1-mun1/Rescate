@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from functools import wraps
 from django.contrib import messages
 from .models import *
 from .forms import *
@@ -37,8 +38,20 @@ def catalogo_general(request, tipo):
 
     return render(request, template, {tipo: objetos, 'query': query})
 
+def requiere_tipo_paramedico(*tipos_permitidos):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            tipo = request.session.get("tipo")
+            if tipo not in tipos_permitidos:
+                messages.warning(request, "🚫 No tienes permisos para acceder a esta sección.")
+                return render(request, "bloqueo.html")
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
 
 #Actualización de rows de las bases de datos
+@requiere_tipo_paramedico('A')
 def update_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
         return redirect('error')
@@ -65,6 +78,7 @@ def update_catalogo(request, tipo, clave):
 
 
 #Eliminar rows de la base de datos
+@requiere_tipo_paramedico('A')
 def delete_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS:
         return redirect('error')
@@ -105,3 +119,4 @@ def add_catalogo(request, tipo):
         form = form_class(initial={'clave': nueva_clave})
 
     return render(request, 'add/add.html', {'form': form, 'tipo': tipo, 'titulo': catalogo.get('nombre', tipo), 'nueva_clave': nueva_clave})
+

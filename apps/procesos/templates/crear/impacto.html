@@ -5,8 +5,6 @@
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4" style="font-size: 1.8rem;">Impacto</h1>
-                <input type="hidden" id="input-impacto-seleccionadas" name="impacto">
-
                 <div class="row mt-6">
                     <div class="col-md-6">
                         <div class="row">
@@ -24,7 +22,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="imagen">
-                                    <img src="{% static 'img/vehsuperior.gif' %}" alt="SUPERIOR O VOLCADURA" class="img-fluid">
+                                    <img src="{% static 'img/vehsuperior.gif' %}" alt="SUPERIOR O VOLCADURA"
+                                        class="img-fluid">
                                 </div>
                                 <p class="text-center mt-1">Superior/Volcadura</p>
                             </div>
@@ -94,6 +93,6 @@
             </div>
         </div>
     </div>
-
+    <input type="hidden" id="input-impacto-seleccionadas" name="impacto">
     <script src="{% static 'js/impacto_asign.js' %}"></script>
 </body>
