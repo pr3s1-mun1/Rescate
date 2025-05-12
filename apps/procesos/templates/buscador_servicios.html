@@ -128,12 +128,20 @@
                             </button>
                         </form>
 
+                        <form action="{% url 'eliminar_servicio' servicio.clave %}" method="post">
+                            {% csrf_token %}
+                            <button class="btn-action btn-delete mt-3" type="submit">
+                                <i class="fas fa-trash-alt me-2"></i> Eliminar
+                            </button>
+                        </form>
+
                         <form method="post" action="{% url 'reporte_servicio' servicio.clave %}" target="_blank">
                             {% csrf_token %}
                             <button class="btn-action btn-report mt-3" type="submit">
-                                <i class="fas fa-file-pdf me-2"></i> Generar Reporte
+                                <i class="fas fa-file-pdf me-2"></i> Reporte
                             </button>
                         </form>
+
                     </div>
                 </div>
                 {% endwith %}

@@ -1,0 +1,106 @@
+{% load static %}
+{% load extra_tags %}
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4" id="titulo">Reporte de Servicios por Base</h2>
+
+    <form method="post" class="row g-3 mb-4">
+        {% csrf_token %}
+        <div class="col-md-5">
+            <label>Desde:</label>
+            <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-5">
+            <label>Hasta:</label>
+            <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+
+    {% if conteos %}
+    <table class="table table-bordered" id="tabla-reporte">
+        <thead>
+            <tr>
+                <th>Tipo de Servicio</th>
+                {% for base in basees %}
+                    <th>{{ base }}</th>
+                {% endfor %}
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tipo in tipos_servicio %}
+            <tr class="data-row" data-tipo="{{ tipo }}">
+                <td>{{ tipo }}</td>
+                {% for base in basees %}
+                    <td class="cell-value" data-base="{{ base }}">{{ conteos|get_item:tipo|get_item:base|default:0 }}</td>
+                {% endfor %}
+                <td class="row-total text-center"><strong>0</strong></td>
+            </tr>
+            {% endfor %}
+            
+            <!-- Fila de totales por columna -->
+            <tr id="totals-row">
+                <td><strong>Total</strong></td>
+                {% for base in basees %}
+                    <td class="column-total " data-base="{{ base }}"><strong>0</strong></td>
+                {% endfor %}
+                <td class="text-center" id="grand-total"><strong>0</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    {% elif fecha_inicio and fecha_fin %}
+        <p class="alert alert-warning">No se encontraron servicios para ese tipo en el rango de fechas.</p>
+    {% endif %}
+
+    <form method="get" action="{% url 'reporte_servicios' %}" target="_blank">
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Calcular totales por fila
+    const rows = document.querySelectorAll('.data-row');
+    let grandTotal = 0;
+    const columnTotals = {};
+
+    // Inicializar totales por columna
+    document.querySelectorAll('.column-total').forEach(col => {
+        const base = col.getAttribute('data-base');
+        columnTotals[base] = 0;
+    });
+
+    // Procesar cada fila
+    rows.forEach(row => {
+        let rowTotal = 0;
+        const cells = row.querySelectorAll('.cell-value');
+        
+        cells.forEach(cell => {
+            const value = parseInt(cell.textContent) || 0;
+            rowTotal += value;
+            
+            // Acumular para total de columna
+            const base = cell.getAttribute('data-base');
+            columnTotals[base] += value;
+        });
+        
+        // Actualizar total de fila
+        row.querySelector('.row-total strong').textContent = rowTotal;
+        grandTotal += rowTotal;
+    });
+
+    // Actualizar totales por columna
+    for (const base in columnTotals) {
+        document.querySelector(`.column-total[data-base="${base}"] strong`).textContent = columnTotals[base];
+    }
+    
+    // Actualizar total general
+    document.querySelector('#grand-total strong').textContent = grandTotal;
+});
+</script>

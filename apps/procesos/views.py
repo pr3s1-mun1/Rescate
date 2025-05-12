@@ -55,17 +55,16 @@ def vista_principal(request):
     })
 
 #Función para guardar formulario y pestañas de creación (Primera Parte)
+from django.shortcuts import redirect
+
 def crear_servicio(request):
-    servicio = None
     if request.method == 'POST':
         servicio_form = ServicioForm(request.POST)
 
         if servicio_form.is_valid():
             servicio = servicio_form.save()
 
-            # Manejo de unidades asignadas
             unidades = json.loads(request.POST.get('unidades', '[]'))
-            print(unidades)
             for u in unidades:
                 if u.get('clave') and u.get('id_unidad'):
                     UnidadxServicio.objects.create(
@@ -74,25 +73,25 @@ def crear_servicio(request):
                         numero_unidad=u['id_unidad'],
                         agente_nombre=u.get('agente', '')
                     )
-            
-            # Manejo de paramédicos asignados
-            ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
+
             paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
-            print(paramedicos)
             for item in paramedicos:
                 clave = item.get("clave")
                 paramedico = Paramedicos.objects.get(clave=clave)
                 ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
+
+            print("Servicio creado con éxito:", servicio.clave)
+            return redirect('carga_modifica', pk=servicio.clave)  # redirige a otra vista
 
         else:
             context = {
                 'servicio_form': servicio_form,
                 'unidades': TipoUnidad.objects.all(),
                 'paramedicos': Paramedicos.objects.all(),
-                'errores': servicio_form.errors,  
+                'errores': servicio_form.errors,
             }
             return render(request, 'modificar_servicio.html', context)
-    
+
     else:
         servicio_form = ServicioForm()
 
@@ -103,6 +102,7 @@ def crear_servicio(request):
     }
 
     return render(request, 'modificar_servicio.html', context)
+
 
 @requiere_tipo_paramedico('P', 'A')
 def carga_modifica(request, pk):
@@ -145,6 +145,13 @@ def carga_modifica(request, pk):
     }
 
     return render(request, 'modificar_servicio.html', context)
+
+@requiere_tipo_paramedico('P', 'A')
+def eliminar_servicio(request, pk):
+    print("Eliminando servicio con pk:", pk)
+    servicio = get_object_or_404(Servicio, pk=pk)
+    servicio.delete()
+    return redirect('formulario_buscar')
 
 def guardar_todo(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)

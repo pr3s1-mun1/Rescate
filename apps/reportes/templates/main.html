@@ -1,0 +1,235 @@
+{% load static %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="d-flex">
+        <div class="container">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Centro de Reportes</h1>
+
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <a href="{% url 'reporte_servicios' %}" class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
+                                <h4>Tipos de Servicio por Base y Fecha</h4>
+                                <p class="text-muted">Servicios realizados en el día actual</p>
+                                <span class="badge bg-info">Hoy</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-calendar-week"></i>
+                                </div>
+                                <h4>Servicios por Ambulancia</h4>
+                                <p class="text-muted">Resumen de servicios de la semana</p>
+                                <span class="badge bg-primary">Semana actual</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Lista de Asistencia del Personal</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Pacientes Atendidos</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Total de Servicios Atendidos por Fecha</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Servicios Sobresalientes</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Parte Informativa</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Atención de Paramédicos</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Equipo Utilizado</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Material Utilizado</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Combustible</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Pacientes Atendidos por Sexo</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Servicios Prestados por Fecha</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Material Utilizado en Pacientes por Fecha y Hora</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Medicamento Administrado en Pacientes por Fecha y Hora</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <a  class="text-decoration-none">
+                            <div class="card option-card text-center p-4">
+                                <div class="option-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <h4>Pacientes Atendidos por Sexo</h4>
+                                <p class="text-muted">Filtrar reportes por fechas y parámetros</p>
+                                <span class="badge bg-secondary">Opciones</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.querySelector('.option-icon').style.transform = 'scale(1.1)';
+            });
+            card.addEventListener('mouseleave', function () {
+                this.querySelector('.option-icon').style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

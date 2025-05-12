@@ -75,7 +75,7 @@ class PacientexServicio(models.Model):
     enfermedad = models.ForeignKey(Enfermedad, on_delete=models.SET_NULL, null=True)
     marca_vehiculo = models.ForeignKey(MarcaVehiculo, on_delete=models.SET_NULL, null=True)
     placa_vehiculo = models.CharField(max_length=10)
-    color_vehiculo = models.CharField(max_length=2)
+    color_vehiculo = models.CharField(max_length=1)
     fecha_ultima_comida = models.DateTimeField()
     fallecio = models.BooleanField(default=False)
     hospital = models.ForeignKey(Hospitales, on_delete=models.SET_NULL, null=True)
@@ -94,6 +94,8 @@ class PacientexServicio(models.Model):
     nombre_respon_hospital = models.CharField(max_length=100)
     nombre_agente = models.CharField(max_length=100)
     numero_agente = models.CharField(max_length=10)
+
+
     nivel_concienciaa = models.CharField(max_length=1)
     piel = models.CharField(max_length=1)
     antecedente = models.CharField(max_length=255)
