@@ -1,0 +1,65 @@
+{% load static %}
+{% include 'navbar.html' %}
+{% load extra_tags %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <div class="container mt-4">
+
+        <h2>Servicios por Tipo de Servicio</h2>
+
+        <form method="post" class="row g-3 mb-4">
+            {% csrf_token %}
+            <div class="col-md-5">
+                <label>Desde:</label>
+                <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+            </div>
+            <div class="col-md-5">
+                <label>Hasta:</label>
+                <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+
+        <form class="my-3" method="get" action="{% url 'imprimir_reporte_tipo_servicio_pdf' %}" target="_blank">
+            <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+            <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+            <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+        </form>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tipo de Servicio</th>
+                    {% for base in columnas %}
+                        <th>Base {{ base }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for tipo in filas %}
+                <tr>
+                    <td>{{ tipo }}</td>
+                    {% for base in columnas %}
+                        <td>{{ tabla|dict_getPac:tipo|dict_getPac:base }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+
+
+
+    </div>
+</body>
+
+</html>

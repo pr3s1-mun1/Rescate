@@ -39,3 +39,12 @@ def grand_total(conteos):
         else:
             total += sum(tipo_dict.values())
     return total
+
+@register.filter
+def dict_get(d, key):
+    """Obtiene un valor de un diccionario (funciona también con defaultdict)."""
+    return d.get(key, {})
+
+@register.filter
+def dict_getPac(diccionario, clave):
+    return diccionario.get(clave, 0)

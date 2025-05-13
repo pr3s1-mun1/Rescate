@@ -1,0 +1,95 @@
+{% load extra_tags %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .table-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .tdImg {
+            width: 20%;
+        }
+        .tdImg img {
+            width: 75px;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .report-table th, .report-table td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: center;
+            font-size: 11px;
+        }
+        .report-table th {
+            background-color: #dadada;
+            font-weight: bold;
+
+            max-width: 120px;
+            word-wrap: break-word;
+            white-space: normal;
+            overflow-wrap: break-word;
+            vertical-align: middle;
+        
+        }
+        h1, h2, h3 {
+            margin: 5px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table class="table-header">
+        <tr>
+            <td class="tdImg" align="left">
+                <img src="rescate\static\img\escudorescate.gif" alt="Logo Izquierdo">
+            </td>
+            <td align="center">
+                <h1>DEPARTAMENTO DE RESCATE</h1>
+                <h3>DIRECCIÓN MUNICIPAL DE PROTECCIÓN CIVIL</h3>
+                <h3>CD. JUÁREZ - CHIHUAHUA - MÉXICO</h3>
+                <h2>LISTADO DE TIPOS DE SERVICIO Y PACIENTES ATENDIDOS</h2>
+                <p><strong>Desde:</strong> {{ fecha_inicio }} &nbsp;&nbsp;&nbsp; <strong>Hasta:</strong> {{ fecha_fin }}
+                </p>
+            </td>
+            <td class="tdImg" align="right">
+                <img src="rescate\static\img\rescatelogo.gif" alt="Logo Derecho">
+            </td>
+        </tr>
+    </table>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Tipo de Servicio</th>
+                {% for base in columnas %}
+                <th>Base {{ base }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for tipo in filas %}
+            <tr>
+                <td>{{ tipo }}</td>
+                {% for base in columnas %}
+                <td>{{ tabla|dict_getPac:tipo|dict_getPac:base }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+
+</html>

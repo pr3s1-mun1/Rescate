@@ -20,6 +20,12 @@
         </div>
     </form>
 
+    <form class="my-3" method="get" action="{% url 'reporte_servicios' %}" target="_blank">
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+    </form>
+
     {% if conteos %}
     <table class="table table-bordered" id="tabla-reporte">
         <thead>
@@ -56,27 +62,19 @@
         <p class="alert alert-warning">No se encontraron servicios para ese tipo en el rango de fechas.</p>
     {% endif %}
 
-    <form method="get" action="{% url 'reporte_servicios' %}" target="_blank">
-        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
-        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
-        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
-    </form>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Calcular totales por fila
     const rows = document.querySelectorAll('.data-row');
     let grandTotal = 0;
     const columnTotals = {};
 
-    // Inicializar totales por columna
     document.querySelectorAll('.column-total').forEach(col => {
         const base = col.getAttribute('data-base');
         columnTotals[base] = 0;
     });
 
-    // Procesar cada fila
     rows.forEach(row => {
         let rowTotal = 0;
         const cells = row.querySelectorAll('.cell-value');
@@ -85,22 +83,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const value = parseInt(cell.textContent) || 0;
             rowTotal += value;
             
-            // Acumular para total de columna
             const base = cell.getAttribute('data-base');
             columnTotals[base] += value;
         });
         
-        // Actualizar total de fila
         row.querySelector('.row-total strong').textContent = rowTotal;
         grandTotal += rowTotal;
     });
 
-    // Actualizar totales por columna
     for (const base in columnTotals) {
         document.querySelector(`.column-total[data-base="${base}"] strong`).textContent = columnTotals[base];
     }
     
-    // Actualizar total general
     document.querySelector('#grand-total strong').textContent = grandTotal;
 });
 </script>
