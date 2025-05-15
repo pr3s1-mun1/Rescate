@@ -154,22 +154,35 @@ function validarPestana(tabId) {
         }
     }
 
-    if (tabId === 'lesion') {
-        const rows = document.querySelectorAll('#tabla-partes-seleccionadas tbody tr');
-        if (rows.length === 0) {
-            alert('Debe agregar al menos una lesión.');
-            isValid = false;
-        }
-    }
-
-    if (tabId === 'impacto') {
-        const rows = document.querySelectorAll('#tabla-impacto-seleccionadas tbody tr');
-        if (rows.length === 0) {
-            alert('Debe agregar al menos un impacto.');
-            isValid = false;
-        }
-    }
-
+    actualizarInputs();
     return isValid;
 }
 
+function actualizarInputs(){
+    actualizarInputAdministrado();
+    actualizarInputEquipo(); 
+    actualizarInputIngerido();
+    actualizarInputMateriales();
+    actualizarInputIngerido();
+    llenarInputs()
+}
+
+function habilitarEliminacionPorDobleClick(idTabla) {
+    const tabla = document.getElementById(idTabla);
+
+    if (!tabla) {
+        console.warn(`No se encontró una tabla con el ID "${idTabla}".`);
+        return;
+    }
+
+    tabla.addEventListener('dblclick', function (e) {
+        const fila = e.target.closest('tr');
+
+        // Evita eliminar si es encabezado
+        if (fila ) {
+                fila.remove();
+                actualizarInputs();
+                actualizarContador("tabla-seleccionados", "contados-unidades");
+        }
+    });
+}

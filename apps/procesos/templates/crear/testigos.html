@@ -1,11 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Testigos</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-</head>
+{% load static %}
 <body>
+    <input type="hidden" id="input-testigos" name="testigos">
+    <div class="text-center mt-4">
+        <p id="activar-testigos" style="cursor: pointer;" class="text-primary">
+            Doble clic para agregar datos de testigos
+        </p>
+    </div>
+    <div id="form-testigos" class="d-none">
+
     <div class="container mt-4">
         <h1 class="text-center mb-4">Testigos</h1>
         <div class="row">
@@ -37,8 +39,8 @@
             </div>
 
             <!-- Columna derecha: Tabla -->
-            <div class="col-md-6">
-                <div class="bg-white p-4 rounded shadow-sm">
+            <div class="col-md-6 ">
+                <div class="bg-light p-4 rounded shadow-sm">
                     <h5 class="mb-3">Lista de Testigos</h5>
                     <table class="table table-bordered">
                         <thead>
@@ -47,10 +49,19 @@
                                 <th>Edad</th>
                                 <th>Dirección</th>
                                 <th>Teléfono</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-testigos">
-                            <!-- Filas se agregarán aquí -->
+                            {% for testigo in testigos_asignados %}
+                            <tr>
+                                <td>{{ testigo.nombre }}</td>
+                                <td>{{ testigo.edad }}</td>
+                                <td>{{ testigo.domicilio }}</td>
+                                <td>{{ testigo.telefono }}</td>
+                                <td><button class="btn btn-danger btn-sm eliminar-fila">Eliminar</button></td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -58,36 +69,7 @@
         </div>
     </div>
 
-    <script>
-        function agregarTestigo() {
-            const nombre = document.getElementById('nomtestigo').value.trim();
-            const edad = document.getElementById('telefono').value.trim();
-            const direccion = document.getElementById('direccion').value.trim();
-            const numero = document.getElementById('numero').value.trim();
+</div>
 
-            if (!nombre || !edad || !direccion || !numero) {
-                alert("Por favor, completa todos los campos.");
-                return;
-            }
-
-            const tabla = document.getElementById('tabla-testigos');
-            const fila = document.createElement('tr');
-
-            fila.innerHTML = `
-                <td>${nombre}</td>
-                <td>${edad}</td>
-                <td>${direccion}</td>
-                <td>${numero}</td>
-            `;
-
-            tabla.appendChild(fila);
-
-            // Limpiar campos
-            document.getElementById('nomtestigo').value = '';
-            document.getElementById('telefono').value = '';
-            document.getElementById('direccion').value = '';
-            document.getElementById('numero').value = '';
-        }
-    </script>
+    <script src="{% static 'js/testigos_asign.js' %}"></script>
 </body>
-</html>

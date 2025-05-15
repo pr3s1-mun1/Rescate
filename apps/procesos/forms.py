@@ -181,6 +181,7 @@ class EmbarazoAsignadoForm(forms.ModelForm):
 class PartesAsignadoForm(forms.ModelForm):
     class Meta:
         model = PartexServico
+        exclude = ['servicio']
         fields = '__all__'
         widgets = {
             'parte': forms.Textarea(attrs={

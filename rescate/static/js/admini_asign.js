@@ -95,4 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
     eliminarSeleccionadosAdministrado();
     actualizarContador("tabla-administrado-disponible", "contador-administrado-disponible");
     actualizarContador("tabla-administrado-asignado", "contador-administrado-asignado");
+
+    const filasAsignadasAdmi = document.querySelectorAll("#tabla-administrado-asignado tbody tr");
+    filasAsignadasAdmi.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+        const unidad = fila.cells[2]?.textContent.trim();
+        fila.ondblclick = function () {
+            moverADisponiblesAdministrado(this, clave, nombre, unidad);
+        };
+    });
 });

@@ -101,4 +101,14 @@ document.addEventListener("DOMContentLoaded", function () {
     eliminarSeleccionadosIngerido();
     actualizarContador("tabla-ingerido-disponible", "contador-ingerido-disponible");
     actualizarContador("tabla-ingerido-asignado", "contador-ingerido-asignado");
+
+    const filasAsignadasInge = document.querySelectorAll("#tabla-ingerido-asignado tbody tr");
+    filasAsignadasInge.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+        const unidad = fila.cells[2]?.textContent.trim();
+        fila.ondblclick = function () {
+            moverADisponiblesIngerido(this, clave, nombre, unidad);
+        };
+    });
 });

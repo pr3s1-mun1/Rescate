@@ -95,4 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
     eliminarSeleccionadosMateriales();
     actualizarContador("tabla-materiales-disponibles", "contador-materiales-disponibles");
     actualizarContador("tabla-materiales-asignados", "contador-materiales-asignados");
+
+    const filasAsignadasMate = document.querySelectorAll("#tabla-materiales-asignados tbody tr");
+    filasAsignadasMate.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+        const unidad = fila.cells[2]?.textContent.trim();
+        fila.ondblclick = function () {
+            moverADisponiblesMaterial(this, clave, nombre, unidad);
+        };
+    });
 });

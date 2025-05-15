@@ -1,77 +1,94 @@
+{% load static %}
 <body>
-    <div class="d-flex justify-content-center mt-4">
-        <div class="container">
-            <div class="form-container bg-light p-4 rounded shadow-sm">
-                <h1 class="text-center mb-4">Datos del Embarazo del Paciente</h1>
+    <input type="hidden" id="input-embarazo" name="embarazo">
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.secuencia.id_for_label }}">Secuencia</label>
-                    <input class="form-control bg-light mb-3" readonly="true" type="text">
-                </div>
+    <div class="text-center mt-4">
+        <p id="activar-formulario" style="cursor: pointer;" class="text-primary">
+             Doble clic para agregar datos de embarazo
+        </p>
+    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.paciente.id_for_label }}">Paciente</label>
-                    <input class="form-control bg-light mb-3" readonly="true" type="text">
-                </div>
+    <div id="form-embarazo" class="d-none">
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.numero_gestaciones.id_for_label }}">Número de Gestaciones</label>
-                    {{ form_embarazo.numero_gestaciones }}
-                </div>
+        <div class="d-flex justify-content-center mt-4">
+            <div class="container">
+                <div class="form-container bg-light p-4 rounded shadow-sm">
+                    <h1 class="text-center mb-4">Datos del Embarazo del Paciente</h1>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.numero_partos.id_for_label }}">Número de Partos</label>
-                    {{ form_embarazo.numero_partos }}
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.secuencia.id_for_label }}">Secuencia</label>
+                        <input class="form-control bg-light mb-3" readonly="true" type="text">
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.numero_cesareas.id_for_label }}">Número de Cesáreas</label>
-                    {{ form_embarazo.numero_cesareas }}
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.paciente.id_for_label }}">Paciente</label>
+                        <input class="form-control bg-light mb-3" readonly="true" type="text">
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.numero_abortos.id_for_label }}">Número de Abortos</label>
-                    {{ form_embarazo.numero_abortos }}
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.numero_gestaciones.id_for_label }}">Número de Gestaciones</label>
+                        {{ form_embarazo.numero_gestaciones }}
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.utlima_menstruacion.id_for_label }}">Última Menstruación</label>
-                    {{ form_embarazo.utlima_menstruacion }}
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.numero_partos.id_for_label }}">Número de Partos</label>
+                        {{ form_embarazo.numero_partos }}
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.edad_gestacional.id_for_label }}">Edad Gestacional</label>
-                    {{ form_embarazo.edad_gestacional }}
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.numero_cesareas.id_for_label }}">Número de Cesáreas</label>
+                        {{ form_embarazo.numero_cesareas }}
+                    </div>
 
-                <div class="form-check mb-3">
-                    <label class="form-check-label" for="{{ form_embarazo.presenta_sangrado.id_for_label }}"> Presenta Sangrado
-                        {{ form_embarazo.presenta_sangrado }} 
-                    </label>
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.numero_abortos.id_for_label }}">Número de Abortos</label>
+                        {{ form_embarazo.numero_abortos }}
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.inicio_contracciones.id_for_label }}">Inicio de Contracciones</label>
-                    {{ form_embarazo.inicio_contracciones }}
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.utlima_menstruacion.id_for_label }}">Última Menstruación</label>
+                        {{ form_embarazo.utlima_menstruacion }}
+                    </div>
 
-                <div class="form-check mb-3">
-                    <label class="form-check-label" for="{{ form_embarazo.bolsa_rota.id_for_label }}"> Bolsa Rota
-                        {{ form_embarazo.bolsa_rota }} 
-                    </label>
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.edad_gestacional.id_for_label }}">Edad Gestacional</label>
+                        {{ form_embarazo.edad_gestacional }}
+                    </div>
 
-                <div class="form-check mb-3">
-                    <label class="form-check-label" for="{{ form_embarazo.atencion_medica_embarazo.id_for_label }}"> Atención Médica Durante el Embarazo
-                        {{ form_embarazo.atencion_medica_embarazo }} 
-                    </label>
-                </div>
+                    <div class="form-check mb-3">
+                        <label class="form-check-label" for="{{ form_embarazo.presenta_sangrado.id_for_label }}">
+                            Presenta Sangrado
+                            {{ form_embarazo.presenta_sangrado }}
+                        </label>
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label for="{{ form_embarazo.nota.id_for_label }}">Nota</label>
-                    {{ form_embarazo.nota }}
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.inicio_contracciones.id_for_label }}">Inicio de
+                            Contracciones</label>
+                        {{ form_embarazo.inicio_contracciones }}
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <label class="form-check-label" for="{{ form_embarazo.bolsa_rota.id_for_label }}"> Bolsa Rota
+                            {{ form_embarazo.bolsa_rota }}
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <label class="form-check-label" for="{{ form_embarazo.atencion_medica_embarazo.id_for_label }}">
+                            Atención Médica Durante el Embarazo
+                            {{ form_embarazo.atencion_medica_embarazo }}
+                        </label>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="{{ form_embarazo.nota.id_for_label }}">Nota</label>
+                        {{ form_embarazo.nota }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
+<script src="{% static 'js/embarazo_asign.js' %}"></script>

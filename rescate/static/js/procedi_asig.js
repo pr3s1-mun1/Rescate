@@ -82,4 +82,14 @@ document.addEventListener("DOMContentLoaded", function () {
     eliminarSeleccionados();
     actualizarContador("tabla-procedimientos-disponibles", "contador-procedimientos-disponibles");
     actualizarContador("tabla-procedimientos-asignados", "contador-procedimientos-asignados");
+    const filasAsignadas = document.querySelectorAll("#tabla-procedimientos-asignados tbody tr");
+    filasAsignadas.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+        const protocolo = fila.cells[2]?.textContent.trim();
+
+        fila.ondblclick = function () {
+            moverAOriginalesProcedimiento(this, clave, nombre, protocolo);
+        };
+    });
 });

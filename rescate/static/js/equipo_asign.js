@@ -6,7 +6,7 @@ function moverASeleccionadosequipo(row, clave, descripcion, unidad) {
     nuevaFila.setAttribute("data-clave", clave);
 
     nuevaFila.ondblclick = function () {
-        moverADisponiblesAdministrado(nuevaFila, clave, descripcion, unidad);
+        moverADisponiblesequipo(nuevaFila, clave, descripcion, unidad);
     };
 
     const celdaClave = nuevaFila.insertCell(0);
@@ -95,4 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
     eliminarSeleccionadosEquipo();
     actualizarContador("tabla-equipo-disponible", "contador-equipo-disponible");
     actualizarContador("tabla-equipo-asignado", "contador-equipo-asignado");
+
+    const filasAsignadasEqui = document.querySelectorAll("#tabla-equipo-asignado tbody tr");
+    filasAsignadasEqui.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+        const unidad = fila.cells[2]?.textContent.trim();
+        fila.ondblclick = function () {
+            moverADisponiblesequipo(this, clave, nombre, unidad);
+        };
+    });
 });

@@ -117,7 +117,9 @@ def carga_modifica(request, pk):
 
 
     form_embarazo = EmbarazoAsignadoForm()
-    form_partes = PartesAsignadoForm()
+    parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
+    form_partes = PartesAsignadoForm(instance=parte_instancia)
+
     context = {
         'form': form_servicio,
         'form_paciente': form_paciente,
@@ -126,7 +128,8 @@ def carga_modifica(request, pk):
         'editar': True,
         'servicio': servicio,
         'pacientes': PacientexServicio.objects.filter(servicio=servicio),
-
+        'form_partes': PartesAsignadoForm(instance=parte_instancia),
+        
         # Datos relacionados asignados
         'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
         'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
@@ -138,6 +141,7 @@ def carga_modifica(request, pk):
         'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
         'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
         'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
+        'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
 
         # Catálogos
         'paramedicos': Paramedicos.objects.all(),
@@ -201,8 +205,30 @@ def guardar_todo(request, pk):
         guardar_equipos(request, paciente)
         guardar_lesiones(request, paciente)
         guardar_impactos(request, paciente)
+        guardar_testigos(request, paciente)
 
-        return redirect('carga_modifica', pk)
+        embarazo = request.POST.get('embarazo') == 'true'
+
+        if embarazo:
+            form_embarazo = EmbarazoAsignadoForm(request.POST)
+            if form_embarazo.is_valid():
+                form_embarazo.save(commit=False)
+                form_embarazo.paciente = paciente
+                form_embarazo.save()
+            else:
+                print("No se registró embarazo")
+
+
+        form_partes = PartesAsignadoForm(request.POST)
+        if form_partes.is_valid():
+            PartexServico.objects.filter(servicio=servicio).delete()
+            parte = form_partes.save(commit=False)
+            parte.servicio = servicio 
+            parte.save()
+        else:
+            print("Errores en el formulario de partes:", form_partes.errors)
+
+        return redirect('carga_modifica', pk=servicio.clave)
 
     except Exception as e:
         print(f"Error general: {e}")
@@ -216,7 +242,6 @@ def guardar_todo(request, pk):
 def guardar_unidades(request, servicio):
     UnidadxServicio.objects.filter(servicio=servicio).delete()
     unidades = json.loads(request.POST.get('unidades', '[]'))
-    print(unidades)
     for u in unidades:
         if u.get('clave') and u.get('id_unidad'):
             UnidadxServicio.objects.create(
@@ -229,7 +254,6 @@ def guardar_unidades(request, servicio):
 def guardar_paramedicos(request, servicio):
     ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
     paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
-    print(paramedicos)
     for item in paramedicos:
         clave = item.get("clave")
         paramedico = Paramedicos.objects.get(clave=clave)
@@ -238,7 +262,6 @@ def guardar_paramedicos(request, servicio):
 def guardar_procedimientos(request, paciente):
         ProcedimientoxPaciente.objects.filter(paciente=paciente).delete()
         procedimientos = json.loads(request.POST.get('procedimientos', '[]'))
-        print(procedimientos)
         for i in procedimientos:
             clave = i.get("clave")
             procedimiento = Procedimiento.objects.get(clave=clave)
@@ -247,7 +270,6 @@ def guardar_procedimientos(request, paciente):
 def guardar_alergias(request, paciente):
     AlergiaxPaciente.objects.filter(paciente=paciente).delete()
     alergias = json.loads(request.POST.get('alergias', '[]'))
-    print(alergias)
     for i in alergias:
         clave = i.get('clave')
         alergia = Alergia.objects.get(clave=clave)
@@ -256,7 +278,6 @@ def guardar_alergias(request, paciente):
 def guardar_materiales(request, paciente):
     MaterialxPaciente.objects.filter(paciente=paciente).delete()
     materiales = json.loads(request.POST.get('materiales', '[]'))
-    print(materiales)
     for i in materiales:
         clave = i.get('clave')
         cantidad = i.get('cantidad')
@@ -266,7 +287,6 @@ def guardar_materiales(request, paciente):
 def guardar_ingeridos(request, paciente):
     MedIngeridoxPaciente.objects.filter(paciente=paciente).delete()
     ingeridos = json.loads(request.POST.get('ingeridos', '[]'))
-    print(ingeridos)
     for i in ingeridos:
         clave = i.get('clave')
         cantidad = i.get('cantidad')
@@ -276,7 +296,6 @@ def guardar_ingeridos(request, paciente):
 def guardar_administrados(request, paciente):
     MedAdministradoxPaciente.objects.filter(paciente=paciente).delete()
     administrados = json.loads(request.POST.get('administrado', '[]'))
-    print(administrados)
     for i in administrados:
         clave = i.get('clave')
         cantidad = i.get('cantidad')
@@ -286,7 +305,6 @@ def guardar_administrados(request, paciente):
 def guardar_equipos(request, paciente):
     EquipoxPaciente.objects.filter(paciente=paciente).delete()
     equipos = json.loads(request.POST.get('equipo', '[]'))
-    print(equipos)
     for i in equipos:
         clave = i.get('clave')
         cantidad = i.get('cantidad')
@@ -296,7 +314,6 @@ def guardar_equipos(request, paciente):
 def guardar_lesiones(request, paciente):
     LesionxPaciente.objects.filter(paciente=paciente).delete()
     lesiones = json.loads(request.POST.get('lesiones', '[]'))
-    print(lesiones)
     for i in lesiones:
         descripcion = i.get('descripcion')
         cantidad = i.get('valor') or '0'
@@ -306,11 +323,19 @@ def guardar_lesiones(request, paciente):
 def guardar_impactos(request, paciente):
     ImpactoxVehiculo.objects.filter(paciente=paciente).delete()
     impactos = json.loads(request.POST.get('impacto', '[]'))
-    print(impactos)
     for i in impactos:
         descripcion = i.get('descripcion')
         ImpactoxVehiculo.objects.create(paciente=paciente, impacto=descripcion)
 
+def guardar_testigos(request, paciente):
+    TestigoxPaciente.objects.filter(paciente=paciente).delete()
+    testigos = json.loads(request.POST.get('testigos', '[]'))
+    for i in testigos:
+        nombre = i.get('nombre')
+        edad = i.get('edad')
+        direccion = i.get('direccion')
+        telefono = i.get('telefono')
+        TestigoxPaciente.objects.create(paciente=paciente, nombre=nombre, edad=edad, domicilio=direccion, telefono=telefono)
                     
 
 def reporte_servicio(request, clave):

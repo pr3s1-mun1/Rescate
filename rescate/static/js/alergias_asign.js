@@ -83,4 +83,14 @@ document.addEventListener("DOMContentLoaded", function () {
     eliminarSeleccionadosAlegias();
     actualizarContador("tabla-alergias-disponibles", "contador-alergias-disponibles");
     actualizarContador("tabla-alergias-asignadas", "contador-alergias-asignadas");
+
+    const filasAsignadas = document.querySelectorAll("#tabla-alergias-asignadas tbody tr");
+    filasAsignadas.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+
+        fila.ondblclick = function () {
+            moverAOriginalesAlergia(this, clave, nombre);
+        };
+    });
 });
