@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from apps.catalogos.forms import *
 from apps.catalogos.views import requiere_tipo_paramedico
-from .forms import ServicioForm, PacientesForm
+from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -18,7 +18,7 @@ import json
 def formulario_buscar(request):
     clave = request.POST.get('clave', '').strip() if request.method == 'POST' else ''
     servicios = Servicio.objects.filter(clave__icontains=clave) if clave else Servicio.objects.all()
-    servicios = servicios.order_by('clave')  # ← Aquí aplicamos el orden
+    servicios = servicios.order_by('clave')
 
     pacientes = PacientexServicio.objects.filter(servicio__in=servicios)
 
@@ -115,9 +115,14 @@ def carga_modifica(request, pk):
     else:
         form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
 
+
+    form_embarazo = EmbarazoAsignadoForm()
+    form_partes = PartesAsignadoForm()
     context = {
         'form': form_servicio,
         'form_paciente': form_paciente,
+        'form_embarazo': form_embarazo,
+        'form_partes': form_partes,
         'editar': True,
         'servicio': servicio,
         'pacientes': PacientexServicio.objects.filter(servicio=servicio),

@@ -18,7 +18,7 @@ document.querySelectorAll('.prev-tab').forEach(button => {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'paciente', 'embarazo', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto'];
+    const pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'paciente', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto'];
 
     document.getElementById('servicioForm').addEventListener('submit', function (e) {
         let todoValido = true;

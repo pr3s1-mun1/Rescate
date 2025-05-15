@@ -171,3 +171,30 @@ class ImpactoxVehiculo(models.Model):
     clave = models.AutoField(primary_key=True)
     impacto = models.CharField(max_length=100)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+
+class PartexServico(models.Model):
+    servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True)
+    parte = models.TextField()
+
+class TestigoxPaciente(models.Model):
+    clave = models.AutoField(primary_key=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    nombre = models.CharField(max_length=100)
+    edad = models.IntegerField()
+    domicilio = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20)
+
+class EmbarazoxPaciente(models.Model):
+    secuencia = models.AutoField(primary_key=True)
+    paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
+    numero_gestaciones = models.IntegerField()
+    numero_partos = models.IntegerField()
+    numero_cesareas = models.IntegerField()
+    numero_abortos = models.IntegerField()
+    utlima_menstruacion = models.DateTimeField()
+    edad_gestacional = models.IntegerField()
+    presenta_sangrado = models.BooleanField(default=False)
+    inicio_contracciones = models.DateTimeField()
+    bolsa_rota = models.BooleanField(default=False)
+    atencion_medica_embarazo = models.BooleanField(default=False)
+    nota = models.TextField()

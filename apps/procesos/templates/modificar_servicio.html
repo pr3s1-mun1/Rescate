@@ -38,7 +38,6 @@
                             <i class="fas fa-user-md me-2"></i>Paramédicos
                         </button>
                     </li>
-                    {% if editar %}
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="paciente-tab" data-bs-toggle="tab" data-bs-target="#paciente"
                             type="button" role="tab" aria-controls="paciente" aria-selected="false">
@@ -52,8 +51,9 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="procedimiento-tab" data-bs-toggle="tab" data-bs-target="#procedimiento"
-                            type="button" role="tab" aria-controls="procedimiento" aria-selected="false">
+                        <button class="nav-link" id="procedimiento-tab" data-bs-toggle="tab"
+                            data-bs-target="#procedimiento" type="button" role="tab" aria-controls="procedimiento"
+                            aria-selected="false">
                             <i class="fa-solid fa-repeat me-2"></i>Procedimiento
                         </button>
                     </li>
@@ -76,8 +76,9 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="administrado-tab" data-bs-toggle="tab" data-bs-target="#administrado"
-                            type="button" role="tab" aria-controls="administrado" aria-selected="false">
+                        <button class="nav-link" id="administrado-tab" data-bs-toggle="tab"
+                            data-bs-target="#administrado" type="button" role="tab" aria-controls="administrado"
+                            aria-selected="false">
                             <i class="fa-solid fa-vial me-2"></i>Administrado
                         </button>
                     </li>
@@ -106,7 +107,7 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="parte-tab" data-bs-toggle="tab" data-bs-target="#parte"
+                        <button class="nav-link" id="partes-tab" data-bs-toggle="tab" data-bs-target="#partes"
                             type="button" role="tab" aria-controls="parte" aria-selected="false">
                             <i class="fa-solid fa-comment me-2"></i>Partes
                         </button>
@@ -116,7 +117,6 @@
                             <i class="fas fa-save me-2"></i> Guardar Servicio
                         </button>
                     </li>
-                    {% endif %}
                 </ul>
 
                 <div class="tab-content p-3 border border-top-0 rounded-bottom" id="mainTabsContent">
@@ -147,19 +147,15 @@
                             <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="unidad-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            {% if editar %}
                             <button type="button" class="btn btn-primary next-tab" data-next-tab="paciente-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
-                            {% else %}
                             <button type="submit" class="btn btn-success" id="btnGuardar">
                                 <i class="fas fa-save me-2"></i> Guardar Servicio
                             </button>
-                            {% endif %}
                         </div>
                     </div>
 
-                    {% if editar %}
                     <div class="tab-pane fade" id="paciente" role="tabpanel" aria-labelledby="pestana4-tab">
                         {% include 'crear/paciente.html' %}
 
@@ -245,7 +241,6 @@
                         </div>
                     </div>
 
-                    <!-- Pestaña 11 -->
                     <div class="tab-pane fade" id="equipo" role="tabpanel" aria-labelledby="pestana11-tab">
                         {% include 'crear/equipo.html' %}
                         <div class="d-flex justify-content-between mt-3">
@@ -288,12 +283,21 @@
                             <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="impacto-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
-                            <button type="submit" class="btn btn-success" id="btnGuardar">
-                                <i class="fas fa-save me-2"></i> Guardar Servicio
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="partes-tab">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>  
+                    </div>
+
+                    <div class="tab-pane fade" id="partes" role="tabpanel" aria-labelledby="pestana15-tab">
+                        {% include 'crear/partes.html' %}
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="testigo-tab">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
                         </div>
                     </div>
-                    {% endif %}
+
                 </div>
             </form>
         </div>
