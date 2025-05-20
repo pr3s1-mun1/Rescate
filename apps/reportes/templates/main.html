@@ -1,4 +1,5 @@
 {% load static %}
+<!DOCTYPE html>
 <style>
     .option-card:hover {
         background-color: #f8f9fa;
@@ -13,7 +14,7 @@
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Centro de Reportes</h1>
 
-                <div class="row">
+                <div class="row mt-5">
                     <div class="col-md-4 mb-4">
                         <a href="{% url 'reporte_servicios' %}" class="text-decoration-none">
                             <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
@@ -70,7 +71,7 @@
                     </div>
 
                     <div class="col-md-4 mb-4">
-                        <a href="{% url 'resumen_tipo_servicio' %}" class="text-decoration-none">
+                        <a href="{% url 'reporte_sobresalientes' %}" class="text-decoration-none">
                             <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
                                 <div class="option-icon mb-3">
                                     <i class="fas fa-calendar-day fa-3x text-primary"></i>
@@ -81,7 +82,7 @@
                     </div>
 
                     <div class="col-md-4 mb-4">
-                        <a href="{% url 'resumen_tipo_servicio' %}" class="text-decoration-none">
+                        <a href="{% url 'reporte_parte_informativo' %}" class="text-decoration-none">
                             <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
                                 <div class="option-icon mb-3">
                                     <i class="fas fa-calendar-day fa-3x text-primary"></i>
@@ -92,7 +93,7 @@
                     </div>
 
                     <div class="col-md-4 mb-4">
-                        <a href="{% url 'resumen_tipo_servicio' %}" class="text-decoration-none">
+                        <a href="{% url 'reporte_paramedico_base' %}" class="text-decoration-none">
                             <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
                                 <div class="option-icon mb-3">
                                     <i class="fas fa-calendar-day fa-3x text-primary"></i>

@@ -1,8 +1,9 @@
 {% include 'navbar.html' %}
 
 <div class="container mt-4">
-    <h2>Resumen por Tipo de Servicio</h2>
+    <h2>Reportes de Servicios Sobresalientes</h2>
     <p>Filtrar por fecha:</p>
+
     <form method="get" class="row g-3 mb-4">
         {% csrf_token %}
         <div class="col-md-5">
@@ -17,33 +18,32 @@
             <button type="submit" class="btn btn-primary w-100">Buscar</button>
         </div>
     </form>
-
-    {% if datos %}
-    <form class="my-3" method="get" action="{% url 'imprimir_resumen_tipo_servicio_pdf' %}?fecha_inicio={{ fecha_inicio }}&fecha_fin={{ fecha_fin }}" target="_blank">
+    <form class="my-3" method="get" action="{% url 'imprimir_reporte_sobresalientes_pdf' %}?fecha_inicio={{ fecha_inicio }}&fecha_fin={{ fecha_fin }}" target="_blank">
         <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
         <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
         <button class="btn btn-danger" type="submit">Imprimir PDF</button>
     </form>
-    {% endif %}
-
-    {% if datos %}
-    <table class="table table-bordered mb-5">
+    {% if textos %}
+    <table class="table">
         <thead>
             <tr>
-                <th>Tipo de Servicio</th>
-                <th>Total</th>
+                <th>Servicio </th>
+                <th>Paciente </th>                
+                <th>Fecha</th>
+                <th>Descripción</th>
             </tr>
         </thead>
         <tbody>
-            {% for fila in datos %}
+            {% for fila in textos %}
             <tr>
-                <td>{{ fila.tipo_servicio }}</td>
-                <td>{{ fila.total }}</td>
+                <td>{{ fila.servicio_id }}</td>
+                <td>{{ fila.paciente_id }}</td>
+                <td>{{ fila.fecha_servicio }}</td>
+                <td>{{ fila.texto }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <br>
     {% else %}
     <p class="alert alert-warning">No hay servicios para mostrar en este rango de fechas.</p>
     {% endif %}

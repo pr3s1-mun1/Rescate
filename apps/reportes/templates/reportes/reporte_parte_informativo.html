@@ -1,0 +1,66 @@
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Reporte Parte Informativo</h2>
+
+    <form method="get" class="row g-3 mb-4">
+        {% csrf_token %}
+        <div class="col-md-5">
+            <label>Desde:</label>
+            <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-5">
+            <label>Hasta:</label>
+            <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+    <form class="my-3" method="get" action="{% url 'reporte_parte_informativo_pdf' %}?fecha_inicio={{ fecha_inicio }}&fecha_fin={{ fecha_fin }}" target="_blank">
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+    </form>
+
+
+    {% if resultados %}
+    {% for resultado in resultados %}
+    <div class="border-bottom pb-3 mb-4">
+        <div class="row align-items-center mb-2">
+            <div class="col-md-4">
+                <h5 class="mb-1 text-primary"># Servicio: {{ resultado.servicio }}</h5>
+            </div>
+            <div class="col-md-4">
+                <p class="mb-1"><strong>Fecha:</strong> {{ resultado.fecha }}</p>
+            </div>
+            <div class="col-md-4">
+                <p class="mb-1">
+                    <strong>¿Es Sobresaliente?</strong>
+                    {% if resultado.es_sobresaliente == "SI" %}
+                    <span class="badge bg-primary ml-2">Sí</span>
+                    {% else %}
+                    <span class="badge bg-secondary ml-2">No</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <p class="mb-1"><strong>Tipo de Servicio:</strong> {{ resultado.descripcion }}</p>
+        <p class="mb-1">
+            <strong>Dirección:</strong>
+            {{ resultado.direccion_emergencia }} y {{ resultado.calle_entre }},
+            <strong>Colonia:</strong> {{ resultado.colonia_emergencia }}
+        </p>
+
+        <div class="mt-3">
+            <h6 class="text-decoration-underline">Parte Informativo</h6>
+            <p class="text-justify">{{ resultado.parte }}</p>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="alert alert-warning">No hay servicios sobresalientes para mostrar en este rango de fechas.</p>
+    {% endif %}
+
+</div>

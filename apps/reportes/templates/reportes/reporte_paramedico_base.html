@@ -1,0 +1,62 @@
+{% include 'navbar.html' %}
+{% load extra_tags %}
+
+<body>
+    <div class="container">
+        <h2>Reporte Paramédico por Base</h2>
+        <form method="get" class="row g-3 mb-4">
+            {% csrf_token %}
+            <div class="col-md-5">
+                <label>Desde:</label>
+                <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+            </div>
+            <div class="col-md-5">
+                <label>Hasta:</label>
+                <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+        <form class="my-3" method="get"
+            action="{% url 'reporte_paramedico_base_pdf' %}"
+            target="_blank">
+            <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+            <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+            <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+        </form>
+
+        {% if resultados %}
+        <table class="table table-bordered mb-5">
+            <thead>
+                <tr>
+                    <th>Paramédico</th>
+                    {% for base_id in bases %}
+                    <th>Base {{ base_id }}</th>
+                    {% endfor %}
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in resultados %}
+                <tr>
+                    <td>{{ fila.paramedico_nombre }}</td>
+                    {% for base_id in bases %}
+                    <td>{{ fila|get_item:base_id }}</td>
+                    {% endfor %}
+                    <td><strong>{{ fila.total }}</strong></td>
+                </tr>
+                {% endfor %}
+
+                
+                
+            </tbody>
+        </table>
+
+        {% else %}
+        <p style="color: red;">No hay asignaciones de paramédicos en este rango de fechas.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>

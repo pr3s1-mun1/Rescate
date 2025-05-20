@@ -35,28 +35,31 @@
             <button class="btn btn-danger" type="submit">Imprimir PDF</button>
         </form>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Tipo de Servicio</th>
-                    {% for base in columnas %}
-                        <th>Base {{ base }}</th>
+        {% if columnas %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Tipo de Servicio</th>
+                        {% for base in columnas %}
+                            <th>Base {{ base }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tipo in filas %}
+                    <tr>
+                        <td>{{ tipo }}</td>
+                        {% for base in columnas %}
+                            <td>{{ tabla|dict_getPac:tipo|dict_getPac:base }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for tipo in filas %}
-                <tr>
-                    <td>{{ tipo }}</td>
-                    {% for base in columnas %}
-                        <td>{{ tabla|dict_getPac:tipo|dict_getPac:base }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
         
-
+        {% else %}
+        <p class="alert alert-warning">No hay servicios para mostrar en este rango de fechas.</p>
+        {% endif %}
 
 
     </div>

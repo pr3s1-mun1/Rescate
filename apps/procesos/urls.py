@@ -11,4 +11,7 @@ urlpatterns = [
     path('guardar_completo/<pk>/', guardar_todo, name='guardar_todo'),
     path('reporte/<str:clave>/', reporte_servicio, name='reporte_servicio'),
 
+
+    path('exito/<str:pk>/', exito_guardado, name='exito_guardado'),
+    path('fallo/', fallo_guardado, name='fallo_guardado'),
 ]

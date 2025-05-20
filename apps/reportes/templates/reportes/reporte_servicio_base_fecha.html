@@ -26,7 +26,7 @@
         <button class="btn btn-danger" type="submit">Imprimir PDF</button>
     </form>
 
-    {% if conteos %}
+    {% if basees %}
     <table class="table table-bordered" id="tabla-reporte">
         <thead>
             <tr>
@@ -58,7 +58,7 @@
             </tr>
         </tbody>
     </table>
-    {% elif fecha_inicio and fecha_fin %}
+    {% else %}
         <p class="alert alert-warning">No se encontraron servicios para ese tipo en el rango de fechas.</p>
     {% endif %}
 

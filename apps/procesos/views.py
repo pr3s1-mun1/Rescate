@@ -215,8 +215,7 @@ def guardar_todo(request, pk):
                 form_embarazo.save(commit=False)
                 form_embarazo.paciente = paciente
                 form_embarazo.save()
-            else:
-                print("No se registró embarazo")
+
 
 
         form_partes = PartesAsignadoForm(request.POST)
@@ -225,19 +224,21 @@ def guardar_todo(request, pk):
             parte = form_partes.save(commit=False)
             parte.servicio = servicio 
             parte.save()
-        else:
-            print("Errores en el formulario de partes:", form_partes.errors)
 
-        return redirect('carga_modifica', pk=servicio.clave)
+
+        return redirect('exito_guardado', pk=servicio.clave)
 
     except Exception as e:
         print(f"Error general: {e}")
-        return render(request, 'modificar_servicio.html', {
-            'form_servicio': form_servicio,
-            'pacientes_form': pacientes_form,
-            'servicio': servicio,
-            'editar': True
-        })
+        return redirect('fallo_guardado', error=str(e))
+
+def exito_guardado(request, pk):
+    return render(request, 'resp/exito_guardado.html', {'clave': pk})
+
+def fallo_guardado(request):
+    error = request.GET.get('error', 'Ocurrió un error inesperado.')
+    return render(request, 'resp/fallo_guardado.html', {'error': error})
+
 
 def guardar_unidades(request, servicio):
     UnidadxServicio.objects.filter(servicio=servicio).delete()
@@ -329,7 +330,10 @@ def guardar_impactos(request, paciente):
 
 def guardar_testigos(request, paciente):
     TestigoxPaciente.objects.filter(paciente=paciente).delete()
-    testigos = json.loads(request.POST.get('testigos', '[]'))
+    try:
+        testigos = json.loads(request.POST.get('testigos', '[]'))
+    except json.JSONDecodeError:
+        testigos = []
     for i in testigos:
         nombre = i.get('nombre')
         edad = i.get('edad')
