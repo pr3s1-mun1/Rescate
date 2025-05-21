@@ -1,0 +1,107 @@
+{% load extra_tags %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .table-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .tdImg {
+            width: 20%;
+        }
+
+        .tdImg img {
+            width: 75px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .report-table th {
+            background-color: #dadada;
+            font-weight: bold;
+
+            max-width: 120px;
+            word-wrap: break-word;
+            white-space: normal;
+            overflow-wrap: break-word;
+            vertical-align: middle;
+
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 5px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <table class="table-header">
+        <tr>
+            <td class="tdImg" align="left">
+                <img src="rescate\static\img\escudorescate.gif" alt="Logo Izquierdo">
+            </td>
+            <td align="center">
+                <h1>DEPARTAMENTO DE RESCATE</h1>
+                <h3>DIRECCIÓN MUNICIPAL DE PROTECCIÓN CIVIL</h3>
+                <h3>CD. JUÁREZ - CHIHUAHUA - MÉXICO</h3>
+                <h2>PACIENTES ATENDIDOS SEGÚN SU SEXO Y BASE</h2>
+                <p><strong>Desde:</strong> {{ fecha_inicio }} &nbsp;&nbsp;&nbsp; <strong>Hasta:</strong> {{ fecha_fin }}
+                </p>
+            </td>
+            <td class="tdImg" align="right">
+                <img src="rescate\static\img\rescatelogo.gif" alt="Logo Derecho">
+            </td>
+        </tr>
+    </table>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Base</th>
+                {% for sexo in sexos %}
+                    <th>{{ sexo }}</th>
+                {% endfor %}
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in resultados %}
+                <tr>
+                    <td>{{ fila.base_id }}</td>
+                    {% for sexo in sexos %}
+                        <td>{{ fila|get_item:sexo }}</td>
+                    {% endfor %}
+                    <td>{{ fila.total }}</td>
+                </tr>
+            {% endfor %}
+            <tr class="total">
+                <td>Total</td>
+                {% for sexo in sexos %}
+                    <td>{{ totales_inferiores|get_item:sexo }}</td>
+                {% endfor %}
+                <td>{{ total_general }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

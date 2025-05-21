@@ -1,0 +1,62 @@
+{% load static %}
+{% load extra_tags %}
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    <h2>Pacientes Atendidos por Base y Sexo</h2>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <label>Desde:</label>
+            <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-5">
+            <label>Hasta:</label>
+            <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+
+    <form class="mb-3" method="get" action="{% url 'reporte_pacientes_por_sexo_pdf' %}" target="_blank">
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+    </form>
+
+    {% if resultados %}
+    <table class="table table-bordered" style="text-align: center;">
+        <thead>
+            <tr>
+                <th>Base</th>
+                {% for sexo in sexos %}
+                    <th>{{ sexo }}</th>
+                {% endfor %}
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in resultados %}
+            <tr>
+                <td>{{ fila.base_id }}</td>
+                {% for sexo in sexos %}
+                    <td>{{ fila|get_item:sexo }}</td>
+                {% endfor %}
+                <td>{{ fila.total }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>Total</td>
+                {% for sexo in sexos %}
+                    <td>{{ totales_inferiores|get_item:sexo }}</td>
+                {% endfor %}
+                <td>{{ total_general }}</td>
+            </tr>
+            
+        </tbody>
+    </table>
+    {% else %}
+    <p class="alert alert-warning">No hay datos para mostrar en este rango de fechas.</p>
+    {% endif %}
+</div>

@@ -665,3 +665,462 @@ def reporte_paramedico_base_pdf(request):
     if pisa_status.err:
         return HttpResponse("Error al generar el PDF", status=500)
     return response
+
+def reporte_materiales(request):
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    materiales = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    m.material_id,
+                    mat.descripcion AS material_nombre,
+                    mat.unidad, 
+                    SUM(m.cantidad) AS cantidad_total,
+                    COUNT(*) AS registros
+                FROM public.procesos_MATERIALXPACIENTE AS m
+                INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
+                INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
+                INNER JOIN public.catalogos_material AS mat ON m.material_id = mat.clave
+                WHERE s.fecha BETWEEN %s AND %s
+                GROUP BY m.material_id, mat.descripcion, mat.unidad
+                ORDER BY m.material_id
+            """, [fecha_inicio, fecha_fin])
+            rows = cursor.fetchall()
+
+        for row in rows:
+            materiales.append({
+                'material_id': row[0],
+                'material_nombre': row[1],
+                'unidad': row[2],
+                'cantidad_total': row[3],
+                'registros': row[4],
+            })
+
+    context = {
+        'materiales': materiales,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    }
+
+    return render(request, 'reportes/reporte_materiales.html', context)
+
+def reporte_materiales_pdf(request):
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT
+                m.material_id,
+                mat.descripcion AS material_nombre,
+                mat.unidad, 
+                SUM(m.cantidad) AS cantidad_total,
+                COUNT(*) AS registros
+            FROM public.procesos_MATERIALXPACIENTE AS m
+            INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
+            INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
+            INNER JOIN public.catalogos_material AS mat ON m.material_id = mat.clave
+            WHERE s.fecha BETWEEN %s AND %s
+            GROUP BY m.material_id, mat.descripcion, mat.unidad
+            ORDER BY m.material_id
+        """, [fecha_inicio, fecha_fin])
+        rows = cursor.fetchall()
+
+    # 2. Convertir a lista de diccionarios
+    materiales = []
+    for row in rows:
+        materiales.append({
+            'material_id': row[0],
+            'material_nombre': row[1],
+            'unidad': row[2],
+            'cantidad_total': row[3],
+            'registros': row[4],
+        })
+
+    # 3. Renderizar PDF
+    template = get_template('plantillas/reporte_pdf_materiales.html')
+    html = template.render({'materiales': materiales, 'inicio':fecha_inicio, 'fin':fecha_fin})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="reporte_materiales.pdf"'
+    pisa.CreatePDF(html, dest=response)
+    return response
+
+
+def reporte_equipos(request):
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    equipos = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    m.equipo_id,
+                    mat.descripcion AS equipo_nombre,
+                    mat.unidad, 
+                    SUM(m.cantidad) AS cantidad_total,
+                    COUNT(*) AS registros
+                FROM public.procesos_equipoxpaciente AS m
+                INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
+                INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
+                INNER JOIN public.catalogos_equipo AS mat ON m.equipo_id = mat.clave
+                WHERE s.fecha BETWEEN %s AND %s
+                GROUP BY m.equipo_id, mat.descripcion, mat.unidad
+                ORDER BY m.equipo_id
+            """, [fecha_inicio, fecha_fin])
+            rows = cursor.fetchall()
+
+        for row in rows:
+            equipos.append({
+                'equipo_id': row[0],
+                'equipo_nombre': row[1],
+                'unidad': row[2],
+                'cantidad_total': row[3],
+                'registros': row[4],
+            })
+
+    context = {
+        'equipos': equipos,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    }
+
+    return render(request, 'reportes/reporte_equipos.html', context)
+
+def reporte_equipos_pdf(request):
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT
+                m.equipo_id,
+                mat.descripcion AS equipo_nombre,
+                mat.unidad, 
+                SUM(m.cantidad) AS cantidad_total,
+                COUNT(*) AS registros
+            FROM public.procesos_equipoxpaciente AS m
+            INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
+            INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
+            INNER JOIN public.catalogos_equipo AS mat ON m.equipo_id = mat.clave
+            WHERE s.fecha BETWEEN %s AND %s
+            GROUP BY m.equipo_id, mat.descripcion, mat.unidad
+            ORDER BY m.equipo_id
+        """, [fecha_inicio, fecha_fin])
+        rows = cursor.fetchall()
+
+    # 2. Convertir a lista de diccionarios
+    equipos = []
+    for row in rows:
+        equipos.append({
+            'equipo_id': row[0],
+            'equipo_nombre': row[1],
+            'unidad': row[2],
+            'cantidad_total': row[3],
+            'registros': row[4],
+        })
+
+    # 3. Renderizar PDF
+    template = get_template('plantillas/reporte_pdf_equipos.html')
+    html = template.render({'equipos': equipos, 'inicio':fecha_inicio, 'fin':fecha_fin})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="reporte_equipos.pdf"'
+    pisa.CreatePDF(html, dest=response)
+    return response
+
+def reporte_pacientes_por_sexo(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    datos_crudos = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    p.base_id, 
+                    p.sexo
+                FROM public.procesos_servicio AS s
+                INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
+                WHERE s.fecha BETWEEN %s AND %s
+            """, [fecha_inicio, fecha_fin])
+            datos_crudos = cursor.fetchall()
+
+    # Preparar tabla tipo pivote
+    tabla = defaultdict(lambda: defaultdict(int))
+    sexos_detectados = set()
+
+    for base_id, sexo in datos_crudos:
+        sexo_str = str(sexo)
+        sexo_nombre = palabras["sexo"].get(sexo_str, f"Desconocido ({sexo})")
+        tabla[base_id][sexo_nombre] += 1
+        sexos_detectados.add(sexo_nombre)
+
+    sexos_ordenados = sorted(sexos_detectados)
+    bases_ordenadas = sorted(tabla.keys())
+
+    resultados = []
+    for base_id in bases_ordenadas:
+        fila = {'base_id': base_id}
+        total = 0
+        for sexo in sexos_ordenados:
+            cantidad = tabla[base_id].get(sexo, 0)
+            fila[sexo] = cantidad
+            total += cantidad
+        fila['total'] = total
+        resultados.append(fila)
+
+    totales_inferiores = {sexo: 0 for sexo in sexos_ordenados}
+    total_general = 0
+    for fila in resultados:
+        for sexo in sexos_ordenados:
+            totales_inferiores[sexo] += fila.get(sexo, 0)
+        total_general += fila.get('total', 0)
+    return render(request, "reportes/reporte_pacientes_base_sexo.html", {
+        "resultados": resultados,
+        "sexos": sexos_ordenados,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin,
+        "totales_inferiores": totales_inferiores,
+        "total_general": total_general,
+    })
+
+def reporte_pacientes_por_sexo_pdf(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    datos_crudos = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    p.base_id, 
+                    p.sexo
+                FROM public.procesos_servicio AS s
+                INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
+                WHERE s.fecha BETWEEN %s AND %s
+            """, [fecha_inicio, fecha_fin])
+            datos_crudos = cursor.fetchall()
+
+    tabla = defaultdict(lambda: defaultdict(int))
+    sexos_detectados = set()
+
+    for base_id, sexo in datos_crudos:
+        sexo_str = str(sexo)
+        sexo_nombre = palabras["sexo"].get(sexo_str, f"Desconocido ({sexo})")
+        tabla[base_id][sexo_nombre] += 1
+        sexos_detectados.add(sexo_nombre)
+
+    sexos_ordenados = sorted(sexos_detectados)
+    bases_ordenadas = sorted(tabla.keys())
+
+    resultados = []
+    for base_id in bases_ordenadas:
+        fila = {'base_id': base_id}
+        total = 0
+        for sexo in sexos_ordenados:
+            cantidad = tabla[base_id].get(sexo, 0)
+            fila[sexo] = cantidad
+            total += cantidad
+        fila['total'] = total
+        resultados.append(fila)
+
+    # Totales inferiores
+    totales_inferiores = {sexo: 0 for sexo in sexos_ordenados}
+    total_general = 0
+    for fila in resultados:
+        for sexo in sexos_ordenados:
+            totales_inferiores[sexo] += fila.get(sexo, 0)
+        total_general += fila.get('total', 0)
+
+    # Renderizar HTML
+    template = get_template("plantillas/reportes_pdf_base_sexo.html")
+    html = template.render({
+        "resultados": resultados,
+        "sexos": sexos_ordenados,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin,
+        "totales_inferiores": totales_inferiores,
+        "total_general": total_general,
+    })
+
+    # Generar PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="reporte_pacientes_por_sexo.pdf"'
+    pisa_status = pisa.CreatePDF(html, dest=response, encoding='utf-8')
+
+    if pisa_status.err:
+        return HttpResponse("Error al generar el PDF", status=500)
+    return response
+
+def reporte_enfermedades_por_grupo(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    datos_crudos = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    ge.descripcion AS grupo_enfermedad,
+                    e.nombre AS enfermedad,
+                    COUNT(*) AS total
+                FROM procesos_pacientexservicio AS pe
+                JOIN catalogos_enfermedad AS e ON pe.enfermedad_id = e.clave
+                JOIN catalogos_grupoenfermedad AS ge ON e.grupoenfermedad_id = ge.clave
+                JOIN procesos_servicio AS s ON pe.servicio_id = s.clave
+                WHERE s.fecha BETWEEN %s AND %s
+                GROUP BY ge.descripcion, e.nombre
+                ORDER BY ge.descripcion, e.nombre;
+            """, [fecha_inicio, fecha_fin])
+            datos_crudos = cursor.fetchall()
+
+    # Agrupar enfermedades por grupo en una lista de dicts
+    enfermedades_por_grupo = []
+    grupos_dict = {}
+
+    for grupo, enfermedad, total in datos_crudos:
+        if grupo not in grupos_dict:
+            grupos_dict[grupo] = {
+                "grupo": grupo,
+                "enfermedades": []
+            }
+            enfermedades_por_grupo.append(grupos_dict[grupo])
+        grupos_dict[grupo]["enfermedades"].append({
+            "enfermedad": enfermedad,
+            "total": total
+        })
+
+    return render(request, "reportes/reporte_enfermedades_grupo.html", {
+        "enfermedades_por_grupo": enfermedades_por_grupo,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin
+    })
+
+def reporte_enfermedades_por_grupo_pdf(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    datos_crudos = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    ge.descripcion AS grupo_enfermedad,
+                    e.nombre AS enfermedad,
+                    COUNT(*) AS total
+                FROM procesos_pacientexservicio AS pe
+                JOIN catalogos_enfermedad AS e ON pe.enfermedad_id = e.clave
+                JOIN catalogos_grupoenfermedad AS ge ON e.grupoenfermedad_id = ge.clave
+                JOIN procesos_servicio AS s ON pe.servicio_id = s.clave
+                WHERE s.fecha BETWEEN %s AND %s
+                GROUP BY ge.descripcion, e.nombre
+                ORDER BY ge.descripcion, e.nombre;
+            """, [fecha_inicio, fecha_fin])
+            datos_crudos = cursor.fetchall()
+
+    # Agrupar por grupo
+    enfermedades_por_grupo = []
+    grupos_dict = {}
+
+    for grupo, enfermedad, total in datos_crudos:
+        if grupo not in grupos_dict:
+            grupos_dict[grupo] = {
+                "grupo": grupo,
+                "enfermedades": []
+            }
+            enfermedades_por_grupo.append(grupos_dict[grupo])
+        grupos_dict[grupo]["enfermedades"].append({
+            "enfermedad": enfermedad,
+            "total": total
+        })
+
+    # Renderizar el PDF
+    template = get_template("plantillas/reporte_pdf_grupo_enfermedades.html")
+    html = template.render({
+        "enfermedades_por_grupo": enfermedades_por_grupo,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin
+    })
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = "inline; filename=reporte_enfermedades_grupo.pdf"
+    pisa_status = pisa.CreatePDF(html, dest=response, encoding='utf-8')
+    if pisa_status.err:
+        return HttpResponse("Error al generar el PDF", status=500)
+    return response
+
+
+def reporte_materiales_pacientes(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    materiales = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT
+                m.clave,
+                m.descripcion AS material,
+                COUNT(DISTINCT mp.paciente_id) AS cantidad_pacientes,
+                SUM(mp.cantidad) AS cantidad_total,
+                SUM(mp.cantidad * mp.costo) AS valor_total
+            FROM procesos_materialxpaciente AS mp
+            JOIN catalogos_material AS m ON m.clave = mp.material_id
+            JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
+            JOIN procesos_servicio AS s ON s.clave = p.servicio_id
+            WHERE s.fecha BETWEEN %s AND %s
+            GROUP BY m.descripcion, m.clave
+            ORDER BY valor_total DESC;
+            """, [fecha_inicio, fecha_fin])
+            materiales = cursor.fetchall()
+
+    return render(request, "reportes/reporte_materiales_pacientes.html", {
+        "materiales": materiales,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin
+    })
+
+def reporte_materiales_pacientes_pdf(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    materiales = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    m.descripcion AS material,
+                    COUNT(DISTINCT mp.paciente_id) AS cantidad_pacientes,
+                    COALESCE(SUM(mp.cantidad), 0) AS cantidad_total,
+                    COALESCE(SUM(mp.cantidad * mp.costo), 0) AS valor_total
+                FROM procesos_materialxpaciente AS mp
+                JOIN catalogos_material AS m ON m.clave = mp.material_id
+                JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
+                JOIN procesos_servicio AS s ON s.clave = p.servicio_id
+                WHERE s.fecha BETWEEN %s AND %s
+                GROUP BY m.descripcion
+                ORDER BY valor_total DESC;
+            """, [fecha_inicio, fecha_fin])
+            materiales = cursor.fetchall()
+
+    template_path = 'plantillas/reporte_pdf_material_pacientes.html'
+    context = {
+        'materiales': materiales,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    }
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="reporte_materiales_{fecha_inicio}_a_{fecha_fin}.pdf"'
+    # Renderizamos la plantilla HTML con el contexto
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Creamos un PDF usando pisa
+    pisa_status = pisa.CreatePDF(html, dest=response, encoding='utf-8')
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF <pre>' + html + '</pre>')
+
+    return response

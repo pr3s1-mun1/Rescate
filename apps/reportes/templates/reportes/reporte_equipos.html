@@ -1,0 +1,63 @@
+{% load static %}
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de equipoes</title>
+</head>
+
+<body>
+
+<div class="container mt-4">
+    <h2>Reporte de Equipos Usados por Pacientes</h2>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <label for="fecha_inicio">Desde:</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-5">
+            <label for="fecha_fin">Hasta:</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+
+    <form class="mb-3" method="get" action="{% url 'reporte_equipos_pdf' %}" target="_blank">
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+    </form>
+
+    {% if equipos %}
+    <table class="table table-bordered mb-5">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>equipo</th>
+                <th>Unidad</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in equipos %}
+            <tr>
+                <td>{{ m.equipo_id }}</td>
+                <td>{{ m.equipo_nombre }}</td>
+                <td>{{ m.unidad }}</td>
+                <td>{{ m.cantidad_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="alert alert-warning">No hay equipos en este rango de fechas.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

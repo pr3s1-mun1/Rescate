@@ -1,0 +1,64 @@
+{% load static %}
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Materiales por Paciente</title>
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <h2>Reporte de Materiales por Paciente</h2>
+
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-5">
+                <label for="fecha_inicio">Desde:</label>
+                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control"
+                    value="{{ fecha_inicio }}">
+            </div>
+            <div class="col-md-5">
+                <label for="fecha_fin">Hasta:</label>
+                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+
+        <form class="mb-3" method="get" action="{% url 'reporte_materiales_pacientes_pdf' %}" target="_blank">
+            <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+            <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+            <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+        </form>
+
+        <table class="table table-bordered mb-5">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Cantidad de Pacientes</th>
+                    <th>Cantidad Total</th>
+                    <th>Valor Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for clave, material, cantidad_pacientes, cantidad_total, valor_total in materiales %}
+                <tr>
+                    <td>{{ clave }}</td>
+                    <td>{{ material }}</td>
+                    <td>{{ cantidad_pacientes }}</td>
+                    <td>{{ cantidad_total }}</td>
+                    <td>${{ valor_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+
+</html>
