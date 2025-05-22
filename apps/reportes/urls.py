@@ -26,4 +26,6 @@ urlpatterns = [
     path('reportes/serviciosenfermedaddesgrupo/pdf', reporte_enfermedades_por_grupo_pdf, name='reporte_enfermedades_por_grupo_pdf'),
     path('reportes/serviciosmaterialespaciente/', reporte_materiales_pacientes, name='reporte_materiales_pacientes'),
     path('reportes/serviciosmaterialespaciente/pdf', reporte_materiales_pacientes_pdf, name='reporte_materiales_pacientes_pdf'),
+    path('reportes/serviciosmedicamentospaciente/', reporte_medicamentos_pacientes, name='reporte_medicamentos_pacientes'),
+    path('reportes/serviciosmedicamentospaciente/pdf', reporte_medicamentos_pacientes_pdf, name='reporte_medicamentos_pacientes_pdf'),
 ]

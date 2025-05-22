@@ -28,12 +28,11 @@
             </div>
         </form>
 
-        <form class="mb-3" method="get" action="{% url 'reporte_materiales_pacientes_pdf' %}" target="_blank">
+        <form class="mb-3" method="get" action="{% url 'reporte_medicamentos_pacientes_pdf' %}" target="_blank">
             <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
             <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
             <button class="btn btn-danger" type="submit">Imprimir PDF</button>
         </form>
-
         {% if materiales %}
         <table class="table table-bordered mb-5">
             <thead>
@@ -60,8 +59,8 @@
         {% else %}
         <div class="alert alert-warning" role="alert">
             No hay datos en este rango de fechas.
+            {% endif %}
         </div>
-        {% endif %}
 
 </body>
 

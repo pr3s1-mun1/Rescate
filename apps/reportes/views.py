@@ -1124,3 +1124,77 @@ def reporte_materiales_pacientes_pdf(request):
         return HttpResponse('Error al generar el PDF <pre>' + html + '</pre>')
 
     return response
+
+
+def reporte_medicamentos_pacientes(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    materiales = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT
+                mp.medicamento_id,
+                m.descripcion AS medicamento,
+                COUNT(DISTINCT mp.paciente_id) AS cantidad_pacientes,
+                SUM(mp.cantidad) AS cantidad_total,
+                SUM(mp.cantidad * m.costo) AS valor_total
+            FROM procesos_medadministradoxpaciente AS mp
+            JOIN catalogos_medicamento AS m ON m.clave = mp.medicamento_id
+            JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
+            JOIN procesos_servicio AS s ON s.clave = p.servicio_id
+            WHERE s.fecha BETWEEN %s AND %s
+            GROUP BY m.descripcion, mp.medicamento_id
+            ORDER BY mp.medicamento_id;
+            """, [fecha_inicio, fecha_fin])
+            materiales = cursor.fetchall()
+
+    return render(request, "reportes/reporte_medicamentos_pacientes.html", {
+        "materiales": materiales,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin
+    })
+
+def reporte_medicamentos_pacientes_pdf(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    materiales = []
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    mp.medicamento_id,
+                    m.descripcion AS medicamento,
+                    COUNT(DISTINCT mp.paciente_id) AS cantidad_pacientes,
+                    SUM(mp.cantidad) AS cantidad_total,
+                    SUM(mp.cantidad * m.costo) AS valor_total
+                FROM procesos_medadministradoxpaciente AS mp
+                JOIN catalogos_medicamento AS m ON m.clave = mp.medicamento_id
+                JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
+                JOIN procesos_servicio AS s ON s.clave = p.servicio_id
+                WHERE s.fecha BETWEEN %s AND %s
+                GROUP BY m.descripcion, mp.medicamento_id
+                ORDER BY mp.medicamento_id;
+            """, [fecha_inicio, fecha_fin])
+            materiales = cursor.fetchall()
+
+    template_path = 'plantillas/reporte_pdf_medicamentos_pacientes.html'
+    context = {
+        'materiales': materiales,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    }
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="reporte_materiales_{fecha_inicio}_a_{fecha_fin}.pdf"'
+    # Renderizamos la plantilla HTML con el contexto
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Creamos un PDF usando pisa
+    pisa_status = pisa.CreatePDF(html, dest=response, encoding='utf-8')
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF <pre>' + html + '</pre>')
+
+    return response

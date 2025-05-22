@@ -1,0 +1,59 @@
+{% include 'navbar.html' %}
+
+<div class="container">
+
+        <h2>Pacientes por Colonia</h2>
+
+        <form method="get" class="row g-3 mb-4">
+            {% csrf_token %}
+            <div class="col-md-5">
+                <label>Desde:</label>
+                <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+            </div>
+            <div class="col-md-5">
+                <label>Hasta:</label>
+                <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+
+
+        <button onclick="imprimirGrafica()" class="btn btn-danger" type="submit">Imprimir</button>
+
+
+    {% if resultados %}
+
+    <div class="d-flex justify-content-center mt-5">
+        <img id="grafica" src="data:image/png;base64,{{ grafica_base64 }}" alt="Gráfica de traslados">
+    </div>
+    {% else %}
+    <p>No hay datos para mostrar.</p>
+    {% endif %}
+
+</div>
+<script>
+    function imprimirGrafica() {
+        var imgSrc = document.getElementById('grafica').src;
+        var ventana = window.open('', '_blank');
+        ventana.document.write(`
+            <html>
+                <head>
+                    <title>Imprimir Gráfica</title>
+                </head>
+                <body style="margin:0; text-align:center;">
+                    <img src="${imgSrc}" style="max-width:100%; height:auto;" />
+                    <script>
+                        window.onload = function() {
+                            window.focus();
+                            window.print();
+                            window.onafterprint = function() { window.close(); };
+                        }
+                    <\/script>
+                </body>
+            </html>
+        `);
+        ventana.document.close();
+    }
+    </script>
