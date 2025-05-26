@@ -6,7 +6,10 @@ class ServicioForm(forms.ModelForm):
         model = Servicio
         fields = '__all__'
         widgets = {
-            'fecha': forms.DateInput(attrs={'type': 'datetime-local', 'class': 'form-control'}, format='%Y-%m-%dT%H:%M'),
+            'fecha': forms.DateInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'}, 
+                format='%Y-%m-%dT%H:%M'
+            ),
             'descripcion_evento': forms.Textarea(attrs={'cols': 90}),
             'estatus': forms.Select(choices=[
                 ('P', 'EN PROCESO'),
@@ -22,15 +25,18 @@ class ServicioForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Agrega la clase 'form-control' a todos los widgets
         for field in self.fields:
             self.fields[field].widget.attrs.update({
                 'class': 'form-control'
             })
-        
-        self.fields['clave'].widget.attrs.update({
-            'class': 'form-control bg-light highlight-field',
-            'readonly': True
-        })
+        # Para el campo 'clave', lo pones como readonly y con otras clases
+        if 'clave' in self.fields:
+            self.fields['clave'].widget.attrs.update({
+                'class': 'form-control bg-light highlight-field',
+                'readonly': True
+            })
+
 
 class ParamedicosForm(forms.ModelForm):
     class Meta:

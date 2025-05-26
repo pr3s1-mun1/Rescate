@@ -45,6 +45,12 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pertenencias-tab" data-bs-toggle="tab" data-bs-target="#pertenencias"
+                            type="button" role="tab" aria-controls="pertenencias" aria-selected="false">
+                            <i class="fa-solid fa-user me-2"></i>Pertenencias
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="embarazo-tab" data-bs-toggle="tab" data-bs-target="#embarazo"
                             type="button" role="tab" aria-controls="embarazo" aria-selected="false">
                             <i class="fa-solid fa-baby-carriage me-2"></i>Embarazo
@@ -158,6 +164,19 @@
 
                         <div class="d-flex justify-content-between mt-3">
                             <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paramedicos-tab">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
+                            </button>
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pertenencias-tab">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pertenencias" role="tabpanel" aria-labelledby="pestana4-tab">
+                        {% include 'crear/pertenencias.html' %}
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paciente-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
                             <button type="button" class="btn btn-primary next-tab" data-next-tab="embarazo-tab">

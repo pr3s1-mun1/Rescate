@@ -1,0 +1,44 @@
+{% load static %}
+
+<body>
+    <div class="d-flex">
+
+        <div class="container">
+            <div class="form-container bg-light p-4 rounded shadow-sm">
+                <h1 class="text-center mb-4">Pertenencias del Paciente</h1>
+
+                {% csrf_token %}
+
+                <div class="groupbox mb-4">
+                    <h2 class="groupbox-title">Pertenencias</h2>
+                    <div class="row">
+                        <div class="form-group col-md-2">
+                            <label for="{{ form_paciente.entregan_pertenencias.id_for_label }}">Se Entregaron</label>
+                            {{ form_paciente.entregan_pertenencias }}
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Descripción</label>
+                            {{ form_paciente.descripcion_pertenencias }}
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Nombre de quien
+                                recibe</label>
+                            {{ form_paciente.nombre_recibe }}
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Cargo de quien
+                                recibe</label>
+                            {{ form_paciente.cargo_recibe }}
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Empleado quien
+                                entrega</label>
+                            {{ form_paciente.empleado_recibe }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>

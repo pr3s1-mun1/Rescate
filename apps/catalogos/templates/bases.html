@@ -31,7 +31,7 @@
                     {% for base in bases %}
                     <tr>
                         <td>
-                            <span class="d-inline-block" style="width: 20px; height: 20px; border-radius: 3px; background-color: rgb({{ base.rojo }}, {{ base.verde }}, {{ base.azul }})"></span>
+                            <span class="d-inline-block" style="width: 20px; height: 20px; border-radius: 3px; background-color: {{ base.color_hex }}"></span>
                             <span class="ms-2">{{ base.clave }}</span>
                         </td>
                         <td class="text-center">

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Reporte de Servicio del Departamento de Rescate, Dirección Municipal de Protección Civil, Cd. Juárez, Chihuahua, México">
+    <title>Reporte de Servicio - Protección Civil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9pt;
+            line-height: 1.2;
+            color: #000;
+            margin: 5mm;
+            padding: 1pt; /* nuevo padding agregado */
+        }
+
+        .table-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .tdImg {
+            width: 20%;
+        }
+        .tdImg img {
+            width: 85px;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            border-bottom: 1pt solid #000;
+            padding-bottom: 2pt;
+            margin-bottom: 5pt;
+            page-break-after: avoid;
+        }
+
+        .header img {
+            height: 20pt;
+            vertical-align: middle;
+        }
+
+        .header-logo-left,
+        .header-logo-right {
+            display: inline-block;
+            width: 15%;
+        }
+
+        .header-center {
+            display: inline-block;
+            width: 70%;
+            vertical-align: middle;
+        }
+
+        .header-center h1 {
+            font-size: 10pt;
+            margin: 2pt 0;
+            padding: 0;
+        }
+
+        .header-center h2,
+        .header-center h3 {
+            font-size: 8pt;
+            margin: 1pt 0;
+            padding: 0;
+        }
+
+        .section {
+            margin-bottom: 8pt;
+            page-break-inside: avoid;
+        }
+
+        .title-section {
+            font-size: 8pt;
+            font-weight: bold;
+            border-bottom: 1pt solid #000;
+            padding-bottom: 1pt;
+            margin-bottom: 3pt;
+            text-transform: uppercase;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7pt;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 2pt;
+            text-align: left;
+            vertical-align: top;
+            border: 0.5pt solid #d3d3d3;
+        }
+
+        .info-table th.label {
+            font-weight: bold;
+            width: 25%;
+            background: #f0f0f0;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20mm;
+            font-size: 6pt;
+            color: #000;
+            border-top: 1pt solid #000;
+            padding: 5px 10px;
+            text-align: right;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table-header">
+        <tr>
+            <td class="tdImg" align="left">
+                <img src="rescate/static/img/escudorescate.gif" alt="Logo Izquierdo">
+            </td>
+            <td align="center">
+                <h1>DEPARTAMENTO DE RESCATE</h1>
+                <h3>DIRECCIÓN MUNICIPAL DE PROTECCIÓN CIVIL</h3>
+                <h3>CD. JUÁREZ - CHIHUAHUA - MÉXICO</h3>
+                <h2>REPORTE DE SERVICIO</h2>
+            </td>
+            <td class="tdImg" align="right">
+                <img src="rescate/static/img/rescatelogo.gif" alt="Logo Derecho">
+            </td>
+        </tr>
+    </table>
+    <table class="info-table" style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
+        <tr style="background-color: #e9f0fa;">
+            <th style="padding: 6px 10px; font-size: 10pt; font-weight: bold; text-align: left; width: 20%; border: 1px solid #ccc;">
+                #Servicio:
+            </th>
+            <td style="padding: 6px 10px; font-size: 10pt; border: 1px solid #ccc; width: 30%;">
+                {{ servicio.clave|default:"No especificado" }}
+            </td>
+            <th style="padding: 6px 10px; font-size: 10pt; font-weight: bold; text-align: left; width: 20%; border: 1px solid #ccc;">
+                #Paciente:
+            </th>
+            <td style="padding: 6px 10px; font-size: 10pt; border: 1px solid #ccc; width: 30%;">
+                {{ paciente.clave|default:"No especificado" }}
+            </td>
+        </tr>
+    </table>
+    
+
+    <div class="section" aria-labelledby="datos-servicio">
+        <h2 class="title-section" id="datos-servicio">Datos del Servicio</h2>
+        <table class="info-table">
+            
+            <tr>
+                <th class="label">Tipo Serv. Realizado:</th>
+                <td>{{ servicio.tipo_servicio_realizado.descripcion|default:"No especificado" }}</td>
+                <th class="label">Tipo Serv. Reportado:</th>
+                <td>{{ servicio.tipo_servicio_reporta.descripcion|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Estatus:</th>
+                <td>{% if servicio.estatus == 'P' %}En Proceso{% elif servicio.estatus == 'T' %}Terminado{% else
+                    %}Cancelado{% endif %}</td>
+                <th class="label">Fecha:</th>
+                <td>{{ servicio.fecha|date:"d/m/Y H:i"|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Dirección Emergencia:</th>
+                <td>{{ servicio.direccion_emergencia.calle|default:"No especificado" }} y {{ servicio.calle_entre.calle|default:"No especificado" }}</td>
+                <th class="label">Colonia:</th>
+                <td>{{ servicio.colonia_emergencia.colonia|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Descripción Evento:</th>
+                <td colspan="3">{{ servicio.descripcion_evento|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Reporta:</th>
+                <td>{{ servicio.nombre_persona_reporta|default:"No especificado" }}</td>
+                <th class="label">Edad:</th>
+                <td>{{ servicio.edad_persona_reporta|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Teléfono:</th>
+                <td>{{ servicio.telefono_persona_reporta|default:"No especificado" }}</td>
+                <th class="label">Sexo:</th>
+                <td>{{ servicio.sexo_persona_reporta|default:"No especificado" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {% if paciente %}
+    <div class="section" aria-labelledby="info-paciente">
+        <h2 class="title-section" id="info-paciente">Información del Paciente</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label"> Ambulancia </th>
+                <td> {{ paciente.ambulancia }}</td>
+                <th class="label"> Base </th>
+                <td> {{ paciente.base }} </td>
+            </tr>
+            <tr>
+                <th class="label">Nombre:</th>
+                <td colspan="3">{{ paciente.nombre|default:"No especificado" }} {{ paciente.apellido_paterno|default:"" }} {{ paciente.apellido_materno|default:"" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Edad:</th>
+                <td>
+                    {{ paciente.edad|default:"No especificado" }}
+                    (
+                    {% if paciente.edad_tipo == '1' %}
+                        Días
+                    {% elif paciente.edad_tipo == '2' %}
+                        Semanas
+                    {% elif paciente.edad_tipo == '3' %}
+                        Meses
+                    {% elif paciente.edad_tipo == '4' %}
+                        Años
+                    {% else %}
+                        No especificado
+                    {% endif %}
+                    )
+                </td>
+                                </td>
+                <th class="label">Sexo:</th>
+                <td>{% if paciente.sexo == '1' %}NO INGRESADO{% elif paciente.sexo == '2' %}MASCULINO{% elif paciente.sexo == '3' %}FEMENINO{% else %}NO ESPECIFICADO{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Estado Civil:</th>
+                <td>{% if paciente.estado_civil == '1' %}Casado{% elif paciente.estado_civil == '2' %}Desconocido{% elif paciente.estado_civil == '3' %}Divorciado{% elif paciente.estado_civil == '4' %}Soltero{% elif paciente.estado_civil == '5' %}Unión Libre{% elif paciente.estado_civil == '6' %}Viudo{% else %}No especificado{% endif %}</td>
+                <th class="label">Teléfono:</th>
+                <td>{{ paciente.telefono|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Domicilio:</th>
+                <td>{{ paciente.domicilio.calle|default:"No especificado" }} {{ paciente.domicilio_numero|default:"" }}
+                </td>
+                <th class="label">Colonia:</th>
+                <td>{{ paciente.colonia.colonia|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Estatura:</th>
+                <td>{{ paciente.estatura|default:"No especificado" }} m</td>
+                <th class="label">Complexión:</th>
+                <td>{% if paciente.complexion == '1' %}Caquexia{% elif paciente.complexion == '2' %}Delgado{% elif paciente.complexion == '3' %}Regular{% elif paciente.complexion == '4' %}Robusta{% elif paciente.complexion == '5' %}Obesa{% elif paciente.complexion == '6' %}Obesidad móribida{% else %}No
+                    especificado{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Tez:</th>
+                <td>{% if paciente.tez == '1' %}Blanco{% elif paciente.tez == '2' %}Medio{% elif paciente.tez == '3' %}Moreno{% elif paciente.tez == '4' %}Negro{% else %}No especificado{% endif %}</td>
+                <th class="label">Pelo:</th>
+                <td>{% if paciente.pelo == '1' %}Negro{% elif paciente.pelo == '2' %}Castaño{% elif paciente.pelo == '3'%}Rubio{% elif paciente.pelo == '4' %}Pelirrojo{% elif paciente.pelo == '5' %}Teñindo{% elif paciente.pelo == '6' %}Canoso{% elif paciente.pelo == '7' %}Calvo{% else %}No especificado{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Ropa:</th>
+                <td colspan="3">{{ paciente.ropa|default:"No especificado" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="datos-antecedentes">
+        <h2 class="title-section" id="datos-antecedentes">Antecedentes</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Enfermedad:</th>
+                <td>{{ paciente.enfermedad.nombre|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Antecedente:</th>
+                <td>{{ paciente.antecedente|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Sintoma:</th>
+                <td>{{ paciente.sintoma|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Hospital:</th>
+                <td>{{ paciente.hospital.nombre|default:"No especificado" }}</td>
+                <th class="label">Hospital Responsable:</th>
+                <td>{{ paciente.nombre_respon_hospital|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Número Agente:</th>
+                <td>{{ paciente.numero_agente|default:"No especificado" }}</td>
+                <th class="label">Nombre Agente:</th>
+                <td>{{ paciente.nombre_agente|default:"No especificado"  }}</td>
+            </tr>
+            <tr>
+                <th class="label">Ultima Comida:</th>
+                <td>{{ paciente.fecha_ultima_comida|date:"d/m/Y H:i"|default:"No especificado" }}</td>
+                <th class="label">Falleció:</th>
+                <td>{% if paciente.fallecio %}Sí{% else %}No{% endif %}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="evaluacion-medica">
+        <h2 class="title-section" id="evaluacion-medica">Impresión Diagnóstica</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Nivel de Conciencia:</th>
+                <td>{% if paciente.nivel_conciencia == '1' %}Alerta{% elif paciente.nivel_conciencia == '2' %}Estimulo Verbal{%elif paciente.nivel_conciencia == '3' %}Estimulo Doloroso{% elif paciente.nivel_conciencia == '4'%}Inconsciente{% else %}No evaluado{% endif %}</td>
+                <th class="label">Piel:</th>
+                <td>
+                    {% if paciente.piel == '1' %}NORMAL
+                    {% elif paciente.piel == '2' %}HÚMEDA
+                    {% elif paciente.piel == '3' %}SECA
+                    {% elif paciente.piel == '4' %}FRÍA
+                    {% elif paciente.piel == '5' %}CALIENTE
+                    {% elif paciente.piel == '6' %}DIAFORÉTICA
+                    {% elif paciente.piel == '7' %}RUBICUNDA
+                    {% elif paciente.piel == '8' %}PÁLIDA - BLANCA
+                    {% elif paciente.piel == '9' %}CIANÓTICA - AZUL
+                    {% else %}No especificado
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th class="label">Antecedentes:</th>
+                <td colspan="3">{{ paciente.antecedente|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Síntomas:</th>
+                <td colspan="3">{{ paciente.sintoma|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Pulso (Diagnóstico):</th>
+                <td>{% if paciente.pulso_diagnostico == '1' %}REGULAR{% elif paciente.pulso_diagnostico == '2' %}IRREGULAR{% elif paciente.pulso_diagnostico == '3' %}LLENO{% elif paciente.pulso_diagnostico == '4' %}DÉBIL{% elif paciente.pulso_diagnostico == '5' %}FILIFORME{% elif paciente.pulso_diagnostico == '6' %}AUSENTE{% else %}No especificado{% endif %}</td>
+
+                <th class="label">Respiración (Diagnóstico):</th>
+                <td>{% if paciente.respiracion_diagnostico == '1' %}NORMAL{% elif paciente.respiracion_diagnostico == '2' %}SUPERFICIAL{% elif paciente.respiracion_diagnostico == '3' %}LABORIOSA{% elif paciente.respiracion_diagnostico == '4' %}APNEA{% elif paciente.respiracion_diagnostico == '5' %}KUSSMAULL{% elif paciente.respiracion_diagnostico == '6' %}AUSENTE{% else %}No especificado{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Pupilas:</th>
+                <td>{% if paciente.pupilas == '1' %}REACTIVAS{% elif paciente.pupilas == '2' %}NO REACTIVAS{% elif paciente.pupilas == '3' %}ISOCORIA{% elif paciente.pupilas == '4' %}MIOSIS{% elif paciente.pupilas == '5' %}MIDRIASIS{% elif paciente.pupilas == '6' %}ANISICORA{% elif paciente.pupilas == '7' %}DISCORIA{% else %}No especificado{% endif %}</td>
+
+                <th class="label">Hemorragia:</th>
+                <td>{% if paciente.hemorragia == '1' %}NO{% elif paciente.hemorragia == '2' %}MINIMA{% elif paciente.hemorragia == '3' %}MODERADA{% elif paciente.hemorragia == '4' %}SEVERA{% else %}No especificado{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Dolor:</th>
+                <td>{% if paciente.dolor == 'N' %}No{% elif paciente.dolor == 'L' %}Leve{% elif paciente.dolor == 'M'
+                    %}Moderado{% elif paciente.dolor == 'I' %}Intenso{% else %}No evaluado{% endif %}</td>
+            </tr>
+            <tr>
+
+                <th class="label">Pulso:</th>
+                <td>{{ paciente.pulso|default:"No evaluado" }} lpm</td>
+            </tr>
+            <tr>
+                <th class="label">Respiración:</th>
+                <td>{{ paciente.respiracion|default:"No evaluado" }} rpm</td>
+                <th class="label">Temperatura:</th>
+                <td>{{ paciente.temperatura|default:"No evaluado" }} °C</td>
+            </tr>
+            <tr>
+                <th class="label">Presión Inicial:</th>
+                <td>{{ paciente.presion_inicial|default:"No evaluado" }}</td>
+                <th class="label">Presión Posterior:</th>
+                <td>{{ paciente.presion_posterior|default:"No evaluado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Dextrostix:</th>
+                <td>{{ paciente.destroxtix|default:"No evaluado" }} mg/dL</td>
+                <th class="label">Oximetría:</th>
+                <td>{{ paciente.oximetria|default:"No evaluado" }}%</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="datos-signos">
+        <h2 class="title-section" id="datos-signos">Signos Vitales</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Pulso:</th>
+                <td>{{ paciente.pulso|default:"No aplica" }}</td>
+                <th class="label">Respiración:</th>
+                <td>{{ paciente.respiracion|default:"No aplica" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Presión Inicial</th>
+                <td>{{ paciente.presion_inicial }}</td>
+                <th class="label">Presión Posterior</th>
+                <td>{{ paciente.presion_posterior }}</td>
+            </tr>
+            <tr>
+                <th class="label">Destroxtix</th>
+                <td>{{ paciente.destroxtix|default:"No aplica" }} mg/dL</td>
+                <th class="label">Oximetría</th>
+                <td>{{ paciente.oximetria|default:"No aplica" }}%</td>
+            </tr>
+            <tr>
+                <th class="label">Temperatura:</th>
+                <td>{{ paciente.temperatura|default:"No aplica" }} °C</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="datos-glasgow">
+        <h2 class="title-section" id="datos-glasgow">Evaluación Glasgow</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Apertura de Ojos</th>
+                <td>{% if paciente.apertura_ojos_glasgow == '1' %}NO EVALUADO{% elif paciente.apertura_ojos_glasgow == '2' %}ESPONTANEO{% elif paciente.apertura_ojos_glasgow == '3' %}AL ESTIMULO VERBAL{% elif paciente.apertura_ojos_glasgow == '4' %}AL DOLOR{% elif paciente.apertura_ojos_glasgow == '5' %}NO RESPUESTA{% else %}No especificado{% endif %}</td>
+                <th class="label">Respuesta Verbal</th>
+                <td>{% if paciente.respuesta_verbal_glasgow == '1' %}ORIENTADO EN 3 ESFERAS{% elif paciente.respuesta_verbal_glasgow == '2' %}CONFUSO PERO CONTESTA{% elif paciente.respuesta_verbal_glasgow == '3' %}PALABRAS INCOHERENTES{% elif paciente.respuesta_verbal_glasgow == '4' %}PALABRAS INCOMPRENSIBLES{% elif paciente.respuesta_verbal_glasgow == '5' %}NO HAY RESPUESTA{% elif paciente.respuesta_verbal_glasgow == '6' %}NO EVALUADO{% else %}No especificado{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Presión Inicial</th>
+                <td>{{ paciente.presion_inicial }}</td>
+                <th class="label">Presión Posterior</th>
+                <td>{{ paciente.presion_posterior }}</td>
+            </tr>
+            <tr>
+                <th class="label">Respuesta Motora</th>
+                <td>{% if paciente.respuesta_motora_glasgow == '1' %}NO EVALUADO{% elif paciente.respuesta_motora_glasgow == '2' %}OBEDECE ORDENES{% elif paciente.respuesta_motora_glasgow == '3' %}LOCALIZA DOLOR{% elif paciente.respuesta_motora_glasgow == '4' %}RECHAZO AL DOLOR{% elif paciente.respuesta_motora_glasgow == '5' %}FLEXION ANORMAL AL DOLOR{% elif paciente.respuesta_motora_glasgow == '6' %}EXTENSION ANORMAL AL DOLOR{% elif paciente.respuesta_motora_glasgow == '7' %}NO RESPUESTA{% else %}No especificado{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="label">Temperatura:</th>
+                <td>{{ paciente.temperatura|default:"No aplica" }} °C</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div class="section" aria-labelledby="datos-vehiculo">
+        <h2 class="title-section" id="datos-vehiculo">Datos del Vehículo</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Marca del Vehículo:</th>
+                <td>{{ paciente.marca_vehiculo.descripcion|default:"No aplica" }}</td>
+                <th class="label">Placa:</th>
+                <td>{{ paciente.placa_vehiculo|default:"No aplica" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Color:</th>
+                <td colspan="3">{% if paciente.color_vehiculo == 'A' %}Amarillo{% elif paciente.color_vehiculo == 'B'
+                    %}Blanco{% elif paciente.color_vehiculo == 'C' %}Café{% elif paciente.color_vehiculo == 'G' %}Gris{%
+                    elif paciente.color_vehiculo == 'N' %}Negro{% elif paciente.color_vehiculo == 'R' %}Rojo{% elif
+                    paciente.color_vehiculo == 'V' %}Verde{% elif paciente.color_vehiculo == 'Z' %}Azul{% else %}No
+                    especificado{% endif %}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="datos-pertenencias">
+        <h2 class="title-section" id="datos-pertenencias">Pertenencias</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Se Entregaron:</th>
+                <td>{% if paciente.entrega_pertenencias %}Sí{% else %}No{% endif %}</td>
+                <th class="label">Descripción:</th>
+                <td>{{ paciente.descripcion_pertenencias|default:"No aplica" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Nombre de quien Recibe:</th>
+                <td>{{ paciente.nombre_recibe|default:"No aplica" }}</td>
+                <th class="label">Cargo de quien Recibe:</th>
+                <td>{{ paciente.cargo_recibe|default:"No aplica" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Empleado que Recibe:</th>
+                <td>{{ paciente.empleado_recibe.nombre|default:"No aplica" }}</td>
+            </tr>
+
+        </table>
+    </div>
+
+
+
+    <div class="section" aria-labelledby="acompanante">
+        <h2 class="title-section" id="acompanante">Acompañante</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Nombre:</th>
+                <td>{{ paciente.nombre_acompanante|default:"No aplica" }}</td>
+                <th class="label">Tiene Acompañante:</th>
+                <td>{% if paciente.tiene_acompanante %}Sí{% else %}No{% endif %}</td>
+
+            </tr>
+            <tr>
+                <th class="label">Edad:</th>
+                <td>{{ paciente.edad_acompanante|default:"No aplica" }}</td>
+                <th class="label">Sexo:</th>
+                <td>{{ paciente.sexo_acompanante|default:"No aplica" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Domicilio:</th>
+                <td>{{ paciente.domicilio_acompanante|default:"No aplica" }}</td>
+                <th class="label">Parentesco:</th>
+                <td>
+                    {% if paciente.parentesco_acompanante == '1' %}
+                        NINGUNO
+                    {% elif paciente.parentesco_acompanante == '2' %}
+                        PADRE
+                    {% elif paciente.parentesco_acompanante == '3' %}
+                        MADRE
+                    {% elif paciente.parentesco_acompanante == '4' %}
+                        HERMANO(A)
+                    {% elif paciente.parentesco_acompanante == '5' %}
+                        TIO(A)
+                    {% elif paciente.parentesco_acompanante == '6' %}
+                        ABUELO(A)
+                    {% elif paciente.parentesco_acompanante == '7' %}
+                        CUÑADO(A)
+                    {% elif paciente.parentesco_acompanante == '8' %}
+                        HIJO(A)
+                    {% else %}
+                        No especificado
+                    {% endif %}
+                </td>
+
+            </tr>
+        </table>
+    </div>
+
+
+
+    <div class="section" aria-labelledby="datos-liberacion">
+        <h2 class="title-section" id="datos-liberacion">Datos de Liberación</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Libera Responsabilidad:</th>
+                <td>{% if paciente.libera_responsabilidad %}Sí{% else %}No{% endif %}</td>
+                <th class="label">Fecha Liberación Responsabilidad:</th>
+                <td>{{ paciente.fecha_liberacion_respon|date:"d/m/Y H:i"|default:"No especificado" }}</td>
+            </tr>
+            <tr>
+                <th class="label">Firmó Liberación:</th>
+                <td>{% if paciente.firmo_liberacion %}Sí{% else %}No{% endif %}</td>
+                <th class="label">Niega Firmar:</th>
+                <td>{% if paciente.niega_firmar %}Sí{% else %}No{% endif %}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="otros-datos">
+        <table class="info-table">
+            <tr>
+                <td>
+                    <strong>Procedimientos:</strong><br>
+                    {% for proc in procedimientos_asignados %}
+                        {{ proc.procedimiento.descripcion }}<br>
+                    {% empty %}
+                        No registrados
+                    {% endfor %}
+                </td>
+                <td>
+                    <strong>Alergias:</strong><br>
+                    {% for a in alergias_asignados %}
+                        {{ a.alergia.descripcion }}<br>
+                    {% empty %}
+                        No registradas
+                    {% endfor %}
+                </td>
+                <td>
+                    <strong>Material Utilizado:</strong><br>
+                    {% for m in materiales_asignados %}
+                        {{ m.material.descripcion }}<br>
+                    {% empty %}
+                        No registrado
+                    {% endfor %}
+                </td>
+                <td>
+                    <strong>Equipo Utilizado:</strong><br>
+                    {% for e in equipos_asignados %}
+                        {{ e.equipo.descripcion }}<br>
+                    {% empty %}
+                        No registrado
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="otros-datos2">
+        <table class="info-table">
+            <tr>
+                <td>
+                    <strong>Medicamento Ingerido:</strong><br>
+                    {% for i in ingeridos_asignados %}
+                        {{ i.medicamento.descripcion }}<br>
+                    {% empty %}
+                        No registrados
+                    {% endfor %}
+                </td>
+                <td>
+                    <strong>Medicamento Administrado:</strong><br>
+                    {% for a in administrados_asignados %}
+                        {{ a.medicamento.descripcion }}<br>
+                    {% empty %}
+                        No registradas
+                    {% endfor %}
+                </td>
+                <td>
+                    <strong>Lesion / Quemaduras:</strong><br>
+                    {% for l in lesiones_asignados %}
+                        {{ l.lesion }}<br>
+                    {% empty %}
+                        No registrado
+                    {% endfor %}
+                </td>
+                <td>
+                    <strong>Impactos en vehiculo:</strong><br>
+                    {% for v in impactos_asignados %}
+                        {{ v.impacto }}<br>
+                    {% empty %}
+                        No registrado
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" aria-labelledby="observaciones">
+        <table class="info-table">
+            <tr>
+                <td colspan="4">
+                    <strong>Unidades Presentes:</strong><br>
+                    {% for unidad in unidades_asignadas %}
+                        {{ unidad.unidad }} - {{ unidad.numero_unidad }} - {{ unidad.agente_nombre }}<br>
+                    {% empty %}
+                        No registradas
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    
+
+    {% endif %}
+    
+    
+</body>
+
+</html>

@@ -12,5 +12,6 @@ urlpatterns = [
     path('intoxicaciones/', intoxicaciones, name='intoxicaciones'),
     path('pacienteporcolonia/', pacientes_por_colonia, name='pacientes_por_colonia'),
     path('defunciones/', defunciones, name='defunciones'),
+    path('lesiones/', lesiones, name='lesiones'),
 
 ]

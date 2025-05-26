@@ -21,7 +21,7 @@ class Servicio(models.Model):
     )
     
     estatus = models.CharField(max_length=1)
-    calle_entre = models.CharField(max_length=255)
+    calle_entre = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True, related_name='calle_entre')
 
     def __str__(self):
         return f"{self.descripcion_evento[:30]}"
@@ -85,8 +85,18 @@ class PacientexServicio(models.Model):
     domicilio_acompanante = models.CharField(max_length=150)
     parentesco_acompanante = models.CharField(max_length=2)
     sexo_acompanante = models.CharField(max_length=1)
+
+
+    #Datos de liberación
     entregan_pertenencias = models.BooleanField(default=False)
-    descripcion_pertenencias = models.CharField(max_length=255)
+    descripcion_pertenencias = models.TextField()
+    nombre_recibe = models.CharField(max_length=100)
+    cargo_recibe = models.CharField(max_length=100)
+    empleado_recibe = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True, related_name='recibe_paciente')
+
+
+
+
     libera_responsabilidad = models.BooleanField(default=False)
     fecha_liberacion_respon = models.DateTimeField(default=False)
     firmo_liberacion = models.BooleanField(default=False)
@@ -99,7 +109,7 @@ class PacientexServicio(models.Model):
     nivel_concienciaa = models.CharField(max_length=1)
     piel = models.CharField(max_length=1)
     antecedente = models.CharField(max_length=255)
-    sintoma = models.CharField(max_length=255)
+    sintoma = models.TextField()
     pulso_diagnostico = models.CharField(max_length=1)    
     respiracion_diagnostico = models.CharField(max_length=1)    
     pupilas = models.CharField(max_length=1)    

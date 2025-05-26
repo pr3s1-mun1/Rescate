@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var formulario = document.getElementById('form-testigos');
         formulario.classList.toggle('d-none');
         testigos = !testigos;
+        var label = document.getElementById('activar-testigos');
+        label.classList.toggle('d-none');
         actualizarInputTestigos();
     }
 

@@ -4,13 +4,9 @@ from apps.catalogos.forms import *
 from apps.catalogos.views import requiere_tipo_paramedico
 from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm
 from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
+from collections import defaultdict
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 import datetime
 import json
 
@@ -340,320 +336,34 @@ def guardar_testigos(request, paciente):
         direccion = i.get('direccion')
         telefono = i.get('telefono')
         TestigoxPaciente.objects.create(paciente=paciente, nombre=nombre, edad=edad, domicilio=direccion, telefono=telefono)
-                    
 
 def reporte_servicio(request, clave):
-    # Obtener datos principales
     servicio = get_object_or_404(Servicio, clave=clave)
-    unidades = UnidadxServicio.objects.filter(servicio=clave).first()
-    paramedico = ParamedicoxPaciente.objects.filter(servicio=clave).first()
-    paciente = PacientexServicio.objects.filter(servicio=clave).first()
-    
-    # Obtener datos relacionados si existe paciente
-    datos_relacionados = {}
-    if paciente:
-        datos_relacionados = {
-            'procedimiento': ProcedimientoxPaciente.objects.filter(paciente=clave).first(),
-            'alergia': AlergiaxPaciente.objects.filter(paciente=clave).first(),
-            'material': MaterialxPaciente.objects.filter(paciente=clave).first(),
-            'ingerido': MedIngeridoxPaciente.objects.filter(paciente=clave).first(),
-            'administrado': MedAdministradoxPaciente.objects.filter(paciente=clave).first(),
-            'equipo': EquipoxPaciente.objects.filter(paciente=clave).first(),
-            'lesion': LesionxPaciente.objects.filter(paciente=clave).first(),
-            'impacto': ImpactoxVehiculo.objects.filter(paciente=clave).first()
-        }
+    paciente = PacientexServicio.objects.filter(servicio=servicio).first()
 
-    # Configurar respuesta HTTP
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="reporte_servicio_{clave}.pdf"'
+    template = get_template("reporte/reporte_servicio.html")
+    context = {
+        "servicio": servicio,
+        "paciente": paciente,
+        "paramedicos_asignados": ParamedicoxPaciente.objects.filter(servicio=servicio),
+        "unidades_asignadas": UnidadxServicio.objects.filter(servicio=servicio),
+        "procedimientos_asignados": ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
+        "alergias_asignados": AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
+        "materiales_asignados": MaterialxPaciente.objects.filter(paciente__servicio=servicio),
+        "ingeridos_asignados": MedIngeridoxPaciente.objects.filter(paciente__servicio=servicio),
+        "administrados_asignados": MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
+        "equipos_asignados": EquipoxPaciente.objects.filter(paciente__servicio=servicio),
+        "lesiones_asignados": LesionxPaciente.objects.filter(paciente__servicio=servicio),
+        "impactos_asignados": ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
+        "testigos_asignados": TestigoxPaciente.objects.filter(paciente__servicio=servicio),
+    }
 
-    # Registrar fuentes
-    try:
-        pdfmetrics.registerFont(TTFont('Helvetica-Bold', 'Helvetica-Bold.ttf'))
-        pdfmetrics.registerFont(TTFont('Helvetica', 'Helvetica.ttf'))
-    except:
-        pass  # Usar fuentes por defecto si falla el registro
+    html = template.render(context)
 
-    # Obtener estilos base y modificarlos
-    styles = getSampleStyleSheet()
-    
-    # Modificar el estilo Title existente en lugar de crear uno nuevo
-    styles['Title'].textColor = colors.HexColor('#003366')
-    styles['Title'].fontSize = 18
-    styles['Title'].leading = 22
-    styles['Title'].spaceAfter = 20
-    
-    # Crear nuevos estilos solo si no existen
-    if 'SectionHeader' not in styles:
-        styles.add(ParagraphStyle(
-            name='SectionHeader',
-            fontSize=14,
-            leading=18,
-            spaceBefore=15,
-            spaceAfter=10,
-            textColor=colors.HexColor('#990000')
-        ))
-    
-    if 'Label' not in styles:
-        styles.add(ParagraphStyle(
-            name='Label',
-            fontSize=10,
-            leading=12,
-            spaceAfter=5,
-            textColor=colors.HexColor('#333333')
-        ))
-    
-    if 'Value' not in styles:
-        styles.add(ParagraphStyle(
-            name='Value',
-            fontSize=10,
-            leading=12,
-            spaceAfter=10,
-            textColor=colors.black
-        ))
-    
-    if 'Footer' not in styles:
-        styles.add(ParagraphStyle(
-            name='Footer',
-            fontSize=8,
-            leading=10,
-            alignment=1,  # Centrado
-            textColor=colors.grey
-        ))
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="reporte_servicio_{clave}.pdf"'
+    pisa_status = pisa.CreatePDF(html, dest=response)
 
-    # Crear documento
-    doc = SimpleDocTemplate(response, pagesize=letter, 
-                          rightMargin=inch/2, leftMargin=inch/2,
-                          topMargin=inch/2, bottomMargin=inch/2)
-    
-    elements = []
-
-    # Título del reporte
-    elements.append(Paragraph(f"REPORTE DE SERVICIO #{servicio.clave}", styles['Title']))
-    elements.append(Spacer(1, 0.2*inch))
-
-    # Sección de información general del servicio
-    elements.append(Paragraph("INFORMACIÓN GENERAL DEL SERVICIO", styles['SectionHeader']))
-    
-    general_data = [
-        ["Nombre:", servicio.nombre_persona_reporta or "No especificado"],
-        ["Fecha:", servicio.fecha.strftime('%d/%m/%Y')],
-        ["Edad/Sexo:", f"{servicio.edad_persona_reporta or 'N/A'} / {servicio.sexo_persona_reporta or 'N/A'}"],
-        ["Ubicación:", f"{servicio.direccion_emergencia.calle if servicio.direccion_emergencia else 'N/A'}, "
-                              f"{servicio.colonia_emergencia.colonia if servicio.colonia_emergencia else 'N/A'}, "
-                              f"Entre calle: {servicio.calle_entre or 'N/A'}"],
-        ["Teléfono:", servicio.telefono_persona_reporta or "No especificado"],
-        ["Estatus:", "En Proceso" if servicio.estatus == "P" else "Finalizado"],
-        ["Tipo de Servicio Realizado:", servicio.tipo_servicio_realizado.descripcion if servicio.tipo_servicio_realizado else "Urgencia"],
-        ["Tipo de Servicio Reportado:", servicio.tipo_servicio_reporta.descripcion if servicio.tipo_servicio_reporta else "Urgencia"],
-        ["Paramedico:", paramedico.paramedico.nombre if paramedico and paramedico.paramedico else "No asignado"],
-        ["Unidad:", unidades.unidad.descripcion if unidades and unidades.unidad else "No asignada"],
-        ["ID Agente:", unidades.numero_unidad if unidades else "No asignado"],
-        ["Agente Nombre:", unidades.agente_nombre if unidades else "No asignado"]
-    ]
-    
-    general_table = Table(general_data, colWidths=[2*inch, 4*inch])
-    general_table.setStyle(TableStyle([
-        ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('ALIGN', (0,0), (0,-1), 'LEFT'),
-        ('ALIGN', (1,0), (1,-1), 'LEFT'),
-        ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
-        ('FONTSIZE', (0,0), (-1,-1), 10),
-        ('LEADING', (0,0), (-1,-1), 12),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5)
-    ]))
-    
-    elements.append(general_table)
-    elements.append(Spacer(1, 0.2*inch))
-
-    # Sección de información del paciente si existe
-    if paciente:
-        elements.append(PageBreak())
-        elements.append(Paragraph("INFORMACIÓN DETALLADA DEL PACIENTE", styles['SectionHeader']))
-        
-        # Datos básicos del paciente
-        patient_basic_data = [
-            ["Nombre:", f"{paciente.nombre or ''} {paciente.apellido_paterno or ''} {paciente.apellido_materno or ''}"],
-            ["Edad:", f"{paciente.edad or 'N/A'} ({paciente.edad_tipo or 'N/A'})"],
-            ["Sexo:", paciente.sexo or "No especificado"],
-            ["Estado Civil:", paciente.estado_civil or "No especificado"],
-            ["Teléfono:", paciente.telefono or "No especificado"],
-            ["Domicilio:", f"{paciente.domicilio or 'N/A'} {paciente.domicilio_numero or ''}, {paciente.colonia or 'N/A'}"],
-            ["Estatura/Complexión/Tez:", f"{paciente.estatura or 'N/A'} / {paciente.complexion or 'N/A'} / {paciente.tez or 'N/A'}"],
-            ["Pelo/Ropa:", f"{paciente.pelo or 'N/A'} / {paciente.ropa or 'N/A'}"],
-            ["Vehículo:", f"{paciente.marca_vehiculo or 'N/A'} {paciente.color_vehiculo or ''} {paciente.placa_vehiculo or ''}"],
-            ["Última comida:", paciente.fecha_ultima_comida.strftime('%d/%m/%Y %H:%M') if paciente.fecha_ultima_comida else "No especificado"],
-            ["Falleció:", "Sí" if paciente.fallecio else "No"],
-            ["Hospital:", paciente.hospital or "No especificado"],
-            ["Ambulancia:", paciente.ambulancia or "No especificado"],
-            ["Base:", paciente.base or "No especificado"]
-        ]
-        
-        patient_table = Table(patient_basic_data, colWidths=[2*inch, 4*inch])
-        patient_table.setStyle(TableStyle([
-            ('VALIGN', (0,0), (-1,-1), 'TOP'),
-            ('ALIGN', (0,0), (0,-1), 'LEFT'),
-            ('ALIGN', (1,0), (1,-1), 'LEFT'),
-            ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
-            ('FONTSIZE', (0,0), (-1,-1), 10),
-            ('LEADING', (0,0), (-1,-1), 12),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#f0f0f0'))
-        ]))
-        
-        elements.append(patient_table)
-        elements.append(Spacer(1, 0.2*inch))
-
-        # Sección de acompañante si aplica
-        if paciente.tiene_acompanante:
-            elements.append(Paragraph("INFORMACIÓN DEL ACOMPAÑANTE", styles['SectionHeader']))
-            
-            acompanante_data = [
-                ["Nombre:", paciente.nombre_acompanante or "No especificado"],
-                ["Edad:", paciente.edad_acompanante or "No especificado"],
-                ["Sexo:", paciente.sexo_acompanante or "No especificado"],
-                ["Domicilio:", paciente.domicilio_acompanante or "No especificado"],
-                ["Parentesco:", paciente.parentesco_acompanante or "No especificado"]
-            ]
-            
-            acompanante_table = Table(acompanante_data, colWidths=[2*inch, 4*inch])
-            acompanante_table.setStyle(TableStyle([
-                ('VALIGN', (0,0), (-1,-1), 'TOP'),
-                ('ALIGN', (0,0), (0,-1), 'LEFT'),
-                ('ALIGN', (1,0), (1,-1), 'LEFT'),
-                ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
-                ('FONTSIZE', (0,0), (-1,-1), 10),
-                ('LEADING', (0,0), (-1,-1), 12),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 5)
-            ]))
-            
-            elements.append(acompanante_table)
-            elements.append(Spacer(1, 0.2*inch))
-
-        # Sección de diagnóstico y signos vitales
-        elements.append(Paragraph("DIAGNÓSTICO Y SIGNOS VITALES", styles['SectionHeader']))
-        
-        diagnostico_data = [
-            ["Nivel de Conciencia:", paciente.nivel_concienciaa or "No especificado"],
-            ["Piel:", paciente.piel or "No especificado"],
-            ["Antecedente:", paciente.antecedente or "No especificado"],
-            ["Síntoma:", paciente.sintoma or "No especificado"],
-            ["Pulso Diagnóstico:", paciente.pulso_diagnostico or "No especificado"],
-            ["Respiración Diagnóstico:", paciente.respiracion_diagnostico or "No especificado"],
-            ["Pupilas:", paciente.pupilas or "No especificado"],
-            ["Hemorragia:", paciente.hemorragia or "No especificado"],
-            ["Dolor:", paciente.dolor or "No especificado"],
-            ["Pulso:", paciente.pulso or "No especificado"],
-            ["Respiración:", paciente.respiracion or "No especificado"],
-            ["Presión Inicial/Posterior:", f"{paciente.presion_inicial or 'N/A'} / {paciente.presion_posterior or 'N/A'}"],
-            ["Destroxtix:", paciente.destroxtix or "No especificado"],
-            ["Escala Glasgow:", f"Ojos: {paciente.apertura_ojos_glasgow or 'N/A'}, "
-                                     f"Verbal: {paciente.respuesta_verbal_glasgow or 'N/A'}, "
-                                     f"Motora: {paciente.respuesta_motora_glasgow or 'N/A'}"],
-            ["Oximetría:", paciente.oximetria or "No especificado"],
-            ["Temperatura:", paciente.temperatura or "No especificado"]
-        ]
-        
-        diagnostico_table = Table(diagnostico_data, colWidths=[2*inch, 4*inch])
-        diagnostico_table.setStyle(TableStyle([
-            ('VALIGN', (0,0), (-1,-1), 'TOP'),
-            ('ALIGN', (0,0), (0,-1), 'LEFT'),
-            ('ALIGN', (1,0), (1,-1), 'LEFT'),
-            ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
-            ('FONTSIZE', (0,0), (-1,-1), 10),
-            ('LEADING', (0,0), (-1,-1), 12),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#f0f0f0'))
-        ]))
-        
-        elements.append(diagnostico_table)
-        elements.append(Spacer(1, 0.2*inch))
-
-        # Sección de procedimientos y tratamientos
-        elements.append(Paragraph("PROCEDIMIENTOS Y TRATAMIENTOS", styles['SectionHeader']))
-        
-        tratamientos_data = []
-        
-        if datos_relacionados['procedimiento']:
-            tratamientos_data.append(["Procedimiento:", datos_relacionados['procedimiento'].procedimiento.descripcion])
-        
-        if datos_relacionados['alergia']:
-            tratamientos_data.append(["Alergias:", datos_relacionados['alergia'].alergia.descripcion])
-        
-        if datos_relacionados['material']:
-            tratamientos_data.append(["Materiales usados:", 
-                                   f"{datos_relacionados['material'].material.descripcion} - "
-                                   f"{datos_relacionados['material'].cantidad} {datos_relacionados['material'].material.unidad}"])
-        
-        if datos_relacionados['ingerido']:
-            tratamientos_data.append(["Medicamento ingerido:", 
-                                   f"{datos_relacionados['ingerido'].medicamento.descripcion} - "
-                                   f"{datos_relacionados['ingerido'].cantidad} {datos_relacionados['ingerido'].medicamento.unidad}"])
-        
-        if datos_relacionados['administrado']:
-            tratamientos_data.append(["Medicamento administrado:", 
-                                   f"{datos_relacionados['administrado'].medicamento.descripcion} - "
-                                   f"{datos_relacionados['administrado'].cantidad} {datos_relacionados['administrado'].medicamento.unidad}"])
-        
-        if datos_relacionados['equipo']:
-            tratamientos_data.append(["Equipo utilizado:", datos_relacionados['equipo'].equipo.descripcion])
-        
-        if datos_relacionados['lesion']:
-            tratamientos_data.append(["Lesiones:", datos_relacionados['lesion'].lesion])
-        
-        if datos_relacionados['impacto']:
-            tratamientos_data.append(["Impacto vehicular:", datos_relacionados['impacto'].impacto])
-        
-        if not tratamientos_data:
-            tratamientos_data.append(["No se registraron", "procedimientos o tratamientos"])
-        
-        tratamientos_table = Table(tratamientos_data, colWidths=[2*inch, 4*inch])
-        tratamientos_table.setStyle(TableStyle([
-            ('VALIGN', (0,0), (-1,-1), 'TOP'),
-            ('ALIGN', (0,0), (0,-1), 'LEFT'),
-            ('ALIGN', (1,0), (1,-1), 'LEFT'),
-            ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
-            ('FONTSIZE', (0,0), (-1,-1), 10),
-            ('LEADING', (0,0), (-1,-1), 12),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 5)
-        ]))
-        
-        elements.append(tratamientos_table)
-        elements.append(Spacer(1, 0.2*inch))
-
-        # Sección de responsabilidades
-        elements.append(Paragraph("RESPONSABILIDADES Y DOCUMENTACIÓN", styles['SectionHeader']))
-        
-        responsabilidades_data = [
-            ["Entrega de pertenencias:", "Sí" if paciente.entregan_pertenencias else "No"],
-            ["Descripción pertenencias:", paciente.descripcion_pertenencias or "No especificado"],
-            ["Liberación de responsabilidad:", "Sí" if paciente.libera_responsabilidad else "No"],
-            ["Fecha liberación:", paciente.fecha_liberacion_respon.strftime('%d/%m/%Y %H:%M') if paciente.fecha_liberacion_respon else "No aplica"],
-            ["Firmó liberación:", "Sí" if paciente.firmo_liberacion else "No"],
-            ["Niega firmar:", "Sí" if paciente.niega_firmar else "No"],
-            ["Responsable en hospital:", paciente.nombre_respon_hospital or "No especificado"],
-            ["Agente:", f"{paciente.nombre_agente or 'N/A'} ({paciente.numero_agente or 'N/A'})"]
-        ]
-        
-        responsabilidades_table = Table(responsabilidades_data, colWidths=[2*inch, 4*inch])
-        responsabilidades_table.setStyle(TableStyle([
-            ('VALIGN', (0,0), (-1,-1), 'TOP'),
-            ('ALIGN', (0,0), (0,-1), 'LEFT'),
-            ('ALIGN', (1,0), (1,-1), 'LEFT'),
-            ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
-            ('FONTSIZE', (0,0), (-1,-1), 10),
-            ('LEADING', (0,0), (-1,-1), 12),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 5)
-        ]))
-        
-        elements.append(responsabilidades_table)
-
-    # Pie de página
-    elements.append(Spacer(1, 0.5*inch))
-    elements.append(Paragraph("Este reporte fue generado automáticamente por el sistema de gestión de servicios.", styles['Footer']))
-    elements.append(Paragraph(f"Fecha de generación: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}", styles['Footer']))
-
-    # Construir el PDF
-    doc.build(elements)
-    
+    if pisa_status.err:
+        return HttpResponse("Error al generar el PDF", status=500)
     return response

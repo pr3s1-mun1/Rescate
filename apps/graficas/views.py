@@ -466,3 +466,58 @@ def defunciones(request):
         "fecha_fin": fecha_fin,
         "grafica_base64": grafica_base64,
     })
+
+def lesiones(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    resultados = []
+    grafica_base64 = None
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT h.nombre, COUNT(*) as total
+                FROM procesos_pacientexservicio as p
+                JOIN catalogos_enfermedad as h ON h.clave = p.enfermedad_id
+                JOIN procesos_servicio as s ON p.servicio_id = s.clave
+                WHERE h.grupoenfermedad_id = '18' 
+                  AND s.fecha BETWEEN %s AND %s
+                GROUP BY h.nombre
+                ORDER BY total DESC;
+            """, [fecha_inicio, fecha_fin])
+            resultados = cursor.fetchall()
+
+        nombres = [r[0] for r in resultados]
+        totales = [r[1] for r in resultados]
+
+        colores = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
+        colores = (colores * (len(nombres)//len(colores) + 1))[:len(nombres)]
+
+        fig, ax = plt.subplots(figsize=(max(10, len(nombres) * 0.5), 8))
+        barras = ax.bar(nombres, totales, color=colores)
+
+        ax.set_ylabel('Total Casos')
+        ax.set_xlabel('Lesiones')
+        ax.set_title(f'Lesiones del {fecha_inicio} al {fecha_fin}')
+
+        ax.yaxis.set_major_locator(MultipleLocator(1))
+        ax.set_ylim(0, max(totales) + 1)
+
+        legend_patches = [Patch(color=col, label=label) for col, label in zip(colores, nombres)]
+        ax.legend(handles=legend_patches, title='Lesiones')
+
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        plt.close(fig)
+        buffer.seek(0)
+        grafica_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    return render(request, "reportes/lesiones.html", {
+        "resultados": resultados,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin,
+        "grafica_base64": grafica_base64,
+    })

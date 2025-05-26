@@ -34,5 +34,11 @@
             class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/calles/' %} btn-primary {% endif %}">🛤️</a>
         <a href="{% url 'catalogo_general' 'colonias' %}" title="Colonias" 
             class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/colonias/' %} btn-primary {% endif %}">🏘️</a>
-    </div>
+            <a href="{% url 'relacionar_calle_colonia' %}" 
+            title="Colonias x Calles" 
+            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/relacionar-calle-colonia/' %} btn-primary {% endif %}">
+            🛤️x🏘️
+         </a>
+         
+        </div>
 </div>

@@ -1,6 +1,39 @@
 {% load static %}
+
 <body>
     <input type="hidden" id="input-testigos" name="testigos">
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Liberación</h1>
+
+        <div class="row">
+            <div class="groupbox mb-4">
+                <h2 class="groupbox-title">Liberación de Responsabilidades</h2>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="{{ form_paciente.libera_responsabilidad.id_for_label }}">Libera
+                            Responsabilidad</label>
+                        {{ form_paciente.libera_responsabilidad }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="{{ form_paciente.firmo_liberacion.id_for_label }}">Firmó Liberación</label>
+                        {{ form_paciente.firmo_liberacion }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="{{ form_paciente.fecha_liberacion_respon.id_for_label }}">Fecha
+                            Liberación</label>
+                        {{ form_paciente.fecha_liberacion_respon }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="{{ form_paciente.niega_firmar.id_for_label }}">Niega Firmar</label>
+                        {{ form_paciente.niega_firmar }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="text-center mt-4">
         <p id="activar-testigos" style="cursor: pointer;" class="text-primary">
             Doble clic para agregar datos de testigos
@@ -8,68 +41,67 @@
     </div>
     <div id="form-testigos" class="d-none">
 
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Testigos</h1>
-        <div class="row">
-            <!-- Columna izquierda: Formulario -->
-            <div class="col-md-6">
-                <div class="bg-light p-4 rounded shadow-sm">
-                    <div class="mb-3">
-                        <label for="testigo" class="form-label">Nombre del testigo</label>
-                        <input type="text" class="form-control" id="nomtestigo">
-                    </div>
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Columna izquierda: Formulario -->
+                <div class="col-md-6">
+                    <div class="bg-light p-4 rounded shadow-sm">
+                        <div class="mb-3">
+                            <label for="testigo" class="form-label">Nombre del testigo</label>
+                            <input type="text" class="form-control" id="nomtestigo">
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="telefono" class="form-label">Edad del testigo</label>
-                        <input type="number" class="form-control" id="telefono">
-                    </div>
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Edad del testigo</label>
+                            <input type="number" class="form-control" id="telefono">
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="direccion" class="form-label">Dirección del testigo</label>
-                        <input type="text" class="form-control" id="direccion">
-                    </div>
+                        <div class="mb-3">
+                            <label for="direccion" class="form-label">Dirección del testigo</label>
+                            <input type="text" class="form-control" id="direccion">
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="numero" class="form-label">Teléfono del testigo</label>
-                        <input type="number" class="form-control" id="numero">
-                    </div>
+                        <div class="mb-3">
+                            <label for="numero" class="form-label">Teléfono del testigo</label>
+                            <input type="number" class="form-control" id="numero">
+                        </div>
 
-                    <a href="#" class="btn btn-primary" onclick="agregarTestigo()">Agregar</a>
+                        <a href="#" class="btn btn-primary" onclick="agregarTestigo()">Agregar</a>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Columna derecha: Tabla -->
-            <div class="col-md-6 ">
-                <div class="bg-light p-4 rounded shadow-sm">
-                    <h5 class="mb-3">Lista de Testigos</h5>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Edad</th>
-                                <th>Dirección</th>
-                                <th>Teléfono</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-testigos">
-                            {% for testigo in testigos_asignados %}
-                            <tr>
-                                <td>{{ testigo.nombre }}</td>
-                                <td>{{ testigo.edad }}</td>
-                                <td>{{ testigo.domicilio }}</td>
-                                <td>{{ testigo.telefono }}</td>
-                                <td><button class="btn btn-danger btn-sm eliminar-fila">Eliminar</button></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <!-- Columna derecha: Tabla -->
+                <div class="col-md-6 ">
+                    <div class="bg-light p-4 rounded shadow-sm">
+                        <h5 class="mb-3">Lista de Testigos</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Edad</th>
+                                    <th>Dirección</th>
+                                    <th>Teléfono</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-testigos">
+                                {% for testigo in testigos_asignados %}
+                                <tr>
+                                    <td>{{ testigo.nombre }}</td>
+                                    <td>{{ testigo.edad }}</td>
+                                    <td>{{ testigo.domicilio }}</td>
+                                    <td>{{ testigo.telefono }}</td>
+                                    <td><button class="btn btn-danger btn-sm eliminar-fila">Eliminar</button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
     <script src="{% static 'js/testigos_asign.js' %}"></script>
 </body>

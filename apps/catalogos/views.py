@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+
 from functools import wraps
 from django.contrib import messages
 from .models import *
@@ -22,6 +23,7 @@ CATALOGOS = {
     'marcas_vehiculos':     {'model': MarcaVehiculo,      'form': MarcasVehiculosForm,     'template': 'marcas_vehiculos.html',    'update_template': 'updt/update_marcas_vehiculos.html'},
     'calles':               {'model': Calle,              'form': CallesForm,              'template': 'calles.html',              'update_template': 'updt/update_calles.html'},
     'colonias':             {'model': Colonia,            'form': ColoniasForm,            'template': 'colonias.html',            'update_template': 'updt/update_colonias.html'},
+    'callexcolonias':        {'model': Calle_Colonia,       'form': CalleColoniaForm,        'template': 'calle_colonia.html',       'update_template': 'updt/calle_colonia.html'},
 }
 
 #Envío de listas de catalogos a HTML
@@ -101,22 +103,78 @@ def add_catalogo(request, tipo):
     modelo = catalogo['model']
     form_class = catalogo['form']
 
-    if modelo.objects.exists():
-        max_clave = modelo.objects.all().aggregate(models.Max('clave'))['clave__max']
-        nueva_clave = max_clave + 1 if max_clave is not None else 1
+    CLAVE_MANUAL_MODELOS = ['Bases', 'Ambulancias']
+    clave_manual = modelo.__name__ in CLAVE_MANUAL_MODELOS
+
+    if not clave_manual:
+        if modelo.objects.exists():
+            max_clave = modelo.objects.all().aggregate(models.Max('clave'))['clave__max']
+            try:
+                nueva_clave = max_clave + 1 if max_clave is not None else 1
+            except Exception:
+                nueva_clave = ""
+        else:
+            nueva_clave = ""
     else:
-        nueva_clave = 1
+        nueva_clave = ""
 
     if request.method == "POST":
         form = form_class(request.POST)
         if form.is_valid():
             nuevo_registro = form.save(commit=False)
-            nuevo_registro.clave = nueva_clave
-            nuevo_registro.save() 
+            if not clave_manual:
+                nuevo_registro.clave = nueva_clave
+            nuevo_registro.save()
             return redirect('catalogo_general', tipo=tipo)
-
     else:
-        form = form_class(initial={'clave': nueva_clave})
+        initial_data = {}
+        if not clave_manual:
+            initial_data['clave'] = nueva_clave
+        form = form_class(initial=initial_data)
 
-    return render(request, 'add/add.html', {'form': form, 'tipo': tipo, 'titulo': catalogo.get('nombre', tipo), 'nueva_clave': nueva_clave})
+    return render(request, 'add/add.html', {
+        'form': form,
+        'tipo': tipo,
+        'titulo': catalogo.get('nombre', tipo),
+        'nueva_clave': nueva_clave,
+    })
 
+def relacionar_calle_colonia(request):
+    colonias = Colonia.objects.all().order_by('colonia')
+    calles = Calle.objects.all().order_by('calle')
+
+    colonia_id = request.GET.get('colonia_id')
+    colonia_seleccionada = None
+    calles_relacionadas = []
+    calles_no_relacionadas = []
+
+    if colonia_id:
+        colonia_seleccionada = get_object_or_404(Colonia, pk=colonia_id)
+        calles_relacionadas = Calle_Colonia.objects.filter(colonia=colonia_seleccionada).order_by('calle__calle')
+        relacionadas_ids = calles_relacionadas.values_list('calle__clave', flat=True)
+        calles_no_relacionadas = Calle.objects.exclude(clave__in=relacionadas_ids).order_by('calle')
+    else:
+        calles_no_relacionadas = calles  # si no hay colonia seleccionada, mostrar todas las calles disponibles para asignar
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        calle_id = request.POST.get('calle_id')
+        colonia_id_post = request.POST.get('colonia_id')
+
+        if calle_id and colonia_id_post:
+            colonia = get_object_or_404(Colonia, pk=colonia_id_post)
+            calle = get_object_or_404(Calle, pk=calle_id)
+
+            if action == 'add':
+                obj, created = Calle_Colonia.objects.get_or_create(colonia=colonia, calle=calle)
+            elif action == 'remove':
+                Calle_Colonia.objects.filter(colonia=colonia, calle=calle).delete()
+
+        return redirect(f'{request.path}?colonia_id={colonia_id_post}')
+
+    return render(request, 'calle_colonia.html', {
+        'colonias': colonias,
+        'calles_relacionadas': calles_relacionadas,
+        'calles_no_relacionadas': calles_no_relacionadas,
+        'colonia_seleccionada': colonia_seleccionada,
+    })

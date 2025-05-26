@@ -2,6 +2,8 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    path('relacionar-calle-colonia/', relacionar_calle_colonia, name='relacionar_calle_colonia'),
+
     #Vistas de formularios
     path('<str:tipo>/', catalogo_general, name='catalogo_general'),
 

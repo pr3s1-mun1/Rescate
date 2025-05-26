@@ -1,0 +1,127 @@
+{% include "navbar.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">Relación entre Calles y Colonias</h3>
+
+    <div class="row">
+        <!-- Colonias -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <strong>Colonias</strong>
+                </div>
+                <div class="card-body p-2" style="overflow-x: auto;">
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for colonia in colonias %}
+                            <tr>
+                                <td>{{ colonia.clave }}</td>
+                                <td>{{ colonia.colonia }}</td>
+                                <td>
+                                    <form method="get">
+                                        <input type="hidden" name="colonia_id" value="{{ colonia.clave }}">
+                                        <button type="submit" class="btn btn-sm btn-info">Ver</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calles no relacionadas -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <strong>Calles disponibles</strong>
+                </div>
+                <div class="card-body p-2" style="overflow-x: auto;">
+                    {% if colonia_seleccionada %}
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for calle in calles_no_relacionadas %}
+                            <tr>
+                                <td>{{ calle.clave }}</td>
+                                <td>{{ calle.calle }}</td>
+                                <td>
+                                    <form method="post">{% csrf_token %}
+                                        <input type="hidden" name="action" value="add">
+                                        <input type="hidden" name="colonia_id" value="{{ colonia_seleccionada.clave }}">
+                                        <input type="hidden" name="calle_id" value="{{ calle.clave }}">
+                                        <button class="btn btn-sm btn-success">➕</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-muted">Sin calles disponibles.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="text-muted">Seleccione una colonia.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Calles relacionadas -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-warning">
+                    <strong>Calles relacionadas</strong>
+                </div>
+                <div class="card-body p-2" style="overflow-x: auto;">
+                    {% if colonia_seleccionada %}
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for relacion in calles_relacionadas %}
+                            <tr>
+                                <td>{{ relacion.calle.clave }}</td>
+                                <td>{{ relacion.calle.calle }}</td>
+                                <td>
+                                    <form method="post">{% csrf_token %}
+                                        <input type="hidden" name="action" value="remove">
+                                        <input type="hidden" name="colonia_id" value="{{ colonia_seleccionada.clave }}">
+                                        <input type="hidden" name="calle_id" value="{{ relacion.calle.clave }}">
+                                        <button class="btn btn-sm btn-danger">❌</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-muted">Sin calles relacionadas.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="text-muted">Seleccione una colonia.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

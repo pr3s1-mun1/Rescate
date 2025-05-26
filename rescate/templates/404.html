@@ -1,0 +1,106 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+<div class="not-found-container">
+  <div class="not-found-card">
+    <div class="not-found-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#ffc107" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0L.165 13.233c-.457.778.091 1.767.982 1.767h13.706c.89 0 1.438-.99.982-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+      </svg>
+    </div>
+    <h1 class="not-found-title">Contenido No Encontrado</h1>
+    <p class="not-found-message">Lo sentimos, la página o el recurso que buscas no existe.</p>
+    
+    <div class="not-found-actions">
+      <a href="{% url 'catalogo_general' 'ambulancias' %}" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+        Volver al inicio
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .not-found-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 20px;
+    background-color: #fff3cd;
+  }
+  
+  .not-found-card {
+    max-width: 500px;
+    width: 100%;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-left: 6px solid #ffc107;
+  }
+  
+  .not-found-icon {
+    margin-bottom: 1.5rem;
+    color: #ffc107;
+  }
+  
+  .not-found-title {
+    color: #856404;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .not-found-message {
+    color: #856404;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .not-found-actions {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary {
+    background-color: #ffc107;
+    color: #212529;
+    border: 1px solid #ffc107;
+  }
+  
+  .btn-primary:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: white;
+  }
+  
+  @media (max-width: 576px) {
+    .not-found-card {
+      padding: 1.5rem;
+    }
+    
+    .not-found-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}

@@ -4,157 +4,379 @@
 <html lang="es">
 
 <head>
-    <style></style>
-    <link rel="stylesheet" href="{% static 'css/servicio.css' %}">
-    <link rel="stylesheet" href="{% static 'css/buscador.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Servicios Médicos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #6b7280;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .main-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .search-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .input-group {
+            display: flex;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group-text {
+            background-color: var(--light-bg);
+            border: none;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group-text i {
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+
+        .form-control {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .servicio-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .servicio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .servicio-header span:first-child {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .servicio-header span:last-child {
+            font-size: 0.85rem;
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+        }
+
+        .servicio-body {
+            flex: 1;
+        }
+
+        .info-block {
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .info-block strong {
+            color: var(--text-color);
+            font-weight: 500;
+            display: inline-block;
+            min-width: 80px;
+        }
+
+        .info-block span {
+            color: var(--text-light);
+        }
+
+        .acciones {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 1.75rem;
+            }
+
+            .servicios-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                border-radius: 0 0 var(--border-radius) var(--border-radius);
+                width: 100%;
+            }
+
+            .input-group-text {
+                border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+
+            .form-control {
+                border-radius: 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
     {% include 'navbar.html' %}
 
-    <div class="d-flex">
-        <div class="container">
-            <!-- Encabezado con efecto visual -->
-            <div class="header-section text-center mb-5">
-                <h1 class="main-title">Buscador de Servicios Médicos</h1>
-            </div>
+    <div class="container mt-4">
+        <h1 class="main-title">Buscador de Servicios Médicos</h1>
 
-            <!-- Tarjeta de búsqueda con sombra y efecto hover -->
-            <div class="search-card bg-white rounded-lg shadow-sm mb-5">
-                <form method="post" class="mb-0">
-                    {% csrf_token %}
-                    <div class="input-group search-bar">
-                        <span class="input-group-text bg-primary text-white">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" name="clave" class="form-control form-control-lg"
-                            placeholder="Buscar por clave, nombre o ubicación...">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-search me-2"></i> Buscar
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <div class="search-card">
+            <form method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" name="clave" class="form-control" placeholder="Buscar por nombre, clave o ubicación...">
+                    <button type="submit" class="btn">
+                        <i class="fas fa-search mr-2"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
 
-            <div class="servicios-container">
+        <div class="servicios-grid">
+            {% if servicios %}
                 {% for servicio in servicios %}
                 {% with servicio.pacientes.all.0 as paciente %}
-                <div class="servicio-card shadow-sm rounded-lg">
-                    <div class="servicio-header bg-primary text-white rounded-top">
-                        {% if paciente %}
-                        <h3 class="patient-name" style="color: white; font-weight: bold;">
-                            <i class="fas fa-user me-2"></i>
-                            {{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}
-                        </h3>
-                        {% else %}
-                        <h3 class="patient-name" style="color: white; font-weight: bold;">
-                            <i class="fas fa-user-slash me-2"></i>
-                            Servicio sin paciente
-                        </h3>
-                        {% endif %}
-                        <span class="servicio-id badge bg-light text-primary">#{{ servicio.clave }}</span>
+                <div class="servicio-card">
+                    <div class="servicio-header">
+                        <span>{{ paciente.nombre|default:"Sin paciente" }}</span>
+                        <span>#{{ servicio.clave }}</span>
                     </div>
-
                     <div class="servicio-body">
-                        <div class="servicio-info">
-                            <div class="info-item">
-                                <span class="info-icon"><i class="fas fa-calendar-alt"></i></span>
-                                <div>
-                                    <span class="info-label">Fecha:</span>
-                                    <span class="info-value">{{ servicio.fecha|date:"l, j F Y" }}</span>
-                                </div>
-                            </div>
-                            
-                            {% if paciente %}
-                            <div class="info-item">
-                                <span class="info-icon"><i class="fas fa-user-tag"></i></span>
-                                <div>
-                                    <span class="info-label">Edad/Sexo:</span>
-                                    <span class="info-value">
-                                        {{ paciente.edad }} años /
-                                        {% if paciente.sexo == 2 %}
-                                        Masculino
-                                        {% else %}
-                                        Femenino
-                                        {% endif %}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="info-item">
-                                <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
-                                <div>
-                                    <span class="info-label">Ubicación:</span>
-                                    <span class="info-value">{{ servicio.direccion_emergencia.calle|truncatechars:30 }}</span>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="info-item">
-                                <span class="info-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                                <div>
-                                    <span class="info-label">Estado:</span>
-                                    <span class="info-value no-paciente">No hay paciente asignado a este servicio</span>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-
+                        <div class="info-block"><strong>Fecha:</strong> <span>{{ servicio.fecha|date:"d/m/Y" }}</span></div>
                         {% if paciente %}
-                        <div class="servicio-details">
-                            <div class="detail-item bg-light-blue">
-                                <i class="fas fa-ambulance icon-detail"></i>
-                                <span class="detail-text">{{ paciente.ambulancia|default:"No especificada" }}</span>
-                            </div>
-                            <div class="detail-item bg-light-green">
-                                <i class="fas fa-hospital icon-detail"></i>
-                                <span class="detail-text">{{ paciente.hospital|default:"No especificado" }}</span>
-                            </div>
-                            <div class="detail-item bg-light-yellow">
-                                <i class="fas fa-procedures icon-detail"></i>
-                                <span class="detail-text">{{ paciente.enfermedad|default:"Urgencia" }}</span>
-                            </div>
-                        </div>
+                        <div class="info-block"><strong>Edad:</strong> <span>{{ paciente.edad }}</span></div>
+                        <div class="info-block"><strong>Sexo:</strong> <span>{{ paciente.sexo|yesno:"Masculino,Femenino" }}</span></div>
+                        <div class="info-block"><strong>Ubicación:</strong> <span>{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span></div>
+                        <div class="info-block"><strong>Ambulancia:</strong> <span>{{ paciente.ambulancia|default:"-" }}</span></div>
+                        <div class="info-block"><strong>Hospital:</strong> <span>{{ paciente.hospital|default:"-" }}</span></div>
+                        {% else %}
+                        <div class="info-block"><span>Sin datos de paciente</span></div>
                         {% endif %}
                     </div>
-
-                    <div class="servicio-actions">
+                    <div class="acciones">
                         <form action="{% url 'carga_modifica' servicio.clave %}" method="post">
                             {% csrf_token %}
-                            <button class="btn-action btn-edit mt-3" type="submit">
-                                <i class="fas fa-edit me-2"></i> Modificar
+                            <button class="btn-sm btn-primary" type="submit">
+                                <i class="fas fa-edit mr-1"></i>
                             </button>
                         </form>
-
                         <form action="{% url 'eliminar_servicio' servicio.clave %}" method="post">
                             {% csrf_token %}
-                            <button class="btn-action btn-delete mt-3" type="submit">
-                                <i class="fas fa-trash-alt me-2"></i> Eliminar
+                            <button class="btn-sm btn-danger" type="submit">
+                                <i class="fas fa-trash-alt mr-1"></i> 
                             </button>
                         </form>
-
-                        <form method="post" action="{% url 'reporte_servicio' servicio.clave %}" target="_blank">
+                        <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank">
                             {% csrf_token %}
-                            <button class="btn-action btn-report mt-3" type="submit">
-                                <i class="fas fa-file-pdf me-2"></i> Reporte
+                            <button class="btn-sm btn-secondary" type="submit">
+                                <i class="fas fa-file-alt mr-1"></i>
                             </button>
                         </form>
-
                     </div>
                 </div>
                 {% endwith %}
-                {% empty %}
-                <div class="no-resultados text-center py-5">
-                    <i class="fas fa-search fa-3x mb-3 text-muted"></i>
-                    <h3 class="text-muted">No se encontraron servicios</h3>
-                    <p class="text-muted">Intenta con otros términos de búsqueda</p>
-                </div>
                 {% endfor %}
-            </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <p>No se encontraron servicios médicos</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 
+    <script>
+        // Efecto de carga suave
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.servicio-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+    </script>
 </body>
+
 </html>

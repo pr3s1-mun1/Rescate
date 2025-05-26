@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MaxValueValidator
+from django.core.validators import RegexValidator
 
 class Alergia(models.Model):
     clave = models.IntegerField(primary_key=1)
@@ -9,12 +9,19 @@ class Alergia(models.Model):
         return f"{self.descripcion}"
 
 class Bases(models.Model):
-    clave = models.CharField(primary_key=1, max_length=20)
+    clave = models.CharField(primary_key=True, max_length=20)
     estacion = models.CharField(max_length=50)
     ubicacion = models.CharField(max_length=100)
-    rojo = models.PositiveSmallIntegerField(validators=[MaxValueValidator(255)])
-    azul = models.PositiveSmallIntegerField(validators=[MaxValueValidator(255)])
-    verde = models.PositiveSmallIntegerField(validators=[MaxValueValidator(255)])
+    color_hex = models.CharField(
+        max_length=7,
+        validators=[
+            RegexValidator(
+                regex=r'^#([A-Fa-f0-9]{6})$',
+                message='El color debe estar en formato hexadecimal, por ejemplo: #FF5733'
+            )
+        ],
+        help_text="Código de color en formato hexadecimal (ej. #FF5733)"
+    )
 
     def __str__(self):
         return f"{self.clave}"
@@ -23,7 +30,7 @@ class Ambulancias(models.Model):
     clave = models.CharField(primary_key=1, max_length=5)
     descripcion = models.CharField(max_length=50)
     estado = models.CharField(max_length=1)
-    base = models.CharField(max_length=20)
+    base = models.ForeignKey('Bases', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.descripcion}"
@@ -148,7 +155,7 @@ class Colonia(models.Model):
         return f"{self.colonia}"
 
 class Calle_Colonia(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     calle = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True)
     colonia = models.ForeignKey(Colonia, on_delete=models.SET_NULL, null=True)
 

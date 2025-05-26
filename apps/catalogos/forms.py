@@ -3,14 +3,14 @@ from .models import *
 
 class BootstrapFormMixin:
     EXCLUDED_FIELDS = ['clave']
-    CHECKED_BOX = ['administrado']
+    EXCLUDED_MODELS = ['Bases', 'Ambulancias']  # ← Nombres de clase como string
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        model_name = self._meta.model.__name__  # ← Obtener el nombre del modelo asociado al form
+
         for field_name, field in self.fields.items():
-            if field_name in self.CHECKED_BOX:
-                continue  
-            elif field_name in self.EXCLUDED_FIELDS:
+            if field_name in self.EXCLUDED_FIELDS and model_name not in self.EXCLUDED_MODELS:
                 field.widget.attrs.update({
                     'class': 'form-control bg-light mb-3',
                     'readonly': True
@@ -25,11 +25,23 @@ class BaseForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Bases
         fields = '__all__'
+        widgets = {
+            'color_hex': forms.TextInput(attrs={'type': 'color'}),
+        }
 
 class AmbulanciaForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Ambulancias
         fields = '__all__'
+        widgets = {
+            'estado': forms.Select(choices=[
+                ('A', 'ACTIVO'),
+                ('I', 'INACTIVO'),
+                ('R', 'REPARACION'),
+            ]),
+            'base': forms.Select(attrs={'class': 'form-control mb-3'})
+        }
+
 
 class AlergiaForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -82,6 +94,16 @@ class TiposServicioForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = TiposServicio
         fields = '__all__'
+        widgets = {
+            'sobresaliente': forms.Select(choices=[
+                ('S', 'SI'),
+                ('N', 'NO'),
+            ]),
+            'engrafica': forms.Select(choices=[
+                ('S', 'SI'),
+                ('N', 'NO'),
+            ])
+        }
 
 class GruposServicioForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -92,6 +114,13 @@ class ProcedimientoForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Procedimiento
         fields = '__all__'
+        widgets = {
+            'protocolo': forms.Select(choices=[
+                ('B', 'BASICO'),
+                ('A', 'AVANZADO'),
+                ('E', 'ESPECIAL'),
+            ])
+        }
 
 class TiposUnidadesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -102,6 +131,12 @@ class EnfermedadesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Enfermedad
         fields = '__all__'
+        widgets = {
+            'engrafica': forms.Select(choices=[
+                ('S', 'SI'),
+                ('N', 'NO'),
+            ])
+        }
 
 class GruposEnfermedadesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -112,6 +147,12 @@ class MedicamentosForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Medicamento
         fields = '__all__'
+        widgets = {
+            'administrado': forms.Select(choices=[
+                ('S', 'SI'),
+                ('N', 'NO'),
+            ])
+        }
 
 class MaterialesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -138,3 +179,11 @@ class ColoniasForm(BootstrapFormMixin, forms.ModelForm):
         model = Colonia
         fields = '__all__'
 
+class CalleColoniaForm(forms.ModelForm):
+    class Meta:
+        model = Calle_Colonia
+        fields = ['calle', 'colonia']
+        widgets = {
+            'calle': forms.Select(attrs={'class': 'form-select'}),
+            'colonia': forms.Select(attrs={'class': 'form-select'}),
+        }

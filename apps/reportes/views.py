@@ -9,6 +9,7 @@ from io import BytesIO
 from collections import defaultdict
 from django.db import connection
 from datetime import date
+
 def cargar_reportes(request):
     return render(request, 'main.html')
 

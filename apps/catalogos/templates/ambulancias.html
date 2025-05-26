@@ -36,9 +36,9 @@
                         <td>{{ ambulancia.clave }}</td>
                         <td>{{ ambulancia.descripcion }}</td>
                         <td>
-                            {% if ambulancia.estado == "1" %}
+                            {% if ambulancia.estado == "A" %}
                                 <span class="badge bg-success">Activo</span>
-                            {% elif ambulancia.estado == "3" %}
+                            {% elif ambulancia.estado == "R" %}
                                 <span class="badge bg-warning text-dark">Reparación</span>
                             {% else %}
                                 <span class="badge bg-danger">Inactivo</span>
