@@ -89,7 +89,7 @@
 
         .info-table th,
         .info-table td {
-            padding: 2pt;
+            padding: 1.1pt;
             text-align: left;
             vertical-align: top;
             border: 0.5pt solid #d3d3d3;
@@ -169,8 +169,7 @@
             </tr>
             <tr>
                 <th class="label">Estatus:</th>
-                <td>{% if servicio.estatus == 'P' %}En Proceso{% elif servicio.estatus == 'T' %}Terminado{% else
-                    %}Cancelado{% endif %}</td>
+                <td>{% if servicio.estatus == 'P' %}En Proceso{% elif servicio.estatus == 'T' %}Terminado{% else %}Cancelado{% endif %}</td>
                 <th class="label">Fecha:</th>
                 <td>{{ servicio.fecha|date:"d/m/Y H:i"|default:"No especificado" }}</td>
             </tr>
@@ -252,8 +251,7 @@
                 <th class="label">Estatura:</th>
                 <td>{{ paciente.estatura|default:"No especificado" }} m</td>
                 <th class="label">Complexión:</th>
-                <td>{% if paciente.complexion == '1' %}Caquexia{% elif paciente.complexion == '2' %}Delgado{% elif paciente.complexion == '3' %}Regular{% elif paciente.complexion == '4' %}Robusta{% elif paciente.complexion == '5' %}Obesa{% elif paciente.complexion == '6' %}Obesidad móribida{% else %}No
-                    especificado{% endif %}</td>
+                <td>{% if paciente.complexion == '1' %}Caquexia{% elif paciente.complexion == '2' %}Delgado{% elif paciente.complexion == '3' %}Regular{% elif paciente.complexion == '4' %}Robusta{% elif paciente.complexion == '5' %}Obesa{% elif paciente.complexion == '6' %}Obesidad móribida{% else %}No especificado{% endif %}</td>
             </tr>
             <tr>
                 <th class="label">Tez:</th>
@@ -637,7 +635,39 @@
         </table>
     </div>
     
+    <div class="section" aria-labelledby="datos-liberacion">
+        <h2 class="title-section" id="datos-liberacion">Datos de Liberación</h2>
+        <table class="info-table">
+            <tr>
+                <th class="label">Libera Responsabilidad:</th>
+                {% for p in parte %}
+                    <td>{{p.parte}}</td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
     
+    <div class="section" aria-labelledby="paramedicos-asignados">
+        <h2 class="title-section" id="paramedicos-asignados">Paramédicos Asignados</h2>
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Nombre del Paramédico</th>
+                    <th>Firma</th>
+                </tr>
+            </thead>
+            <tbody style="height: 50px;">
+                {% for asignacion in paramedicos_asignados %}
+                    <tr>
+                        <td>{{ asignacion.paramedico.nombre }}</td>
+                        <td>.</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="2">No hay paramédicos asignados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     {% endif %}
     

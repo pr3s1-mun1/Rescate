@@ -14,15 +14,10 @@
             <div class="container">
                 <div class="form-container bg-light p-4 rounded shadow-sm">
                     <h1 class="text-center mb-4">Datos del Embarazo del Paciente</h1>
-
+                    
                     <div class="form-group mb-3">
                         <label for="{{ form_embarazo.secuencia.id_for_label }}">Secuencia</label>
-                        <input class="form-control bg-light mb-3" readonly="true" type="text">
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label for="{{ form_embarazo.paciente.id_for_label }}">Paciente</label>
-                        <input class="form-control bg-light mb-3" readonly="true" type="text">
+                        {{ form_embarazo.secuencia }}
                     </div>
 
                     <div class="form-group mb-3">

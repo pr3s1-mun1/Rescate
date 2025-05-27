@@ -135,6 +135,8 @@
             margin-bottom: 3rem;
         }
 
+
+
         .servicio-card {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -318,39 +320,137 @@
                 {% for servicio in servicios %}
                 {% with servicio.pacientes.all.0 as paciente %}
                 <div class="servicio-card">
+                    <!-- Header -->
                     <div class="servicio-header">
-                        <span>{{ paciente.nombre|default:"Sin paciente" }}</span>
-                        <span>#{{ servicio.clave }}</span>
+                        <h3>{{ paciente.nombre|default:"Sin paciente" }}</h3>
+                        <span class="servicio-clave">Servicio #{{ servicio.clave }}</span>
                     </div>
+        
+                    <!-- Body with grouped sections -->
                     <div class="servicio-body">
-                        <div class="info-block"><strong>Fecha:</strong> <span>{{ servicio.fecha|date:"d/m/Y" }}</span></div>
+                        <!-- Service Information -->
+                        <div class="info-section">
+                            <h4>Información del Servicio</h4>
+                            <div class="info-block">
+                                <strong>Fecha:</strong> <span>{{ servicio.fecha|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Estado:</strong> 
+                                <span>
+                                    {% if servicio.estatus == 'P' %}En Proceso
+                                    {% elif servicio.estatus == 'T' %}Terminado
+                                    {% else %}Cancelado{% endif %}
+                                </span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Ubicación:</strong> 
+                                <span>{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
+                            </div>
+                        </div>
+        
+                        <!-- Patient Information -->
                         {% if paciente %}
-                        <div class="info-block"><strong>Edad:</strong> <span>{{ paciente.edad }}</span></div>
-                        <div class="info-block"><strong>Sexo:</strong> <span>{{ paciente.sexo|yesno:"Masculino,Femenino" }}</span></div>
-                        <div class="info-block"><strong>Ubicación:</strong> <span>{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span></div>
-                        <div class="info-block"><strong>Ambulancia:</strong> <span>{{ paciente.ambulancia|default:"-" }}</span></div>
-                        <div class="info-block"><strong>Hospital:</strong> <span>{{ paciente.hospital|default:"-" }}</span></div>
+                        <div class="info-section">
+                            <h4>Información del Paciente</h4>
+                            <div class="info-block">
+                                <strong>Clave:</strong> <span>{{ paciente.clave }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Edad:</strong> <span>{{ paciente.edad }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Sexo:</strong> 
+                                <span>{{ paciente.sexo|yesno:"Masculino,Femenino" }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Estatura:</strong> <span>{{ paciente.estatura }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Complexión:</strong> 
+                                <span>
+                                    {% if paciente.complexion == '1' %}Caquexia
+                                    {% elif paciente.complexion == '2' %}Delgado
+                                    {% elif paciente.complexion == '3' %}Regular
+                                    {% elif paciente.complexion == '4' %}Robusta
+                                    {% elif paciente.complexion == '5' %}Obesa
+                                    {% elif paciente.complexion == '6' %}Obesidad mórbida
+                                    {% else %}No especificado{% endif %}
+                                </span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Tez:</strong> 
+                                <span>
+                                    {% if paciente.tez == '1' %}Blanco
+                                    {% elif paciente.tez == '2' %}Medio
+                                    {% elif paciente.tez == '3' %}Moreno
+                                    {% elif paciente.tez == '4' %}Negro
+                                    {% else %}No especificado{% endif %}
+                                </span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Ropa:</strong> <span>{{ paciente.ropa }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Acompañante:</strong> <span>{{ paciente.nombre_acompanante|default:"-" }}</span>
+                            </div>
+                        </div>
+        
+                        <!-- Vehicle Information -->
+                        <div class="info-section">
+                            <h4>Información del Vehículo</h4>
+                            <div class="info-block">
+                                <strong>Ambulancia:</strong> <span>{{ paciente.ambulancia|default:"-" }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Hospital:</strong> <span>{{ paciente.hospital|default:"-" }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Marca:</strong> <span>{{ paciente.marca_vehiculo|default:"-" }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Placas:</strong> <span>{{ paciente.placa_vehiculo|default:"-" }}</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Color:</strong> 
+                                <span>
+                                    {% if paciente.color_vehiculo == '1' %} Ninguno 
+                                    {% elif paciente.color_vehiculo == '2'%} Blanco
+                                    {% elif paciente.color_vehiculo == '3'%} Negro
+                                    {% elif paciente.color_vehiculo == '4'%} Rojo
+                                    {% elif paciente.color_vehiculo == '5'%} Amarillo
+                                    {% elif paciente.color_vehiculo == '6'%} Verde
+                                    {% elif paciente.color_vehiculo == '7'%} Café
+                                    {% elif paciente.color_vehiculo == '8'%} Gris
+                                    {% else %} Inválido
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
                         {% else %}
-                        <div class="info-block"><span>Sin datos de paciente</span></div>
+                        <div class="info-section">
+                            <p>Sin datos de paciente</p>
+                        </div>
                         {% endif %}
                     </div>
+        
+                    <!-- Actions -->
                     <div class="acciones">
-                        <form action="{% url 'carga_modifica' servicio.clave %}" method="post">
+                        <form action="{% url 'carga_modifica' servicio.clave %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <button class="btn-sm btn-primary" type="submit">
-                                <i class="fas fa-edit mr-1"></i>
+                                <i class="fas fa-edit mr-1"></i> Modificar
                             </button>
                         </form>
-                        <form action="{% url 'eliminar_servicio' servicio.clave %}" method="post">
+                        <form action="{% url 'eliminar_servicio' servicio.clave %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <button class="btn-sm btn-danger" type="submit">
-                                <i class="fas fa-trash-alt mr-1"></i> 
+                                <i class="fas fa-trash-alt mr-1"></i> Eliminar
                             </button>
                         </form>
-                        <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank">
+                        <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank" style="display: inline;">
                             {% csrf_token %}
                             <button class="btn-sm btn-secondary" type="submit">
-                                <i class="fas fa-file-alt mr-1"></i>
+                                <i class="fas fa-file-alt mr-1"></i> Reporte
                             </button>
                         </form>
                     </div>

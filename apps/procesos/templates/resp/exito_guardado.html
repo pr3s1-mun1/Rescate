@@ -10,6 +10,9 @@
         <div class="card-body">
             <h1 class="card-title text-success">¡Datos guardados correctamente!</h1>
             <p class="card-text">La información del servicio con clave <strong>{{ clave }}</strong> fue guardada exitosamente.</p>
+            <a href="{% url 'formulario_buscar' %}" class="btn btn-warning mt-3">
+                Volver a panel de búsqueda
+            </a>
             <a href="{% url 'carga_modifica' clave %}" class="btn btn-success mt-3">
                 Volver a editar
             </a>

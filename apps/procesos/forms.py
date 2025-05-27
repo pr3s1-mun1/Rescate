@@ -134,6 +134,7 @@ class EmbarazoAsignadoForm(forms.ModelForm):
     class Meta:
         model = EmbarazoxPaciente
         fields = '__all__'
+        exclude = ['paciente']
         widgets = {
             'utlima_menstruacion': forms.DateInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'},
@@ -175,9 +176,9 @@ class EmbarazoAsignadoForm(forms.ModelForm):
             elif field_name in self.EXCLUDED_FIELDS:
                 field.widget.attrs.update({
                     'class': 'form-control bg-light mb-3',
-                    'readonly': True
+                    'readonly': 'readonly'
                 })
-
+                
             # Otros campos
             else:
                 field.widget.attrs.update({

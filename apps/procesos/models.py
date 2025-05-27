@@ -34,7 +34,7 @@ class Servicio(models.Model):
 
 class ParamedicoxPaciente(models.Model):
     clave = models.AutoField(primary_key=True)
-    paciente = models.CharField(max_length=100, null=True)
+    paciente = models.ForeignKey('PacientexServicio', on_delete=models.SET_NULL, null=True)
     paramedico = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True)
     servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True)
 
@@ -128,6 +128,9 @@ class PacientexServicio(models.Model):
     edad_tipo = models.CharField(max_length=1)
     domicilio_numero = models.CharField(max_length=10)
 
+    def __str__(self):
+        return f"{self.clave}"  
+    
     @classmethod
     def obtener_siguiente_numero(cls):
         ultimo = cls.objects.order_by('-clave').first()
@@ -195,7 +198,7 @@ class TestigoxPaciente(models.Model):
     telefono = models.CharField(max_length=20)
 
 class EmbarazoxPaciente(models.Model):
-    secuencia = models.AutoField(primary_key=True)
+    secuencia = models.IntegerField(primary_key=True)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
     numero_gestaciones = models.IntegerField()
     numero_partos = models.IntegerField()
@@ -208,3 +211,6 @@ class EmbarazoxPaciente(models.Model):
     bolsa_rota = models.BooleanField(default=False)
     atencion_medica_embarazo = models.BooleanField(default=False)
     nota = models.TextField()
+
+    def __str__(self):
+        return f"{self.secuencia}"  

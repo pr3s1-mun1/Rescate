@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from collections import defaultdict
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from django.db.models import Max
+
 import datetime
 import json
 
@@ -111,8 +113,18 @@ def carga_modifica(request, pk):
     else:
         form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
 
+    # 💡 Aquí obtenemos el Embarazo relacionado (si existe)
+    embarazo_instancia = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
 
-    form_embarazo = EmbarazoAsignadoForm()
+    if embarazo_instancia:
+        # Si ya existe, se carga en modo edición
+        form_embarazo = EmbarazoAsignadoForm(instance=embarazo_instancia)
+    else:
+        # Si no existe, se calcula la siguiente secuencia y se carga como valor inicial
+        max_secuencia = EmbarazoxPaciente.objects.aggregate(max_seq=Max('secuencia'))['max_seq'] or 0
+        siguiente_secuencia = max_secuencia + 1
+        form_embarazo = EmbarazoAsignadoForm(initial={'secuencia': siguiente_secuencia})
+
     parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
     form_partes = PartesAsignadoForm(instance=parte_instancia)
 
@@ -124,9 +136,6 @@ def carga_modifica(request, pk):
         'editar': True,
         'servicio': servicio,
         'pacientes': PacientexServicio.objects.filter(servicio=servicio),
-        'form_partes': PartesAsignadoForm(instance=parte_instancia),
-        
-        # Datos relacionados asignados
         'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
         'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
         'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
@@ -138,8 +147,6 @@ def carga_modifica(request, pk):
         'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
         'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
         'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-
-        # Catálogos
         'paramedicos': Paramedicos.objects.all(),
         'unidades': TipoUnidad.objects.all(),
         'alergias': Alergia.objects.all(),
@@ -150,6 +157,8 @@ def carga_modifica(request, pk):
     }
 
     return render(request, 'modificar_servicio.html', context)
+
+
 
 @requiere_tipo_paramedico('P', 'A')
 def eliminar_servicio(request, pk):
@@ -172,7 +181,7 @@ def guardar_todo(request, pk):
     form_servicio = ServicioForm(request.POST, instance=servicio)
     paciente_clave = request.POST.get('clave')
     paciente = PacientexServicio.objects.filter(clave=paciente_clave).first()
-    pacientes_form = PacientesForm(request.POST, instance=paciente)
+    pacientes_form = PacientesForm(request.POST, instance=paciente)    
 
     if not (form_servicio.is_valid() and pacientes_form.is_valid()):
         print("Errores de validación:")
@@ -192,7 +201,7 @@ def guardar_todo(request, pk):
         paciente.save()
 
         guardar_unidades(request, servicio)
-        guardar_paramedicos(request, servicio)
+        guardar_paramedicos(request, servicio, paciente)
         guardar_procedimientos(request, paciente)
         guardar_alergias(request, paciente)
         guardar_materiales(request, paciente)
@@ -208,18 +217,12 @@ def guardar_todo(request, pk):
         if embarazo:
             form_embarazo = EmbarazoAsignadoForm(request.POST)
             if form_embarazo.is_valid():
-                form_embarazo.save(commit=False)
-                form_embarazo.paciente = paciente
-                form_embarazo.save()
-
-
-
-        form_partes = PartesAsignadoForm(request.POST)
-        if form_partes.is_valid():
-            PartexServico.objects.filter(servicio=servicio).delete()
-            parte = form_partes.save(commit=False)
-            parte.servicio = servicio 
-            parte.save()
+                embarazo_obj = form_embarazo.save(commit=False)
+                embarazo_obj.paciente = paciente  # Aquí se asigna correctamente
+                embarazo_obj.save()
+            else:
+                print('Error en formulario de embarazo:')
+                print(form_embarazo.errors)
 
 
         return redirect('exito_guardado', pk=servicio.clave)
@@ -248,13 +251,13 @@ def guardar_unidades(request, servicio):
                 agente_nombre=u.get('agente', '')
             )
 
-def guardar_paramedicos(request, servicio):
+def guardar_paramedicos(request, servicio, paciente):
     ParamedicoxPaciente.objects.filter(servicio=servicio).delete()
     paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
     for item in paramedicos:
         clave = item.get("clave")
         paramedico = Paramedicos.objects.get(clave=clave)
-        ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
+        ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico, paciente=paciente)
 
 def guardar_procedimientos(request, paciente):
         ProcedimientoxPaciente.objects.filter(paciente=paciente).delete()
@@ -347,6 +350,7 @@ def reporte_servicio(request, clave):
         "paciente": paciente,
         "paramedicos_asignados": ParamedicoxPaciente.objects.filter(servicio=servicio),
         "unidades_asignadas": UnidadxServicio.objects.filter(servicio=servicio),
+        "parte": PartexServico.objects.filter(servicio=servicio),
         "procedimientos_asignados": ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
         "alergias_asignados": AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
         "materiales_asignados": MaterialxPaciente.objects.filter(paciente__servicio=servicio),
@@ -356,8 +360,10 @@ def reporte_servicio(request, clave):
         "lesiones_asignados": LesionxPaciente.objects.filter(paciente__servicio=servicio),
         "impactos_asignados": ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
         "testigos_asignados": TestigoxPaciente.objects.filter(paciente__servicio=servicio),
+        "paramedico_asignados": ParamedicoxPaciente.objects.filter(paciente__servicio=servicio),
     }
 
+    print(context['parte'])
     html = template.render(context)
 
     response = HttpResponse(content_type="application/pdf")
