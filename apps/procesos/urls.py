@@ -6,12 +6,13 @@ urlpatterns = [
     path('buscar/', formulario_buscar, name='formulario_buscar'),
     path('nuevo/', formulario_servicio, name='formulario_servicio'),
     path('creando/', crear_servicio, name='crear_servicio'),
-    path('editar/<str:pk>/', carga_modifica, name='carga_modifica'),
+    path('editar/<str:pk>/<str:ps>/', carga_modifica, name='carga_modifica'),
     path('eliminar/<pk>/', eliminar_servicio, name='eliminar_servicio'),
+    path('servicio/<int:pk>/agregar-paciente/', agregar_paciente, name='agregar_paciente'),
     path('guardar_completo/<pk>/', guardar_todo, name='guardar_todo'),
     path('reporte/<str:clave>/', reporte_servicio, name='reporte_servicio'),
-
-
     path('exito/<str:pk>/', exito_guardado, name='exito_guardado'),
     path('fallo/', fallo_guardado, name='fallo_guardado'),
+    path('ajax/calles_por_colonia/', obtener_calles_por_colonia, name='ajax_calles_por_colonia'),
+
 ]

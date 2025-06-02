@@ -2,11 +2,11 @@
 
 <body>
     <div class="d-flex">
-
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Hoja de Servicio</h1>
 
+                <form method="POST">
                     {% csrf_token %}
 
                     <div class="groupbox mb-4">
@@ -59,7 +59,7 @@
                                     {{ form.tipo_servicio_reporta }}
                                 </div>
                             </div>
-                        
+
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
                                     <label for="{{ form.tipo_servicio_realizado.id_for_label }}" class="form-label">Servicio Realizado</label>
@@ -98,10 +98,53 @@
                             </div>
                         </div>
                     </div>
+
+                    {% if pacientes %}
+                    <div class="groupbox mb-4">
+                        <h2 class="groupbox-title mb-0">Pacientes Asociados</h2>
+                        <a href="{% url 'agregar_paciente' servicio.pk %}" class="btn btn-primary btn-sm my-3">Agregar Paciente</a>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Paciente</th>
+                                        <th>Nombre</th>
+                                        <th>Edad</th>
+                                        <th>Sexo</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in pacientes %}
+                                    <tr>
+                                        <td>{{ p.clave }}</td>
+                                        <td>{{ p.nombre }} {{ p.apellido_paterno }} {{ p.apellido_materno }}</td>
+                                        <td>{{ p.edad }}</td>
+                                        <td>
+                                            {% if p.sexo == '2' %}
+                                                MASCULINO
+                                            {% elif p.sexo == '3' %}
+                                                FEMENINO
+                                            {% else %}
+                                                NO INGRESADO
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'carga_modifica' servicio.clave p.clave %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </form>
             </div>
         </div>
     </div>
-
 </body>
 
 <script src="{% static 'js/general_asig.js' %}"></script>

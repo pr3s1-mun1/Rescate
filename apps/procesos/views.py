@@ -8,6 +8,7 @@ from collections import defaultdict
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.db.models import Max
+from django.http import JsonResponse
 
 import datetime
 import json
@@ -15,16 +16,18 @@ import json
 
 def formulario_buscar(request):
     clave = request.POST.get('clave', '').strip() if request.method == 'POST' else ''
-    servicios = Servicio.objects.filter(clave__icontains=clave) if clave else Servicio.objects.all()
-    servicios = servicios.order_by('clave')
-
-    pacientes = PacientexServicio.objects.filter(servicio__in=servicios)
-
+    
+    servicios_query = Servicio.objects.filter(clave__icontains=clave) if clave else Servicio.objects.all()
+    servicios_query = servicios_query.order_by('clave')
+    
+    pacientes_servicios = PacientexServicio.objects.filter(
+        servicio__in=servicios_query
+    ).select_related('servicio').order_by('servicio__clave', 'nombre')
+    
     return render(request, 'buscador_servicios.html', {
-        'servicios': servicios,
-        'pacientes': pacientes
+        'clave_busqueda': clave,
+        'pacientes_servicios': pacientes_servicios
     })
-
 
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
@@ -52,9 +55,6 @@ def vista_principal(request):
         'pendientes': pendientes,
     })
 
-#Función para guardar formulario y pestañas de creación (Primera Parte)
-from django.shortcuts import redirect
-
 def crear_servicio(request):
     if request.method == 'POST':
         servicio_form = ServicioForm(request.POST)
@@ -79,7 +79,7 @@ def crear_servicio(request):
                 ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
 
             print("Servicio creado con éxito:", servicio.clave)
-            return redirect('carga_modifica', pk=servicio.clave)  # redirige a otra vista
+            return redirect('exito_guardado', pk=servicio.clave)
 
         else:
             context = {
@@ -103,15 +103,22 @@ def crear_servicio(request):
 
 
 @requiere_tipo_paramedico('P', 'A')
-def carga_modifica(request, pk):
+def carga_modifica(request, pk, ps):
     servicio = get_object_or_404(Servicio, pk=pk)
     form_servicio = ServicioForm(instance=servicio)
 
-    paciente = PacientexServicio.objects.filter(servicio=servicio).first()
+    paciente = None
+    if ps:
+        try:
+            paciente = PacientexServicio.objects.get(clave=ps, servicio=servicio)
+        except PacientexServicio.DoesNotExist:
+            paciente = None
+
     if paciente:
         form_paciente = PacientesForm(instance=paciente)
     else:
         form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
+
 
     # 💡 Aquí obtenemos el Embarazo relacionado (si existe)
     embarazo_instancia = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
@@ -373,3 +380,65 @@ def reporte_servicio(request, clave):
     if pisa_status.err:
         return HttpResponse("Error al generar el PDF", status=500)
     return response
+
+def obtener_calles_por_colonia(request):
+    colonia_id = request.GET.get('colonia_id')
+    calles = Calle_Colonia.objects.filter(colonia_id=colonia_id).select_related('calle').order_by('calle__calle')
+    data = [{'id': c.calle.clave, 'nombre': c.calle.calle} for c in calles]
+    return JsonResponse(data, safe=False)
+
+@requiere_tipo_paramedico('P', 'A')
+def agregar_paciente(request, pk):
+    servicio = get_object_or_404(Servicio, pk=pk)
+
+    if request.method == 'POST':
+        form_paciente = PacientesForm(request.POST)
+        form_embarazo = EmbarazoAsignadoForm(request.POST)
+        form_partes = PartesAsignadoForm(request.POST)
+
+        if form_paciente.is_valid():
+            paciente = form_paciente.save(commit=False)
+            paciente.servicio = servicio
+            paciente.save()
+
+            if form_embarazo.is_valid():
+                embarazo = form_embarazo.save(commit=False)
+                embarazo.paciente = paciente
+                embarazo.save()
+
+            if form_partes.is_valid():
+                parte = form_partes.save(commit=False)
+                parte.servicio = servicio
+                parte.save()
+
+            return redirect('carga_modifica', pk=servicio.pk)
+
+    else:
+        form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
+
+        max_secuencia = EmbarazoxPaciente.objects.aggregate(max_seq=Max('secuencia'))['max_seq'] or 0
+        siguiente_secuencia = max_secuencia + 1
+        form_embarazo = EmbarazoAsignadoForm(initial={'secuencia': siguiente_secuencia})
+
+        form_partes = PartesAsignadoForm()
+
+    form_servicio = ServicioForm(instance=servicio)
+    context = {
+        'form': form_servicio,
+        'form_paciente': form_paciente,
+        'form_embarazo': form_embarazo,
+        'form_partes': form_partes,
+        'servicio': servicio,
+        'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
+        'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
+        'paramedicos': Paramedicos.objects.all(),
+        'unidades': TipoUnidad.objects.all(),
+        'alergias': Alergia.objects.all(),
+        'materiales': Material.objects.all(),
+        'medicamentos': Medicamento.objects.all(),
+        'equipos': Equipo.objects.all(),
+        'procedimientos': Procedimiento.objects.all(),
+        'editar': False,
+    }
+
+    return render(request, 'agregar_paciente.html', context)
