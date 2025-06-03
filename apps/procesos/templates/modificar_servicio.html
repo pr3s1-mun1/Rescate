@@ -14,9 +14,10 @@
 
     <div class="d-flex">
         <div class="container">
-            <form method="post" id="servicioForm" action="{% url 'guardar_todo' servicio.clave%}"
-                enctype="multipart/form-data" novalidate>
-                {% csrf_token %}
+            <form method="post" id="servicioForm"
+            action="{% if paciente_clave %}{% url 'guardar_todo' servicio.clave paciente_clave %}{% else %}{% url 'guardar_todo_n' servicio.clave %}{% endif %}"
+            enctype="multipart/form-data" novalidate>
+                      {% csrf_token %}
 
                 <ul class="nav nav-tabs" id="mainTabs" role="tablist">
                     <li class="nav-item" role="presentation">

@@ -22,6 +22,9 @@
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #dc2626;
         }
 
         * {
@@ -43,20 +46,25 @@
             padding: 0 20px;
         }
 
+        .main-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+        }
+
         .main-title {
             font-size: 2.25rem;
             font-weight: 700;
             color: var(--text-color);
-            margin-bottom: 1.5rem;
-            text-align: center;
+            margin-bottom: 0.5rem;
             position: relative;
-            padding-bottom: 0.5rem;
+            display: inline-block;
         }
 
         .main-title::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
             width: 80px;
@@ -65,12 +73,21 @@
             border-radius: 2px;
         }
 
+        .subtitle {
+            color: var(--text-light);
+            font-weight: 400;
+            font-size: 1.1rem;
+        }
+
+        .search-section {
+            margin-bottom: 2.5rem;
+        }
+
         .search-card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 1.5rem;
             box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
             transition: box-shadow 0.3s ease;
         }
 
@@ -128,24 +145,40 @@
             transform: translateY(-1px);
         }
 
-        .servicios-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            /* Siempre 2 columnas */
-            gap: 1.5rem;
+        .results-section {
             margin-bottom: 3rem;
         }
 
-        .servicio-card {
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            padding: 1.5rem;
-            border-radius: 12px;
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
             margin-bottom: 1.5rem;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .servicio-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         .servicio-card:hover {
@@ -162,51 +195,95 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .servicio-header span:first-child {
+        .servicio-title {
             font-weight: 600;
             color: var(--text-color);
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            margin: 0;
         }
 
-        .servicio-header span:last-child {
+        .servicio-badge {
             font-size: 0.85rem;
-            background-color: var(--light-bg);
-            color: var(--secondary-color);
-            padding: 0.25rem 0.5rem;
+            padding: 0.25rem 0.75rem;
             border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .badge-danger {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--danger-color);
         }
 
         .servicio-body {
             flex: 1;
+            margin-bottom: 1rem;
+        }
+
+        .info-section {
+            margin-bottom: 1.25rem;
+        }
+
+        .info-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-title i {
+            margin-right: 0.5rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .info-block {
-            margin-bottom: 0.75rem;
             font-size: 0.9rem;
         }
 
-        .info-block strong {
+        .info-label {
             color: var(--text-color);
             font-weight: 500;
-            display: inline-block;
-            min-width: 80px;
+            display: block;
+            margin-bottom: 0.25rem;
         }
 
-        .info-block span {
+        .info-value {
             color: var(--text-light);
+            padding: 0.25rem 0.5rem;
+            background-color: rgba(248, 250, 252, 0.7);
+            border-radius: 4px;
+            display: inline-block;
+            word-break: break-word;
         }
 
         .acciones {
-            margin-top: 1.5rem;
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
+            margin-top: auto;
         }
 
         .btn-sm {
@@ -221,6 +298,14 @@
             min-width: 100px;
             text-align: center;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-sm i {
+            margin-right: 0.4rem;
+            font-size: 0.8rem;
         }
 
         .btn-primary {
@@ -234,7 +319,7 @@
         }
 
         .btn-danger {
-            background-color: #dc2626;
+            background-color: var(--danger-color);
             color: white;
         }
 
@@ -257,18 +342,57 @@
             text-align: center;
             padding: 3rem;
             grid-column: 1 / -1;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
         }
 
-        .empty-state i {
+        .empty-icon {
             font-size: 3rem;
             color: var(--secondary-color);
             margin-bottom: 1rem;
             opacity: 0.5;
         }
 
-        .empty-state p {
+        .empty-text {
             color: var(--text-light);
             font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-empty {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-empty:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-pending {
+            background-color: var(--warning-color);
+        }
+
+        .status-completed {
+            background-color: var(--success-color);
+        }
+
+        .status-cancelled {
+            background-color: var(--danger-color);
         }
 
         @media (max-width: 768px) {
@@ -297,196 +421,307 @@
                 border-radius: 0;
             }
         }
+
+        @media (max-width: 576px) {
+            .acciones {
+                flex-direction: column;
+            }
+
+            .btn-sm {
+                width: 100%;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
 <body>
     {% include 'navbar.html' %}
 
-    <div class="container mt-4">
-        <h1 class="main-title">Buscador de Servicios Médicos</h1>
+    <div class="container">
+        <header class="main-header">
+            <h1 class="main-title">Buscador de Servicios Médicos</h1>
+            <p class="subtitle">Encuentra y gestiona servicios médicos registrados</p>
+        </header>
 
-        <div class="search-card">
-            <form method="post">
-                {% csrf_token %}
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" name="clave" class="form-control"
-                        placeholder="Buscar por nombre, clave o ubicación...">
-                    <button type="submit" class="btn">
-                        <i class="fas fa-search mr-2"></i> Buscar
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="servicios-grid">
-            {% if pacientes_servicios %}
-            {% for ps in pacientes_servicios %}
-            <div class="servicio-card">
-                <!-- Header -->
-                <div class="servicio-header">
-                    <h3>
-                        {% if ps %}
-                        {{ ps.nombre }} {{ ps.apellido_paterno }} {{ ps.apellido_materno }}
-                        {% else %}
-                        Sin paciente
-                        {% endif %}
-                    </h3>
-                    <span class="servicio-clave">Servicio #{{ ps.servicio.clave }}</span>
-                </div>
-
-                <!-- Body with grouped sections -->
-                <div class="servicio-body">
-                    <!-- Service Information -->
-                    <div class="info-section">
-                        <h4>Información del Servicio</h4>
-                        <div class="info-block">
-                            <strong>Fecha:</strong> <span>{{ ps.servicio.fecha|date:"d/m/Y" }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Estado:</strong>
-                            <span>
-                                {% if ps.servicio.estatus == 'P' %}En Proceso
-                                {% elif ps.servicio.estatus == 'T' %}Terminado
-                                {% else %}Cancelado{% endif %}
-                            </span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Ubicación:</strong>
-                            <span>{{ ps.servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
-                        </div>
+        <section class="search-section">
+            <div class="search-card">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="clave" class="form-control"
+                            placeholder="Buscar por nombre, clave o ubicación...">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-search mr-2"></i> Buscar
+                        </button>
                     </div>
+                </form>
+            </div>
+        </section>
 
-                    <!-- Patient Information -->
-                    {% if ps %}
-                    <div class="info-section">
-                        <h4>Información del Paciente</h4>
-                        <div class="info-block">
-                            <strong>Clave:</strong> <span>{{ ps.clave }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Edad:</strong> <span>{{ ps.edad }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Sexo:</strong>
-                            <span>{{ ps.sexo|yesno:"Masculino,Femenino" }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Estatura:</strong> <span>{{ ps.estatura }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Complexión:</strong>
-                            <span>
-                                {% if ps.complexion == '1' %}Caquexia
-                                {% elif ps.complexion == '2' %}Delgado
-                                {% elif ps.complexion == '3' %}Regular
-                                {% elif ps.complexion == '4' %}Robusta
-                                {% elif ps.complexion == '5' %}Obesa
-                                {% elif ps.complexion == '6' %}Obesidad mórbida
-                                {% else %}No especificado{% endif %}
-                            </span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Tez:</strong>
-                            <span>
-                                {% if ps.tez == '1' %}Blanco
-                                {% elif ps.tez == '2' %}Medio
-                                {% elif ps.tez == '3' %}Moreno
-                                {% elif ps.tez == '4' %}Negro
-                                {% else %}No especificado{% endif %}
-                            </span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Ropa:</strong> <span>{{ ps.ropa }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Acompañante:</strong> <span>{{ ps.nombre_acompanante|default:"-" }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Vehicle Information -->
-                    <div class="info-section">
-                        <h4>Información del Vehículo</h4>
-                        <div class="info-block">
-                            <strong>Ambulancia:</strong> <span>{{ ps.ambulancia|default:"-" }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Hospital:</strong> <span>{{ ps.hospital|default:"-" }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Marca:</strong> <span>{{ ps.marca_vehiculo|default:"-" }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Placas:</strong> <span>{{ ps.placa_vehiculo|default:"-" }}</span>
-                        </div>
-                        <div class="info-block">
-                            <strong>Color:</strong>
-                            <span>
-                                {% if ps.color_vehiculo == '1' %} Ninguno
-                                {% elif ps.color_vehiculo == '2'%} Blanco
-                                {% elif ps.color_vehiculo == '3'%} Negro
-                                {% elif ps.color_vehiculo == '4'%} Rojo
-                                {% elif ps.color_vehiculo == '5'%} Amarillo
-                                {% elif ps.color_vehiculo == '6'%} Verde
-                                {% elif ps.color_vehiculo == '7'%} Café
-                                {% elif ps.color_vehiculo == '8'%} Gris
-                                {% else %} Inválido
+        <section class="results-section">
+            {% if pacientes_servicios or servicios_sin_paciente %}
+                {% if pacientes_servicios %}
+                <h2 class="section-title">Servicios con pacientes</h2>
+                <div class="servicios-grid">
+                    {% for ps in pacientes_servicios %}
+                    <div class="servicio-card" style="animation-delay: {{ forloop.counter0|divisibleby:2|yesno:'0s,0.1s' }}">
+                        <!-- Header -->
+                        <div class="servicio-header">
+                            <h3 class="servicio-title">
+                                {% if ps %}
+                                    {{ ps.nombre }} {{ ps.apellido_paterno }} {{ ps.apellido_materno }}
+                                {% else %}
+                                    Sin paciente
                                 {% endif %}
-                            </span>
+                            </h3>
+                            <span class="servicio-badge badge-primary">#{{ ps.servicio.clave }}</span>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="servicio-body">
+                            <!-- Service Information -->
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="fas fa-ambulance"></i> Información del Servicio
+                                </h4>
+                                <div class="info-grid">
+                                    <div class="info-block">
+                                        <span class="info-label">Fecha</span>
+                                        <span class="info-value">{{ ps.servicio.fecha|date:"d/m/Y" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Estado</span>
+                                        <span class="info-value">
+                                            {% if ps.servicio.estatus == 'P' %}
+                                                <span class="status-indicator status-pending"></span>En Proceso
+                                            {% elif ps.servicio.estatus == 'T' %}
+                                                <span class="status-indicator status-completed"></span>Terminado
+                                            {% else %}
+                                                <span class="status-indicator status-cancelled"></span>Cancelado
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Ubicación</span>
+                                        <span class="info-value">{{ ps.servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Patient Information -->
+                            {% if ps %}
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="fas fa-user-injured"></i> Información del Paciente
+                                </h4>
+                                <div class="info-grid">
+                                    <div class="info-block">
+                                        <span class="info-label">Clave</span>
+                                        <span class="info-value">{{ ps.clave }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Edad</span>
+                                        <span class="info-value">{{ ps.edad }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Sexo</span>
+                                        <span class="info-value">{{ ps.sexo|yesno:"Masculino,Femenino" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Estatura</span>
+                                        <span class="info-value">{{ ps.estatura }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Complexió</span>
+                                        <span class="info-value">
+                                            {% if ps.complexion == '1' %}Caquexia
+                                            {% elif ps.complexion == '2' %}Delgado
+                                            {% elif ps.complexion == '3' %}Regular
+                                            {% elif ps.complexion == '4' %}Robusta
+                                            {% elif ps.complexion == '5' %}Obesa
+                                            {% elif ps.complexion == '6' %}Obesidad mórbida
+                                            {% else %}No especificado{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Tez</span>
+                                        <span class="info-value">
+                                            {% if ps.tez == '1' %}Blanco
+                                            {% elif ps.tez == '2' %}Medio
+                                            {% elif ps.tez == '3' %}Moreno
+                                            {% elif ps.tez == '4' %}Negro
+                                            {% else %}No especificado{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Ropa</span>
+                                        <span class="info-value">{{ ps.ropa }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Acompañante</span>
+                                        <span class="info-value">{{ ps.nombre_acompanante|default:"-" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vehicle Information -->
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="fas fa-car"></i> Información del Vehículo
+                                </h4>
+                                <div class="info-grid">
+                                    <div class="info-block">
+                                        <span class="info-label">Ambulancia</span>
+                                        <span class="info-value">{{ ps.ambulancia|default:"-" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Hospital</span>
+                                        <span class="info-value">{{ ps.hospital|default:"-" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Marca</span>
+                                        <span class="info-value">{{ ps.marca_vehiculo|default:"-" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Placas</span>
+                                        <span class="info-value">{{ ps.placa_vehiculo|default:"-" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Color</span>
+                                        <span class="info-value">
+                                            {% if ps.color_vehiculo == '1' %} Ninguno
+                                            {% elif ps.color_vehiculo == '2'%} Blanco
+                                            {% elif ps.color_vehiculo == '3'%} Negro
+                                            {% elif ps.color_vehiculo == '4'%} Rojo
+                                            {% elif ps.color_vehiculo == '5'%} Amarillo
+                                            {% elif ps.color_vehiculo == '6'%} Verde
+                                            {% elif ps.color_vehiculo == '7'%} Café
+                                            {% elif ps.color_vehiculo == '8'%} Gris
+                                            {% else %} Inválido
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="info-section">
+                                <p class="info-value"><em>Sin datos de paciente</em></p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="acciones">
+                            <a href="{% url 'carga_modifica' ps.servicio.clave ps.clave %}" class="btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Modificar
+                            </a>
+                            <form action="{% url 'eliminar_servicio' ps.servicio.clave %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button class="btn-sm btn-danger" type="submit">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </button>
+                            </form>
+                            <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank" style="display: inline;">
+                                {% csrf_token %}
+                                <button class="btn-sm btn-secondary" type="submit">
+                                    <i class="fas fa-file-alt"></i> Reporte
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    {% else %}
-                    <div class="info-section">
-                        <p>Sin datos de paciente</p>
-                    </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
+                {% endif %}
 
-                <!-- Actions -->
-                <div class="acciones">
-                    <a href="{% url 'carga_modifica' ps.servicio.clave ps.clave%} " class="btn-sm btn-primary">
-                        <i class="fas fa-edit mr-1"></i> Modificar
-                    </a>                    
-                    <form action="{% url 'eliminar_servicio' ps.servicio.clave %}" method="post"
-                        style="display: inline;">
-                        {% csrf_token %}
-                        <button class="btn-sm btn-danger" type="submit">
-                            <i class="fas fa-trash-alt mr-1"></i> Eliminar
-                        </button>
-                    </form>
-                    <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank"
-                        style="display: inline;">
-                        {% csrf_token %}
-                        <button class="btn-sm btn-secondary" type="submit">
-                            <i class="fas fa-file-alt mr-1"></i> Reporte
-                        </button>
-                    </form>
+                {% if servicios_sin_paciente %}
+                <h2 class="section-title">Servicios sin pacientes</h2>
+                <div class="servicios-grid">
+                    {% for servicio in servicios_sin_paciente %}
+                    <div class="servicio-card">
+                        <div class="servicio-header">
+                            <h3 class="servicio-title">Sin paciente asignado</h3>
+                            <span class="servicio-badge badge-primary">#{{ servicio.clave }}</span>
+                        </div>
+                        <div class="servicio-body">
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="fas fa-ambulance"></i> Información del Servicio
+                                </h4>
+                                <div class="info-grid">
+                                    <div class="info-block">
+                                        <span class="info-label">Fecha</span>
+                                        <span class="info-value">{{ servicio.fecha|date:"d/m/Y" }}</span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Estado</span>
+                                        <span class="info-value">
+                                            {% if servicio.estatus == 'P' %}
+                                                <span class="status-indicator status-pending"></span>En Proceso
+                                            {% elif servicio.estatus == 'T' %}
+                                                <span class="status-indicator status-completed"></span>Terminado
+                                            {% else %}
+                                                <span class="status-indicator status-cancelled"></span>Cancelado
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="info-block">
+                                        <span class="info-label">Ubicación</span>
+                                        <span class="info-value">{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-section">
+                                <p class="info-value"><em>Este servicio no tiene pacientes asignados.</em></p>
+                            </div>
+                        </div>
+                        <div class="acciones">
+                            <a href="{% url 'carga_modifica_n' servicio.clave %}" class="btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Modificar
+                            </a>
+                            <form action="{% url 'eliminar_servicio' servicio.clave %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button class="btn-sm btn-danger" type="submit">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </button>
+                            </form>
+                            <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank" style="display: inline;">
+                                {% csrf_token %}
+                                <button class="btn-sm btn-secondary" type="submit">
+                                    <i class="fas fa-file-alt"></i> Reporte
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-            {% endfor %}
+                {% endif %}
             {% else %}
-            <div class="empty-state">
-                <i class="fas fa-clipboard-list"></i>
-                <p>No se encontraron servicios médicos</p>
-            </div>
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list empty-icon"></i>
+                    <p class="empty-text">No se encontraron servicios médicos</p>
+                    <a href="#" class="btn-empty">
+                        <i class="fas fa-plus mr-2"></i> Crear nuevo servicio
+                    </a>
+                </div>
             {% endif %}
-        </div>
+        </section>
     </div>
 
     <script>
-        // Efecto de carga suave
+        // Efecto de carga suave para las tarjetas
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.servicio-card');
             cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                }, index * 100);
+                card.style.animationDelay = `${index * 0.1}s`;
             });
         });
     </script>
 </body>
-
 </html>
