@@ -119,6 +119,13 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        .parte-contenido {
+            white-space: pre-wrap; /* respeta saltos de línea y envuelve texto */
+            word-wrap: break-word; /* rompe palabras largas si es necesario */
+            max-width: 100%;        /* evita desbordamientos horizontales */
+        }
+
     </style>
 </head>
 
@@ -636,17 +643,19 @@
     </div>
     
     <div class="section" aria-labelledby="datos-liberacion">
-        <h2 class="title-section" id="datos-liberacion">Datos de Liberación</h2>
+        <h2 class="title-section" id="datos-liberacion">Parte Informativa</h2>
         <table class="info-table">
             <tr>
-                <th class="label">Libera Responsabilidad:</th>
-                {% for p in parte %}
-                    <td>{{p.parte}}</td>
-                {% endfor %}
+                <th class="label">Parte:</th>
+                <td class="parte-contenido">
+                    {% for p in parte %}
+                        <div>{{ p.parte }}</div>
+                    {% endfor %}
+                </td>
             </tr>
         </table>
     </div>
-    
+
     <div class="section" aria-labelledby="paramedicos-asignados">
         <h2 class="title-section" id="paramedicos-asignados">Paramédicos Asignados</h2>
         <table class="info-table">

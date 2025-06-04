@@ -87,7 +87,7 @@ def crear_servicio(request):
                 ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
 
             print("Servicio creado con éxito:", servicio.clave)
-            return redirect('carga_modifica', pk=servicio.clave)
+            return redirect('carga_modifica_n', pk=servicio.clave)
 
         else:
             context = {
@@ -255,15 +255,19 @@ def guardar_todo(request, pk, ps):
 
     form_servicio = ServicioForm(request.POST, instance=servicio)
     pacientes_form = PacientesForm(request.POST, instance=paciente)
+    partes_form = PartesAsignadoForm(request.POST, instance=servicio)
 
-    if not (form_servicio.is_valid() and pacientes_form.is_valid()):
+    if not (form_servicio.is_valid() and pacientes_form.is_valid() and partes_form.is_valid()):
         return render(request, 'modificar_servicio.html', {
             'form_servicio': form_servicio,
             'pacientes_form': pacientes_form,
             'servicio': servicio,
             'paciente': paciente,
-            'editar': True
+            'editar': True,
+            'errores_partes': partes_form.errors
         })
+    if partes_form.is_valid():
+        print("SISTABNNN")
 
     try:
         servicio = form_servicio.save(commit=False)
@@ -271,13 +275,21 @@ def guardar_todo(request, pk, ps):
         servicio.save()
 
         paciente = pacientes_form.save(commit=False)
-        
+        parte = partes_form.save(commit=False)
+
         # Si es nuevo, generar clave manualmente
         if paciente.clave is None:
             paciente.clave = PacientexServicio.obtener_siguiente_numero()
         
         paciente.servicio = servicio
         paciente.save()
+
+        parte.servicio = servicio
+        try:
+            parte.save()
+        except Exception as e:
+            print(e)
+
 
         # Guardado auxiliar
         guardar_unidades(request, servicio)
@@ -586,17 +598,13 @@ def agregar_paciente(request, pk):
 
             except Exception as e:
                 print(f"Error al guardar el paciente: {e}")
-                # Puedes agregar manejo de errores aquí
 
-        # Para reutilizar el número de clave en caso de error
         siguiente_clave = request.POST.get('clave')
 
     else:
-        # Calcular clave siguiente
         siguiente_clave = PacientexServicio.obtener_siguiente_numero()
         form_paciente = PacientesForm(initial={'clave': siguiente_clave})
 
-        # Calcular siguiente secuencia de embarazo
         max_secuencia = EmbarazoxPaciente.objects.aggregate(max_seq=Max('secuencia'))['max_seq'] or 0
         siguiente_secuencia = max_secuencia + 1
         form_embarazo = EmbarazoAsignadoForm(initial={'secuencia': siguiente_secuencia})

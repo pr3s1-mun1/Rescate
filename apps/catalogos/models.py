@@ -69,8 +69,8 @@ class TiposServicio(models.Model):
     clave = models.IntegerField(primary_key=True)
     descripcion = models.CharField(max_length=50)
     gruposervicio = models.ForeignKey('GrupoServicio', on_delete=models.SET_NULL, null=True)
-    sobresaliente = models.CharField(max_length=1)
-    engrafica = models.CharField(max_length=1)
+    sobresaliente = models.CharField(max_length=1, null=True)
+    engrafica = models.CharField(max_length=1, null=True)
 
     def __str__(self):
         return f" {self.descripcion}"
@@ -111,7 +111,7 @@ class Medicamento(models.Model):
     descripcion = models.CharField(max_length=50)
     unidad = models.CharField(max_length=10)
     administrado = models.BooleanField()
-    costo = models.DecimalField(max_digits=18, decimal_places=2)
+    costo = models.DecimalField(max_digits=18, decimal_places=2, null=True)
 
     def __str__(self):
         return f"{self.descripcion}"
@@ -120,7 +120,7 @@ class Material(models.Model):
     clave = models.IntegerField(primary_key=True)
     descripcion = models.CharField(max_length=50)
     unidad = models.CharField(max_length=10)
-    costo = models.DecimalField(max_digits=18, decimal_places=2)
+    costo = models.DecimalField(max_digits=18, decimal_places=2, null=True)
 
     def __str__(self):
         return f"{self.descripcion}"
