@@ -9,33 +9,134 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.db.models import Max
 from django.http import JsonResponse
+from django.core.paginator import Paginator
+
 
 import datetime
 import json
 
 
 def formulario_buscar(request):
-    clave = request.POST.get('clave', '').strip() if request.method == 'POST' else ''
-    
-    servicios_query = Servicio.objects.filter(clave__icontains=clave) if clave else Servicio.objects.all()
-    servicios_query = servicios_query.order_by('clave')
+    if request.method == 'POST':
+        filtros = request.POST.dict()
+        pacientes_servicios_query = buscar_servicios_filtrados(filtros)
+    else:
+        pacientes_servicios_query = PacientexServicio.objects.all().select_related('servicio')
 
-    # Servicios que sí tienen pacientes
-    pacientes_servicios = PacientexServicio.objects.filter(
-        servicio__in=servicios_query
-    ).select_related('servicio').order_by('servicio__clave', 'nombre')
+    paginator_con = Paginator(pacientes_servicios_query, 8)
+    page_number_con = request.GET.get('page_con')
+    pacientes_servicios = paginator_con.get_page(page_number_con)
 
-    # IDs (o claves) de servicios que ya tienen pacientes
-    servicios_con_paciente_claves = pacientes_servicios.values_list('servicio__clave', flat=True).distinct()
+    # Servicios sin pacientes (opcional, puedes agregar lógica similar)
+    servicios_con_paciente_claves = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
+    servicios_sin_paciente = Servicio.objects.exclude(clave__in=servicios_con_paciente_claves)
 
-    # Servicios sin pacientes, excluyendo los que ya tienen pacientes
-    servicios_sin_paciente = servicios_query.exclude(clave__in=servicios_con_paciente_claves)
+    paginator_sin = Paginator(servicios_sin_paciente, 8)
+    page_number_sin = request.GET.get('page_sin')
+    servicios_sin_paciente_page = paginator_sin.get_page(page_number_sin)
 
     return render(request, 'buscador_servicios.html', {
-        'clave_busqueda': clave,
         'pacientes_servicios': pacientes_servicios,
-        'servicios_sin_paciente': servicios_sin_paciente,
+        'servicios_sin_paciente': servicios_sin_paciente_page,
+        'filtros': filtros if request.method == 'POST' else {},
     })
+
+
+def buscar_servicios_filtrados(filtros):
+    """
+    filtros: dict con las claves de filtro y sus valores, por ejemplo:
+    {
+        'clave': 'abc',
+        'fecha_inicio': '2025-01-01',
+        'fecha_fin': '2025-01-31',
+        'base': 'Base 1',
+        'direccion': 'Calle 123',
+        'paciente': 'Juan',
+        'ropa': 'Azul',
+        'sintoma': 'Dolor',
+        'antecedente': 'Ninguno',
+        'placas': 'XYZ123',
+        'sexo': 'M',
+        'servicio_realizado': 'Traslado',
+        'enfermedad': 'Diabetes',
+        'hospital': 'Hospital Central',
+        'ambulancia': 'Ambulancia 1'
+    }
+    """
+    from django.db.models import Q
+
+    servicios = Servicio.objects.all()
+
+    # Filtro por clave (en Servicio)
+    clave = filtros.get('clave')
+    if clave:
+        servicios = servicios.filter(clave__icontains=clave)
+
+    # Filtro fechas (en Servicio.fecha)
+    fecha_inicio = filtros.get('fecha_inicio')
+    fecha_fin = filtros.get('fecha_fin')
+    if fecha_inicio:
+        servicios = servicios.filter(fecha__gte=fecha_inicio)
+    if fecha_fin:
+        servicios = servicios.filter(fecha__lte=fecha_fin)
+
+    # Filtro base (asumiendo que es un campo en Servicio)
+    base = filtros.get('base')
+    if base:
+        servicios = servicios.filter(base__icontains=base)
+
+    # Filtro dirección (en Servicio.direccion_emergencia.calle)
+    direccion = filtros.get('direccion')
+    if direccion:
+        servicios = servicios.filter(direccion_emergencia__calle__icontains=direccion)
+
+    # Ahora, para los filtros que involucran a pacientes o detalles de PacientexServicio:
+    pacientes_qs = PacientexServicio.objects.filter(servicio__in=servicios)
+
+    paciente = filtros.get('paciente')
+    if paciente:
+        pacientes_qs = pacientes_qs.filter(
+            Q(nombre__icontains=paciente) | Q(apellido_paterno__icontains=paciente) | Q(apellido_materno__icontains=paciente)
+        )
+
+    ropa = filtros.get('ropa')
+    if ropa:
+        pacientes_qs = pacientes_qs.filter(ropa__icontains=ropa)
+
+    sintoma = filtros.get('sintoma')
+    if sintoma:
+        pacientes_qs = pacientes_qs.filter(sintomas__icontains=sintoma)
+
+    antecedente = filtros.get('antecedente')
+    if antecedente:
+        pacientes_qs = pacientes_qs.filter(antecedentes__icontains=antecedente)
+
+    placas = filtros.get('placas')
+    if placas:
+        pacientes_qs = pacientes_qs.filter(placas__icontains=placas)
+
+    sexo = filtros.get('sexo')
+    if sexo:
+        pacientes_qs = pacientes_qs.filter(sexo=sexo)
+
+    servicio_realizado = filtros.get('servicio_realizado')
+    if servicio_realizado:
+        pacientes_qs = pacientes_qs.filter(servicio_realizado__icontains=servicio_realizado)
+
+    enfermedad = filtros.get('enfermedad')
+    if enfermedad:
+        pacientes_qs = pacientes_qs.filter(enfermedad__icontains=enfermedad)
+
+    hospital = filtros.get('hospital')
+    if hospital:
+        pacientes_qs = pacientes_qs.filter(hospital__icontains=hospital)
+
+    ambulancia = filtros.get('ambulancia')
+    if ambulancia:
+        pacientes_qs = pacientes_qs.filter(ambulancia__icontains=ambulancia)
+
+    # Devuelve la queryset filtrada (puedes usar .select_related si quieres optimizar)
+    return pacientes_qs.select_related('servicio')
 
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
@@ -43,7 +144,7 @@ def formulario_buscar(request):
 def formulario_servicio(request):    
     context = {
         'form': ServicioForm(initial={'clave': Servicio.obtener_siguiente_numero()}),
-        'paramedicos': Paramedicos.objects.all(),
+        'paramedicos': Paramedicos.objects.filter(estatus='A').order_by('nombre'),
         'unidades': TipoUnidad.objects.all(),
         }
     
@@ -169,7 +270,7 @@ def carga_modifica(request, pk, ps):
         'materiales': Material.objects.all(),
         'medicamentos': Medicamento.objects.all(),
         'equipos': Equipo.objects.all(),
-        'procedimientos': Procedimiento.objects.all(),
+        'procedimientos': Procedimiento.objects.all().order_by('protocolo'),
     }
 
     return render(request, 'modificar_servicio.html', context)
@@ -212,13 +313,13 @@ def carga_modifica_n(request, pk):
         'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
         'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
         'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-        'paramedicos': Paramedicos.objects.all(),
+        'paramedicos': Paramedicos.objects.all().order_by('nombre'),
         'unidades': TipoUnidad.objects.all(),
         'alergias': Alergia.objects.all(),
         'materiales': Material.objects.all(),
         'medicamentos': Medicamento.objects.all(),
         'equipos': Equipo.objects.all(),
-        'procedimientos': Procedimiento.objects.all(),
+        'procedimientos': Procedimiento.objects.all().order_by('protocolo'),
     }
 
     return render(request, 'modificar_servicio.html', context)

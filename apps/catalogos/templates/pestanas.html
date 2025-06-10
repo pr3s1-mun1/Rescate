@@ -1,44 +1,218 @@
-<div class="container my-3 p-3 bg-light rounded shadow-sm">
-    <div class="row g-2 justify-content-center text-center gap-2">
-        <a href="{% url 'catalogo_general' 'ambulancias' %}" title="Ambulancias" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/ambulancias/' %} btn-primary {% endif %}">🚑</a>
-        <a href="{% url 'catalogo_general' 'alergias' %}" title="Alergias" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/alergias/' %} btn-primary {% endif %}">🤧</a>
-        <a href="{% url 'catalogo_general' 'bases' %}" title="Bases" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/bases/' %} btn-primary {% endif %}">🏥</a>
-        <a href="{% url 'catalogo_general' 'hospitales' %}" title="Hospitales" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/hospitales/' %} btn-primary {% endif %}">🏥</a>
-        <a href="{% url 'catalogo_general' 'paramedicos' %}" title="Paramédicos" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/paramedicos/' %} btn-primary {% endif %}">👨‍⚕️</a>
-        <a href="{% url 'catalogo_general' 'tipos_servicio' %}" title="Tipos de servicio" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/tipos_servicio/' %} btn-primary {% endif %}">📝</a>
-        <a href="{% url 'catalogo_general' 'grupos_servicio' %}" title="Grupos de servicio" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/grupos_servicio/' %} btn-primary {% endif %}">📌</a>
-        <a href="{% url 'catalogo_general' 'procedimientos' %}" title="Procedimientos" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/procedimientos/' %} btn-primary {% endif %}">📋</a>
-        <a href="{% url 'catalogo_general' 'tipos_unidades' %}" title="Tipos de unidades" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/tipos_unidades/' %} btn-primary {% endif %}">🚗</a>
-        <a href="{% url 'catalogo_general' 'enfermedades' %}" title="Enfermedades" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/enfermedades/' %} btn-primary {% endif %}">🦠</a>
-        <a href="{% url 'catalogo_general' 'grupos_enfermedades' %}" title="Grupos de enfermedades" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/grupos_enfermedades/' %} btn-primary {% endif %}">🔬</a>
-        <a href="{% url 'catalogo_general' 'medicamentos' %}" title="Medicamentos" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/medicamentos/' %} btn-primary {% endif %}">💊</a>
-        <a href="{% url 'catalogo_general' 'materiales' %}" title="Materiales" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/materiales/' %} btn-primary {% endif %}">📦</a>
-        <a href="{% url 'catalogo_general' 'equipos' %}" title="Equipos" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/equipos/' %} btn-primary {% endif %}">🛠️</a>
-        <a href="{% url 'catalogo_general' 'marcas_vehiculos' %}" title="Marcas de vehículos" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/marcas_vehiculos/' %} btn-primary {% endif %}">🚙</a>
-        <a href="{% url 'catalogo_general' 'calles' %}" title="Calles" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/calles/' %} btn-primary {% endif %}">🛤️</a>
-        <a href="{% url 'catalogo_general' 'colonias' %}" title="Colonias" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/colonias/' %} btn-primary {% endif %}">🏘️</a>
-            <a href="{% url 'relacionar_calle_colonia' %}" 
-            title="Colonias x Calles" 
-            class="col-auto btn btn-outline-secondary {% if request.path == '/catalogos/relacionar-calle-colonia/' %} btn-primary {% endif %}">
-            🛤️x🏘️
-         </a>
-         
-        </div>
+<style>
+  :root {
+    --guinda-principal: #8B0000;
+    --guinda-hover: #6B0000;
+    --sombra-suave: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --transicion-rapida: all 0.2s ease;
+  }
+
+  .navbar-catalogos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .navbar-catalogos a {
+    background-color: white;
+    color: var(--guinda-principal);
+    border: 2px solid var(--guinda-principal);
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    text-align: center;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transicion-rapida);
+    text-decoration: none;
+    box-shadow: var(--sombra-suave);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .navbar-catalogos a:hover,
+  .navbar-catalogos a.active {
+    background-color: var(--guinda-principal);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(139, 0, 0, 0.2);
+  }
+
+  .navbar-catalogos a.active {
+    background-color: var(--guinda-hover);
+    border-color: var(--guinda-hover);
+  }
+
+  .navbar-catalogos i {
+    font-size: 1.4rem;
+    transition: var(--transicion-rapida);
+  }
+
+  .navbar-container {
+    background-color: #ffffff;
+    border-left: 4px solid var(--guinda-principal);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+    margin: 1rem 0;
+  }
+
+  .navbar-catalogos span {
+    position: absolute;
+    font-size: 0.65rem;
+    font-weight: 500;
+    bottom: -20px;
+    opacity: 0;
+    transition: var(--transicion-rapida);
+    width: 100%;
+    text-align: center;
+    color: white;
+  }
+
+  .navbar-catalogos a:hover span,
+  .navbar-catalogos a.active span {
+    bottom: 5px;
+    opacity: 1;
+  }
+
+  .navbar-catalogos a:hover i,
+  .navbar-catalogos a.active i {
+    transform: translateY(-8px);
+  }
+
+  /* Tooltip para mostrar el nombre completo */
+  .navbar-catalogos a::after {
+    content: attr(title);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: var(--transicion-rapida);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .navbar-catalogos a:hover::after {
+    top: -35px;
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .navbar-catalogos {
+      grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+      gap: 0.4rem;
+    }
+    
+    .navbar-catalogos a {
+      height: 45px;
+      padding: 0.4rem;
+    }
+    
+    .navbar-catalogos i {
+      font-size: 1.2rem;
+    }
+  }
+</style>
+
+<div class="container navbar-container">
+  <div class="navbar-catalogos">
+    <a href="{% url 'catalogo_general' 'ambulancias' %}" class="{% if request.path == '/catalogos/ambulancias/' %}active{% endif %}" title="Ambulancias">
+      <i class="bi bi-truck-front"></i>
+      <span>Ambulancias</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'alergias' %}" class="{% if request.path == '/catalogos/alergias/' %}active{% endif %}" title="Alergias">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span>Alergias</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'bases' %}" class="{% if request.path == '/catalogos/bases/' %}active{% endif %}" title="Bases">
+      <i class="bi bi-building"></i>
+      <span>Bases</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'hospitales' %}" class="{% if request.path == '/catalogos/hospitales/' %}active{% endif %}" title="Hospitales">
+      <i class="bi bi-hospital"></i>
+      <span>Hospitales</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'paramedicos' %}" class="{% if request.path == '/catalogos/paramedicos/' %}active{% endif %}" title="Paramédicos">
+      <i class="bi bi-person-vcard"></i>
+      <span>Paramédicos</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'tipos_servicio' %}" class="{% if request.path == '/catalogos/tipos_servicio/' %}active{% endif %}" title="Tipos de servicio">
+      <i class="bi bi-card-text"></i>
+      <span>Servicios</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'grupos_servicio' %}" class="{% if request.path == '/catalogos/grupos_servicio/' %}active{% endif %}" title="Grupos de servicio">
+      <i class="bi bi-ui-checks"></i>
+      <span>Grupos</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'procedimientos' %}" class="{% if request.path == '/catalogos/procedimientos/' %}active{% endif %}" title="Procedimientos">
+      <i class="bi bi-list-check"></i>
+      <span>Procedimientos</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'tipos_unidades' %}" class="{% if request.path == '/catalogos/tipos_unidades/' %}active{% endif %}" title="Tipos de unidades">
+      <i class="bi bi-truck"></i>
+      <span>Unidades</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'enfermedades' %}" class="{% if request.path == '/catalogos/enfermedades/' %}active{% endif %}" title="Enfermedades">
+      <i class="bi bi-bug"></i>
+      <span>Enfermedades</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'grupos_enfermedades' %}" class="{% if request.path == '/catalogos/grupos_enfermedades/' %}active{% endif %}" title="Grupos de enfermedades">
+      <i class="bi bi-collection"></i>
+      <span>Grupo Enf.</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'medicamentos' %}" class="{% if request.path == '/catalogos/medicamentos/' %}active{% endif %}" title="Medicamentos">
+      <i class="bi bi-capsule"></i>
+      <span>Medicamentos</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'materiales' %}" class="{% if request.path == '/catalogos/materiales/' %}active{% endif %}" title="Materiales">
+      <i class="bi bi-box-seam"></i>
+      <span>Materiales</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'equipos' %}" class="{% if request.path == '/catalogos/equipos/' %}active{% endif %}" title="Equipos">
+      <i class="bi bi-tools"></i>
+      <span>Equipos</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'marcas_vehiculos' %}" class="{% if request.path == '/catalogos/marcas_vehiculos/' %}active{% endif %}" title="Marcas de vehículos">
+      <i class="bi bi-truck-front-fill"></i>
+      <span>Marcas</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'calles' %}" class="{% if request.path == '/catalogos/calles/' %}active{% endif %}" title="Calles">
+      <i class="bi bi-signpost-split"></i>
+      <span>Calles</span>
+    </a>
+
+    <a href="{% url 'catalogo_general' 'colonias' %}" class="{% if request.path == '/catalogos/colonias/' %}active{% endif %}" title="Colonias">
+      <i class="bi bi-house-door"></i>
+      <span>Colonias</span>
+    </a>
+
+    <a href="{% url 'relacionar_calle_colonia' %}" class="{% if request.path == '/catalogos/relacionar-calle-colonia/' %}active{% endif %}" title="Colonias x Calles">
+      <i class="bi bi-signpost-2"></i>
+      <span>C x C</span>
+    </a>
+  </div>
 </div>

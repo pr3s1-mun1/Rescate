@@ -1,191 +1,200 @@
 {% load static %}
 <!DOCTYPE html>
-<style>
-    .option-card:hover {
-        background-color: #f8f9fa;
-        transform: translateY(-5px);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-</style>
-
-<body>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Reportes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .option-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            background-color: #f8f9fa;
+        }
+        .option-icon {
+            transition: transform 0.3s ease;
+        }
+        .option-card:hover .option-icon {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
     {% include 'navbar.html' %}
-    <div class="container">
-        <h1 class="text-center mb-4">Centro de Reportes</h1>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Centro de Reportes</h1>
 
-        <div class="row mt-5">
-            <div class="col-md-4 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="mb-4">
                 <a href="{% url 'reporte_servicios' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-ambulance fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Tipos de Servicio por Base y Fecha</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Tipos de Servicio por Base y Fecha</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_servicios_x_ambulancia' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-truck-medical fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Servicio por Ambulancia</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Servicio por Ambulancia</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_servicios_x_ambulancia' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-users fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Lista de Asistencia del Personal</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Lista de Asistencia del Personal</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_servicios_x_tipo' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-user-injured fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Pacientes Atendidos</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Pacientes Atendidos</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'resumen_tipo_servicio' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-chart-line fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Total de Servicios Atendidos por Fecha</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Total de Servicios Atendidos por Fecha</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_sobresalientes' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-star fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Servicios Sobresalientes</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Servicios Sobresalientes</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_parte_informativo' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-file-alt fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Parte Informativa</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Parte Informativa</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_paramedico_base' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-user-md fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Atención de Paramédicos</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Atención de Paramédicos</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_equipos' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-tools fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Equipo Utilizado</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Equipo Utilizado</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_materiales' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-box-open fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Material Utilizado</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Material Utilizado</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'resumen_tipo_servicio' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-gas-pump fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Combustible</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Combustible</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_pacientes_por_sexo' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-venus-mars fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Pacientes Atendidos por Sexo</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Pacientes Atendidos por Sexo</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_enfermedades_por_grupo' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-notes-medical fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Servicios Prestados por Fecha</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Servicios Prestados por Fecha</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_materiales_pacientes' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-band-aid fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Material Utilizado en Pacientes por Fecha y Hora</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Material Utilizado en Pacientes por Fecha y Hora</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'reporte_medicamentos_pacientes' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-pills fa-3x text-blue-500"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Medicamento Administrado en Pacientes por Fecha y Hora
-                        </h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Medicamento Administrado en Pacientes por Fecha y Hora</h4>
                     </div>
                 </a>
             </div>
-
-
-
-
         </div>
-    </div>
-    </div>
     </div>
 
     <script>
@@ -199,5 +208,4 @@
         });
     </script>
 </body>
-
 </html>

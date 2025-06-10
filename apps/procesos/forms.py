@@ -25,6 +25,8 @@ class ServicioForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['tipo_servicio_realizado'].queryset = TiposServicio.objects.all().order_by('descripcion')
+        self.fields['tipo_servicio_reporta'].queryset = TiposServicio.objects.all().order_by('descripcion')
         # Agrega la clase 'form-control' a todos los widgets
         for field in self.fields:
             self.fields[field].widget.attrs.update({
@@ -84,6 +86,9 @@ class PacientesForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['enfermedad'].queryset = Enfermedad.objects.all().order_by('nombre')
+        self.fields['base'].queryset = Bases.objects.all().order_by('clave')
+        self.fields['ambulancia'].queryset = Ambulancias.objects.filter(estado='A').order_by('descripcion')
 
         for field_name, field in self.fields.items():
             if field_name in self.__class__.DATE_FIELDS:

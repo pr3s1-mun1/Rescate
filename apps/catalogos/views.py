@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from functools import wraps
 from django.contrib import messages
+from django.db.models import Max, IntegerField
+from django.db.models.functions import Cast
 from .models import *
 from .forms import *
 
@@ -106,29 +108,34 @@ def add_catalogo(request, tipo):
     CLAVE_MANUAL_MODELOS = ['Bases', 'Ambulancias']
     clave_manual = modelo.__name__ in CLAVE_MANUAL_MODELOS
 
+    nueva_clave = ""
     if not clave_manual:
-        if modelo.objects.exists():
-            max_clave = modelo.objects.all().aggregate(models.Max('clave'))['clave__max']
+        clave_field = modelo._meta.get_field('clave')
+
+        if isinstance(clave_field, models.IntegerField):
+            max_clave = modelo.objects.aggregate(Max('clave'))['clave__max']
+            nueva_clave = max_clave + 1 if max_clave is not None else 1
+
+        elif isinstance(clave_field, models.CharField):
             try:
-                nueva_clave = max_clave + 1 if max_clave is not None else 1
+                max_clave = modelo.objects.annotate(
+                    clave_int=Cast('clave', IntegerField())
+                ).aggregate(Max('clave_int'))['clave_int__max']
+                nueva_clave = str(max_clave + 1) if max_clave is not None else "1"
             except Exception:
                 nueva_clave = ""
-        else:
-            nueva_clave = ""
-    else:
-        nueva_clave = ""
 
     if request.method == "POST":
         form = form_class(request.POST)
         if form.is_valid():
             nuevo_registro = form.save(commit=False)
-            if not clave_manual:
+            if not clave_manual and nueva_clave != "":
                 nuevo_registro.clave = nueva_clave
             nuevo_registro.save()
             return redirect('catalogo_general', tipo=tipo)
     else:
         initial_data = {}
-        if not clave_manual:
+        if not clave_manual and nueva_clave != "":
             initial_data['clave'] = nueva_clave
         form = form_class(initial=initial_data)
 
@@ -138,7 +145,6 @@ def add_catalogo(request, tipo):
         'titulo': catalogo.get('nombre', tipo),
         'nueva_clave': nueva_clave,
     })
-
 def relacionar_calle_colonia(request):
     colonias = Colonia.objects.all().order_by('colonia')
     calles = Calle.objects.all().order_by('calle')

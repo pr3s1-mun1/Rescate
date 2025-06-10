@@ -141,14 +141,14 @@ class MarcaVehiculo(models.Model):
         return f"{self.descripcion}"
 
 class Calle(models.Model):
-    clave = models.AutoField(primary_key=True, default=0)
+    clave = models.AutoField(primary_key=True)
     calle = models.TextField(max_length=255)
 
     def __str__(self):
         return f"{self.calle}"
 
 class Colonia(models.Model):
-    clave = models.AutoField(primary_key=True, default=0)
+    clave = models.AutoField(primary_key=True)
     colonia = models.TextField(max_length=255)
 
     def __str__(self):

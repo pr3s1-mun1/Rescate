@@ -10,7 +10,7 @@ class Servicio(models.Model):
     descripcion_evento = models.TextField()
     nombre_persona_reporta = models.CharField(max_length=100)
     telefono_persona_reporta = models.CharField(max_length=20)
-    sexo_persona_reporta = models.CharField(max_length=1)
+    sexo_persona_reporta = models.CharField(max_length=10)
     edad_persona_reporta = models.IntegerField()
     tipo_servicio_reporta = models.ForeignKey(
         TiposServicio, on_delete=models.SET_NULL, null=True, related_name="servicios_reportados"
@@ -20,7 +20,7 @@ class Servicio(models.Model):
         TiposServicio, on_delete=models.SET_NULL, null=True, related_name="servicios_realizados"
     )
     
-    estatus = models.CharField(max_length=1)
+    estatus = models.CharField(max_length=10)
     calle_entre = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True, related_name='calle_entre')
 
     def __str__(self):
@@ -60,22 +60,22 @@ class PacientexServicio(models.Model):
     apellido_materno = models.CharField(max_length=50)
     nombre = models.CharField(max_length=50)
     edad = models.IntegerField()
-    sexo = models.CharField(max_length=1)
-    estado_civil = models.CharField(max_length=1)
+    sexo = models.CharField(max_length=10)
+    estado_civil = models.CharField(max_length=10)
     domicilio = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True)
     telefono = models.CharField(max_length=20)
     colonia = models.ForeignKey(Colonia, on_delete=models.SET_NULL, null=True)
     estatura = models.DecimalField(max_digits=5, decimal_places=2)
-    complexion = models.CharField(max_length=1)
-    tez = models.CharField(max_length=1)
-    pelo = models.CharField(max_length=1)
+    complexion = models.CharField(max_length=10)
+    tez = models.CharField(max_length=10)
+    pelo = models.CharField(max_length=10)
     ropa = models.CharField(max_length=100)
 
     
     enfermedad = models.ForeignKey(Enfermedad, on_delete=models.SET_NULL, null=True)
     marca_vehiculo = models.ForeignKey(MarcaVehiculo, on_delete=models.SET_NULL, null=True)
     placa_vehiculo = models.CharField(max_length=10)
-    color_vehiculo = models.CharField(max_length=1)
+    color_vehiculo = models.CharField(max_length=10)
     fecha_ultima_comida = models.DateTimeField()
     fallecio = models.BooleanField(default=False)
     hospital = models.ForeignKey(Hospitales, on_delete=models.SET_NULL, null=True)
@@ -84,14 +84,14 @@ class PacientexServicio(models.Model):
     edad_acompanante = models.IntegerField()
     domicilio_acompanante = models.CharField(max_length=150)
     parentesco_acompanante = models.CharField(max_length=2)
-    sexo_acompanante = models.CharField(max_length=1)
+    sexo_acompanante = models.CharField(max_length=10)
 
 
     #Datos de liberación
     entregan_pertenencias = models.BooleanField(default=False)
     descripcion_pertenencias = models.TextField()
-    nombre_recibe = models.CharField(max_length=100)
-    cargo_recibe = models.CharField(max_length=100)
+    nombre_recibe = models.CharField(max_length=100, null=True)
+    cargo_recibe = models.CharField(max_length=100, null=True)
     empleado_recibe = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True, related_name='recibe_paciente')
 
 
@@ -106,27 +106,27 @@ class PacientexServicio(models.Model):
     numero_agente = models.CharField(max_length=10)
 
 
-    nivel_concienciaa = models.CharField(max_length=1)
-    piel = models.CharField(max_length=1)
+    nivel_concienciaa = models.CharField(max_length=10)
+    piel = models.CharField(max_length=10)
     antecedente = models.CharField(max_length=255)
     sintoma = models.TextField()
-    pulso_diagnostico = models.CharField(max_length=1)    
-    respiracion_diagnostico = models.CharField(max_length=1)    
-    pupilas = models.CharField(max_length=1)    
-    hemorragia = models.CharField(max_length=1)    
-    dolor = models.CharField(max_length=1)   
+    pulso_diagnostico = models.CharField(max_length=10)    
+    respiracion_diagnostico = models.CharField(max_length=10)    
+    pupilas = models.CharField(max_length=10)    
+    hemorragia = models.CharField(max_length=10)    
+    dolor = models.CharField(max_length=10)   
     pulso = models.CharField(max_length=10)   
     respiracion = models.CharField(max_length=10)   
     presion_inicial = models.CharField(max_length=10)   
     presion_posterior = models.CharField(max_length=10)   
     destroxtix = models.CharField(max_length=10)
-    oximetria = models.CharField(max_length=10)
-    temperatura = models.CharField(max_length=10)
-    apertura_ojos_glasgow = models.CharField(max_length=1)    
-    respuesta_verbal_glasgow = models.CharField(max_length=1)    
-    respuesta_motora_glasgow = models.CharField(max_length=1)    
-    edad_tipo = models.CharField(max_length=1)
-    domicilio_numero = models.CharField(max_length=10)
+    oximetria = models.CharField(max_length=10, null=True)
+    temperatura = models.CharField(max_length=10, null=True)
+    apertura_ojos_glasgow = models.CharField(max_length=10)    
+    respuesta_verbal_glasgow = models.CharField(max_length=10)    
+    respuesta_motora_glasgow = models.CharField(max_length=10)    
+    edad_tipo = models.CharField(max_length=10, null=True)
+    domicilio_numero = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f"{self.clave}"  

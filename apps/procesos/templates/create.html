@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Tu CSS personalizado -->
     <link rel="stylesheet" href="{% static 'css/servicio.css' %}">
+    
 </head>
 
 <body>
@@ -23,7 +24,7 @@
             <form method="post" id="servicioForm" action="{% url 'crear_servicio' %}" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
                 
-                <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <ul style="background-color: var(--guinda-oscuro); border-radius: 10px;" class="nav nav-tabs" id="mainTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="servicio-tab" data-bs-toggle="tab" data-bs-target="#servicio" type="button" role="tab" aria-controls="servicio" aria-selected="true">
                             <i class="fas fa-ambulance me-2"></i>Servicio

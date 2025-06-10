@@ -1,0 +1,210 @@
+{% load static %}
+<footer class="footer-guinda">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <!-- Logo y Nombre Institucional -->
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
+                    <img src="{% static 'img/Juarez_2024-2027-03.png' %}" alt="Protección Civil" class="footer-logo me-3">
+                    <div>
+                        <h4 class="mb-0">Protección Civil</h4>
+                        <p class="mb-0 footer-subtitle">Dirección General de Protección Civil</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enlaces Rápidos -->
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="footer-links d-flex justify-content-center">
+                    <a href="#" class="footer-link mx-3">
+                        <i class="fas fa-shield-alt"></i> Privacidad
+                    </a>
+                    <a href="#" class="footer-link mx-3">
+                        <i class="fas fa-file-contract"></i> Términos
+                    </a>
+                    <a href="#" class="footer-link mx-3">
+                        <i class="fas fa-envelope"></i> Contacto
+                    </a>
+                </div>
+            </div>
+
+            <!-- Desarrollador con Logo -->
+            <div class="col-lg-4">
+                <div class="d-flex align-items-center justify-content-center justify-content-lg-end">
+                    <div class="text-end me-3">
+                        <p class="mb-0 footer-dev-name">Desarrollado por</p>
+                    </div>
+                    <img src="{% static 'img/LOGO DGIC 24-27 V.png' %}" alt="Logo Desarrollador" class="developer-logo">
+                </div>
+            </div>
+        </div>
+
+        <!-- Derechos de Autor -->
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <p class="footer-copyright mb-0">
+                    <i class="far fa-copyright"></i> {{ year }} Gobierno Municipal - Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .footer-guinda {
+            background: linear-gradient(135deg, var(--guinda-oscuro), var(--guinda-principal));
+            color: white;
+            padding: 2rem 0 1rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-guinda::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--dorado-accento);
+        }
+
+        .footer-logo {
+            height: 60px;
+            transition: transform 0.3s;
+        }
+
+        .footer-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .footer-guinda h4 {
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .footer-link i {
+            margin-right: 8px;
+            color: var(--dorado-accento);
+            font-size: 1.1rem;
+        }
+
+        .footer-link::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--dorado-accento);
+            transition: width 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--dorado-accento);
+        }
+
+        .footer-link:hover::after {
+            width: 100%;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+
+        .footer-copyright i {
+            margin-right: 5px;
+        }
+
+        .developer-logo {
+            height: 75px;
+            border-radius: 5%;
+            border: 2px solid var(--dorado-accento);
+            padding: 5px;
+            background: white;
+        }
+
+        .footer-logo {
+            height: 75px;
+            border-radius: 5%;
+            border: 2px solid var(--dorado-accento);
+            padding: 3px;
+            background: white;
+        }
+
+
+        .footer-dev {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.2;
+        }
+
+        .footer-dev-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 992px) {
+            .footer-logo {
+                height: 50px;
+            }
+            
+            .footer-links {
+                justify-content: center !important;
+                margin-bottom: 1rem;
+            }
+            
+            .developer-logo {
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer-guinda {
+                text-align: center;
+                padding: 1.5rem 0;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .footer-link {
+                margin: 0.5rem 0 !important;
+            }
+            
+            .d-flex.justify-content-lg-end {
+                justify-content: center !important;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</footer>

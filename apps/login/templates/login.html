@@ -1,51 +1,397 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Iniciar Sesión - Protección Civil</title>
+    
+    <!-- Bootstrap y Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+
+    <style>
+        :root {
+            --guinda-principal: #7A003C;
+            --guinda-oscuro: #5A002C;
+            --guinda-claro: #9A004C;
+            --dorado-accento: #D4AF37;
+            --gris-claro: #f5f5f5;
+            --texto-oscuro: #212529;
+        }
+        
+        body {
+            background: linear-gradient(135deg, rgba(122, 0, 60, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        .login-container {
+            margin: auto;
+            background-color: white;
+            color: var(--texto-oscuro);
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(122, 0, 60, 0.1);
+            overflow: hidden;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: row;
+            transition: all 0.3s ease;
+            min-height: 600px;
+            border: 1px solid rgba(122, 0, 60, 0.1);
+        }
+
+        .login-image {
+            background: linear-gradient(rgba(122, 0, 60, 0.85), rgba(90, 0, 44, 0.85)), 
+            url("{% static 'img/LogMuni.png' %}") no-repeat center center;
+            background-size: contain;
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-image::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .login-image::after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .login-image-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Alinea a la izquierda */
+        }
+
+        .login-image-content img {
+            max-width: 100px; /* Más pequeña (era 180px) */
+            margin-bottom: 1.5rem; /* Menos espacio abajo */
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+            align-self: flex-start; /* Alinea imagen a la izquierda */
+        }
+
+        .login-image-content h3 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-image-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .login-form {
+            padding: 4rem 3.5rem;
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .login-header h2 {
+            color: var(--guinda-principal);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .login-header h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: var(--dorado-accento);
+            border-radius: 3px;
+        }
+
+        .login-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+            font-size: 1rem;
+            height: 48px;
+        }
+
+        .form-control:focus {
+            border-color: var(--guinda-principal);
+            box-shadow: 0 0 0 0.2rem rgba(122, 0, 60, 0.1);
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--texto-oscuro);
+            font-size: 0.95rem;
+        }
+
+        .btn-login {
+            background-color: var(--guinda-principal);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-login:hover {
+            background-color: var(--guinda-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(122, 0, 60, 0.2);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 1.1rem;
+            z-index: 5;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .alert {
+            border-radius: 8px;
+            font-size: 0.95rem;
+            padding: 1rem;
+            background-color: rgba(255, 193, 7, 0.15);
+            border-left: 4px solid var(--dorado-accento);
+        }
+
+        .input-group-text {
+            background-color: white;
+            border-right: none;
+            padding: 0 1rem;
+            border: 2px solid #e9ecef;
+            border-right: 0;
+        }
+
+        .input-group .form-control {
+            border-left: none;
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: var(--guinda-principal);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--guinda-principal);
+            border-color: var(--guinda-principal);
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(122, 0, 60, 0.25);
+        }
+
+        .forgot-password {
+            color: var(--guinda-principal);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .forgot-password:hover {
+            color: var(--guinda-oscuro);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 992px) {
+            .login-container {
+                max-width: 90%;
+                min-height: auto;
+            }
+            
+            .login-form {
+                padding: 3rem 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 95%;
+            }
+
+            .login-image,
+            .login-form {
+                width: 100%;
+            }
+
+            .login-image {
+                height: 250px;
+                padding: 2rem;
+            }
+            
+            .login-form {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-form {
+                padding: 2rem 1.25rem;
+            }
+            
+            .login-image {
+                height: 220px;
+                padding: 1.5rem;
+            }
+            
+            .login-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
 
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4>Iniciar Sesión</h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            
-                            <div class="mb-3">
-                                <label for="usuario" class="form-label">Usuario:</label>
-                                <input type="text" id="usuario" name="usuario" class="form-control" required>
-                            </div>
+    <div class="login-container my-4">
+        <div class="login-image">
+            <div class="login-image-content">
+                <img src="" class="img-fluid">
+                <h3>Rescate</h3>
+                <p>Sistema de Gestión de Servicios Médicos y Emergencias</p>
+            </div>
+        </div>
+        <div class="login-form">
+            <div class="login-header">
+                <h2><i class="bi bi-shield-lock me-2"></i>Iniciar Sesión</h2>
+                <p>Ingresa tus credenciales para acceder al sistema</p>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
 
-                            <div class="mb-3">
-                                <label for="contrasena" class="form-label">Contraseña:</label>
-                                <input type="password" id="contrasena" name="contrasena" class="form-control" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
-                        </form>
-
-                        {% for message in messages %}
-                        <div class="alert alert-warning mt-3">{{ message }}</div>
-                        {% endfor %}
+                <div class="mb-4">
+                    <label for="usuario" class="form-label">Usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill" style="color: var(--guinda-principal); font-size: 1.2rem;"></i></span>
+                        <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Ingresa tu usuario" required>
                     </div>
                 </div>
-            </div>
+
+                <div class="mb-4">
+                    <label for="contrasena" class="form-label">Contraseña</label>
+                    <div class="password-container">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill" style="color: var(--guinda-principal); font-size: 1.2rem;"></i></span>
+                            <input type="password" id="contrasena" name="contrasena" class="form-control" placeholder="Ingresa tu contraseña" required>
+                        </div>
+                        <i class="bi bi-eye-fill password-toggle" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Recordar sesión</label>
+                    </div>
+                    <a href="#" class="forgot-password text-decoration-none">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100 mb-4">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> INGRESAR
+                </button>
+                
+                {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </form>
         </div>
     </div>
 
-</body>
+    {% include 'footer.html' %}
 
+    <script>
+        // Mostrar/ocultar contraseña
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('contrasena');
+            const icon = this;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            }
+        });
+
+        // Efecto hover en el contenedor
+        const loginContainer = document.querySelector('.login-container');
+        loginContainer.addEventListener('mouseenter', () => {
+            loginContainer.style.transform = 'translateY(-5px)';
+            loginContainer.style.boxShadow = '0 15px 35px rgba(122, 0, 60, 0.15)';
+        });
+        loginContainer.addEventListener('mouseleave', () => {
+            loginContainer.style.transform = 'translateY(0)';
+            loginContainer.style.boxShadow = '0 5px 25px rgba(122, 0, 60, 0.1)';
+        });
+    </script>
+</body>
 </html>

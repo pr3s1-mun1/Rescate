@@ -1,121 +1,133 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Gráficos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        .option-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
         .option-card:hover {
-            background-color: #f8f9fa;
             transform: translateY(-5px);
-            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            background-color: #f8f9fa;
         }
         .option-icon {
             transition: transform 0.3s ease;
         }
+        .option-card:hover .option-icon {
+            transform: scale(1.1);
+        }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
     {% include 'navbar.html' %}
-    <div class="container">
-        <h1 class="text-center mb-5">Centro de Gráficos</h1>
-        <div class="row">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Centro de Gráficos</h1>
 
-            <div class="col-md-4 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="mb-4">
                 <a href="{% url 'traslados' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-file-alt fa-3x text-primary"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-hospital fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Traslados a Hospital Municipal</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Traslados a Hospital Municipal</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'traslados_hospitalarios' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-user-nurse fa-3x text-success"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-hospital-alt fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Traslados a Centros Hospitalarios</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Traslados a Centros Hospitalarios</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'pacientes_sector' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-map-marked-alt fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Pacientes Antendidos por Sector</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Pacientes Atendidos por Sector</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'pacientes_sector_m' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-male fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Pacientes Antendidos por Genero Masculino</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Pacientes Atendidos por Género Masculino</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'pacientes_sector_f' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-female fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Pacientes Antendidos por Genero Femenino</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Pacientes Atendidos por Género Femenino</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'intoxicaciones' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-skull-crossbones fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Pacientes Intoxicados</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Pacientes Intoxicados</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'pacientes_por_colonia' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-map-marker-alt fa-3x "></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Emergencias por Colonia</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Emergencias por Colonia</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="mb-4">
                 <a href="{% url 'defunciones' %}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-cross fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Defunciones</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Defunciones</h4>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
-                <a href="{% url 'lesiones'%}" class="text-decoration-none">
-                    <div class="card option-card text-center p-4 shadow-lg border-0 rounded-lg h-100">
-                        <div class="option-icon mb-3">
-                            <i class="fas fa-ambulance fa-3x text-danger"></i>
+            <div class="mb-4">
+                <a href="{% url 'lesiones' %}" class="text-decoration-none">
+                    <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
+                        <div class="option-icon mb-4">
+                            <i class="fas fa-band-aid fa-3x"></i>
                         </div>
-                        <h4 class="card-title mb-3 text-dark">Lesiones</h4>
+                        <h4 class="text-lg font-semibold text-gray-700">Lesiones</h4>
                     </div>
                 </a>
             </div>
-
         </div>
     </div>
 

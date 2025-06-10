@@ -9,6 +9,7 @@
     <title>Buscador de Servicios Médicos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
         :root {
             --primary-color: #2563eb;
@@ -160,7 +161,7 @@
 
         .servicios-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -178,7 +179,9 @@
         }
 
         @keyframes fadeIn {
-            to { opacity: 1; }
+            to {
+                opacity: 1;
+            }
         }
 
         .servicio-card:hover {
@@ -430,7 +433,7 @@
             .btn-sm {
                 width: 100%;
             }
-            
+
             .info-grid {
                 grid-template-columns: 1fr;
             }
@@ -447,271 +450,318 @@
             <p class="subtitle">Encuentra y gestiona servicios médicos registrados</p>
         </header>
 
-        <section class="search-section">
-            <div class="search-card">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" name="clave" class="form-control"
-                            placeholder="Buscar por nombre, clave o ubicación...">
-                        <button type="submit" class="btn">
-                            <i class="fas fa-search mr-2"></i> Buscar
-                        </button>
-                    </div>
-                </form>
+    <section class="search-section">
+    <div class="search-card">
+        <form method="post">
+        {% csrf_token %}
+
+        <!-- Input principal visible -->
+        <div class="input-group mb-2">
+            <span class="input-group-text">
+            <i class="fas fa-search"></i>
+            </span>
+            <input type="text" name="clave" class="form-control"
+            placeholder="Buscar por nombre, clave o ubicación..." value="{{ filtros.clave|default:'' }}">
+        </div>
+
+        <!-- Botón para desplegar filtros -->
+        <div class="mb-2 text-end">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleFiltros()">Mostrar más filtros</button>
+        </div>
+
+        <!-- Filtros ocultos inicialmente -->
+        <div id="filtros-adicionales" style="display: none;">
+            <div class="input-group mb-2">
+            <label class="input-group-text" for="fecha_inicio">Fecha inicio:</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ filtros.fecha_inicio|default:'' }}">
+            <label class="input-group-text" for="fecha_fin">Fecha fin:</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ filtros.fecha_fin|default:'' }}">
             </div>
-        </section>
+
+            <div class="input-group mb-2">
+            <input type="text" name="base" class="form-control" placeholder="Base" value="{{ filtros.base|default:'' }}">
+            <input type="text" name="direccion" class="form-control" placeholder="Dirección" value="{{ filtros.direccion|default:'' }}">
+            </div>
+
+            <div class="input-group mb-2">
+            <input type="text" name="paciente" class="form-control" placeholder="Paciente" value="{{ filtros.paciente|default:'' }}">
+            <input type="text" name="ropa" class="form-control" placeholder="Ropa" value="{{ filtros.ropa|default:'' }}">
+            </div>
+
+            <div class="input-group mb-2">
+            <input type="text" name="sintoma" class="form-control" placeholder="Síntoma" value="{{ filtros.sintoma|default:'' }}">
+            <input type="text" name="antecedente" class="form-control" placeholder="Antecedente" value="{{ filtros.antecedente|default:'' }}">
+            </div>
+
+            <div class="input-group mb-2">
+            <input type="text" name="placas" class="form-control" placeholder="Placas" value="{{ filtros.placas|default:'' }}">
+            <select name="sexo" class="form-select">
+                <option value="">Sexo</option>
+                <option value="M" {% if filtros.sexo == 'M' %}selected{% endif %}>Masculino</option>
+                <option value="F" {% if filtros.sexo == 'F' %}selected{% endif %}>Femenino</option>
+            </select>
+            </div>
+
+            <div class="input-group mb-2">
+            <input type="text" name="servicio_realizado" class="form-control" placeholder="Servicio Realizado" value="{{ filtros.servicio_realizado|default:'' }}">
+            <input type="text" name="enfermedad" class="form-control" placeholder="Enfermedad" value="{{ filtros.enfermedad|default:'' }}">
+            </div>
+
+            <div class="input-group mb-2">
+            <input type="text" name="hospital" class="form-control" placeholder="Hospital" value="{{ filtros.hospital|default:'' }}">
+            <input type="text" name="ambulancia" class="form-control" placeholder="Ambulancia" value="{{ filtros.ambulancia|default:'' }}">
+            </div>
+        </div>
+
+        <!-- Botón de búsqueda -->
+            <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search mr-2"></i> Buscar
+            </button>
+        </form>
+    </div>
+    </section>
+
+    <script>
+    function toggleFiltros() {
+        const filtros = document.getElementById('filtros-adicionales');
+        const btn = event.currentTarget;
+
+        if (filtros.style.display === 'none') {
+        filtros.style.display = 'block';
+        btn.textContent = 'Ocultar filtros';
+        } else {
+        filtros.style.display = 'none';
+        btn.textContent = 'Mostrar más filtros';
+        }
+    }
+    </script>
+
 
         <section class="results-section">
             {% if pacientes_servicios or servicios_sin_paciente %}
-                {% if pacientes_servicios %}
-                <h2 class="section-title">Servicios con pacientes</h2>
-                <div class="servicios-grid">
-                    {% for ps in pacientes_servicios %}
-                    <div class="servicio-card" style="animation-delay: {{ forloop.counter0|divisibleby:2|yesno:'0s,0.1s' }}">
-                        <!-- Header -->
-                        <div class="servicio-header">
-                            <h3 class="servicio-title">
-                                {% if ps %}
-                                    {{ ps.nombre }} {{ ps.apellido_paterno }} {{ ps.apellido_materno }}
-                                {% else %}
-                                    Sin paciente
-                                {% endif %}
-                            </h3>
-                            <span class="servicio-badge badge-primary">#{{ ps.servicio.clave }}</span>
+            {% if pacientes_servicios %}
+            <h2 class="section-title">Servicios con pacientes</h2>
+            <div class="servicios-grid">
+                {% for ps in pacientes_servicios %}
+                <div class="servicio-card"
+                    style="animation-delay: {{ forloop.counter0|divisibleby:2|yesno:'0s,0.1s' }}">
+                    <!-- Header -->
+                    <div class="servicio-header">
+                        <h3 class="servicio-title">
+                            {% if ps %}
+                            {{ ps.nombre|add:" "|add:ps.apellido_paterno|add:" "|add:ps.apellido_materno|truncatechars:20 }}
+                            {% else %}
+                            Sin paciente
+                            {% endif %}
+                        </h3>
+                        <span class="servicio-badge badge-primary">#{{ ps.servicio.clave }}</span>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="servicio-body">
+                        <!-- Service Information -->
+                        <div class="info-section">
+                            <h4 class="info-title">
+                                <i class="fas fa-ambulance"></i> Información del Servicio
+                            </h4>
+                            <div class="info-grid">
+                                <div class="info-block">
+                                    <span class="info-label">Fecha</span>
+                                    <span class="info-value">{{ ps.servicio.fecha|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Estado</span>
+                                    <span class="info-value">
+                                        {% if ps.servicio.estatus == 'P' %}
+                                        <span class="status-indicator status-pending"></span>En Proceso
+                                        {% elif ps.servicio.estatus == 'T' %}
+                                        <span class="status-indicator status-completed"></span>Terminado
+                                        {% else %}
+                                        <span class="status-indicator status-cancelled"></span>Cancelado
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Ubicación</span>
+                                    <span class="info-value">{{ ps.servicio.direccion_emergencia.calle }}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Body -->
-                        <div class="servicio-body">
-                            <!-- Service Information -->
-                            <div class="info-section">
-                                <h4 class="info-title">
-                                    <i class="fas fa-ambulance"></i> Información del Servicio
-                                </h4>
-                                <div class="info-grid">
-                                    <div class="info-block">
-                                        <span class="info-label">Fecha</span>
-                                        <span class="info-value">{{ ps.servicio.fecha|date:"d/m/Y" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Estado</span>
-                                        <span class="info-value">
-                                            {% if ps.servicio.estatus == 'P' %}
-                                                <span class="status-indicator status-pending"></span>En Proceso
-                                            {% elif ps.servicio.estatus == 'T' %}
-                                                <span class="status-indicator status-completed"></span>Terminado
-                                            {% else %}
-                                                <span class="status-indicator status-cancelled"></span>Cancelado
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Ubicación</span>
-                                        <span class="info-value">{{ ps.servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
-                                    </div>
+                        <!-- Patient Information -->
+                        {% if ps %}
+                        <div class="info-section">
+                            <h4 class="info-title">
+                                <i class="fas fa-user-injured"></i> Información del Paciente
+                            </h4>
+                            <div class="info-grid">
+                                <div class="info-block">
+                                    <span class="info-label"># Paciente</span>
+                                    <span class="info-value">{{ ps.clave }}</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Edad</span>
+                                    <span class="info-value">{{ ps.edad }}</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Sexo</span>
+                                    <span class="info-value">{{ ps.sexo|yesno:"Masculino,Femenino" }}</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Patient Information -->
-                            {% if ps %}
-                            <div class="info-section">
-                                <h4 class="info-title">
-                                    <i class="fas fa-user-injured"></i> Información del Paciente
-                                </h4>
-                                <div class="info-grid">
-                                    <div class="info-block">
-                                        <span class="info-label">Clave</span>
-                                        <span class="info-value">{{ ps.clave }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Edad</span>
-                                        <span class="info-value">{{ ps.edad }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Sexo</span>
-                                        <span class="info-value">{{ ps.sexo|yesno:"Masculino,Femenino" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Estatura</span>
-                                        <span class="info-value">{{ ps.estatura }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Complexió</span>
-                                        <span class="info-value">
-                                            {% if ps.complexion == '1' %}Caquexia
-                                            {% elif ps.complexion == '2' %}Delgado
-                                            {% elif ps.complexion == '3' %}Regular
-                                            {% elif ps.complexion == '4' %}Robusta
-                                            {% elif ps.complexion == '5' %}Obesa
-                                            {% elif ps.complexion == '6' %}Obesidad mórbida
-                                            {% else %}No especificado{% endif %}
-                                        </span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Tez</span>
-                                        <span class="info-value">
-                                            {% if ps.tez == '1' %}Blanco
-                                            {% elif ps.tez == '2' %}Medio
-                                            {% elif ps.tez == '3' %}Moreno
-                                            {% elif ps.tez == '4' %}Negro
-                                            {% else %}No especificado{% endif %}
-                                        </span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Ropa</span>
-                                        <span class="info-value">{{ ps.ropa }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Acompañante</span>
-                                        <span class="info-value">{{ ps.nombre_acompanante|default:"-" }}</span>
-                                    </div>
+                        <!-- Vehicle Information -->
+                        <div class="info-section">
+                            <h4 class="info-title">
+                                <i class="fas fa-car"></i> Información del Vehículo
+                            </h4>
+                            <div class="info-grid">
+                                <div class="info-block">
+                                    <span class="info-label">Ambulancia</span>
+                                    <span class="info-value">{{ ps.ambulancia|default:"-" }}</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Hospital</span>
+                                    <span class="info-value">{{ ps.hospital|default:"-" }}</span>
                                 </div>
                             </div>
+                        </div>
+                        {% else %}
+                        <div class="info-section">
+                            <p class="info-value"><em>Sin datos de paciente</em></p>
+                        </div>
+                        {% endif %}
+                    </div>
 
-                            <!-- Vehicle Information -->
-                            <div class="info-section">
-                                <h4 class="info-title">
-                                    <i class="fas fa-car"></i> Información del Vehículo
-                                </h4>
-                                <div class="info-grid">
-                                    <div class="info-block">
-                                        <span class="info-label">Ambulancia</span>
-                                        <span class="info-value">{{ ps.ambulancia|default:"-" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Hospital</span>
-                                        <span class="info-value">{{ ps.hospital|default:"-" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Marca</span>
-                                        <span class="info-value">{{ ps.marca_vehiculo|default:"-" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Placas</span>
-                                        <span class="info-value">{{ ps.placa_vehiculo|default:"-" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Color</span>
-                                        <span class="info-value">
-                                            {% if ps.color_vehiculo == '1' %} Ninguno
-                                            {% elif ps.color_vehiculo == '2'%} Blanco
-                                            {% elif ps.color_vehiculo == '3'%} Negro
-                                            {% elif ps.color_vehiculo == '4'%} Rojo
-                                            {% elif ps.color_vehiculo == '5'%} Amarillo
-                                            {% elif ps.color_vehiculo == '6'%} Verde
-                                            {% elif ps.color_vehiculo == '7'%} Café
-                                            {% elif ps.color_vehiculo == '8'%} Gris
-                                            {% else %} Inválido
-                                            {% endif %}
-                                        </span>
-                                    </div>
+                    <!-- Actions -->
+                    <div class="acciones">
+                        <a href="{% url 'carga_modifica' ps.servicio.clave ps.clave %}" class="btn-sm btn-primary">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                        <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank"
+                            style="display: inline;">
+                            {% csrf_token %}
+                            <button class="btn-sm btn-secondary" type="submit">
+                                <i class="fas fa-file-alt"></i> Reporte
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
+                {% if pacientes_servicios.has_other_pages %}
+                    <div style="display: inline-flex; gap: 0.5rem;">
+                        {% if pacientes_servicios.has_previous %}
+                            <a href="?page_con={{ pacientes_servicios.previous_page_number }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
+                        {% endif %}
+
+                        {% for num in pacientes_servicios.paginator.page_range %}
+                            {% if pacientes_servicios.number == num %}
+                                <span class="btn-sm btn-primary">{{ num }}</span>
+                            {% elif num > pacientes_servicios.number|add:'-3' and num < pacientes_servicios.number|add:'3' %}
+                                <a href="?page_con={{ num }}" class="btn-sm btn-secondary">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if pacientes_servicios.has_next %}
+                            <a href="?page_con={{ pacientes_servicios.next_page_number }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            {% if servicios_sin_paciente %}
+            <h2 class="section-title">Servicios sin pacientes</h2>
+            <div class="servicios-grid">
+                {% for servicio in servicios_sin_paciente %}
+                <div class="servicio-card">
+                    <div class="servicio-header">
+                        <h3 class="servicio-title">Sin paciente asignado</h3>
+                        <span class="servicio-badge badge-primary">#{{ servicio.clave }}</span>
+                    </div>
+                    <div class="servicio-body">
+                        <div class="info-section">
+                            <h4 class="info-title">
+                                <i class="fas fa-ambulance"></i> Información del Servicio
+                            </h4>
+                            <div class="info-grid">
+                                <div class="info-block">
+                                    <span class="info-label">Fecha</span>
+                                    <span class="info-value">{{ servicio.fecha|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Estado</span>
+                                    <span class="info-value">
+                                        {% if servicio.estatus == 'P' %}
+                                        <span class="status-indicator status-pending"></span>En Proceso
+                                        {% elif servicio.estatus == 'T' %}
+                                        <span class="status-indicator status-completed"></span>Terminado
+                                        {% else %}
+                                        <span class="status-indicator status-cancelled"></span>Cancelado
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Ubicación</span>
+                                    <span class="info-value">{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
                                 </div>
                             </div>
-                            {% else %}
-                            <div class="info-section">
-                                <p class="info-value"><em>Sin datos de paciente</em></p>
-                            </div>
+                        </div>
+                        <div class="info-section">
+                            <p class="info-value"><em>Este servicio no tiene pacientes asignados.</em></p>
+                        </div>
+                    </div>
+                    <div class="acciones">
+                        <a href="{% url 'carga_modifica_n' servicio.clave %}" class="btn-sm btn-primary">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                        <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank"
+                            style="display: inline;">
+                            {% csrf_token %}
+                            <button class="btn-sm btn-secondary" type="submit">
+                                <i class="fas fa-file-alt"></i> Reporte
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
+                    {% if servicios_sin_paciente.has_other_pages %}
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            {% if servicios_sin_paciente.has_previous %}
+                                <a href="?page_sin={{ servicios_sin_paciente.previous_page_number }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
+                            {% endif %}
+
+                            {% for num in servicios_sin_paciente.paginator.page_range %}
+                                {% if servicios_sin_paciente.number == num %}
+                                    <span class="btn-sm btn-primary">{{ num }}</span>
+                                {% elif num > servicios_sin_paciente.number|add:'-3' and num < servicios_sin_paciente.number|add:'3' %}
+                                    <a href="?page_sin={{ num }}" class="btn-sm btn-secondary">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if servicios_sin_paciente.has_next %}
+                                <a href="?page_sin={{ servicios_sin_paciente.next_page_number }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
                             {% endif %}
                         </div>
+                    {% endif %}
+</div>
 
-                        <!-- Actions -->
-                        <div class="acciones">
-                            <a href="{% url 'carga_modifica' ps.servicio.clave ps.clave %}" class="btn-sm btn-primary">
-                                <i class="fas fa-edit"></i> Modificar
-                            </a>
-                            <form action="{% url 'eliminar_servicio' ps.servicio.clave %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <button class="btn-sm btn-danger" type="submit">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
-                                </button>
-                            </form>
-                            <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank" style="display: inline;">
-                                {% csrf_token %}
-                                <button class="btn-sm btn-secondary" type="submit">
-                                    <i class="fas fa-file-alt"></i> Reporte
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
+            </div>
 
-                {% if servicios_sin_paciente %}
-                <h2 class="section-title">Servicios sin pacientes</h2>
-                <div class="servicios-grid">
-                    {% for servicio in servicios_sin_paciente %}
-                    <div class="servicio-card">
-                        <div class="servicio-header">
-                            <h3 class="servicio-title">Sin paciente asignado</h3>
-                            <span class="servicio-badge badge-primary">#{{ servicio.clave }}</span>
-                        </div>
-                        <div class="servicio-body">
-                            <div class="info-section">
-                                <h4 class="info-title">
-                                    <i class="fas fa-ambulance"></i> Información del Servicio
-                                </h4>
-                                <div class="info-grid">
-                                    <div class="info-block">
-                                        <span class="info-label">Fecha</span>
-                                        <span class="info-value">{{ servicio.fecha|date:"d/m/Y" }}</span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Estado</span>
-                                        <span class="info-value">
-                                            {% if servicio.estatus == 'P' %}
-                                                <span class="status-indicator status-pending"></span>En Proceso
-                                            {% elif servicio.estatus == 'T' %}
-                                                <span class="status-indicator status-completed"></span>Terminado
-                                            {% else %}
-                                                <span class="status-indicator status-cancelled"></span>Cancelado
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                    <div class="info-block">
-                                        <span class="info-label">Ubicación</span>
-                                        <span class="info-value">{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="info-section">
-                                <p class="info-value"><em>Este servicio no tiene pacientes asignados.</em></p>
-                            </div>
-                        </div>
-                        <div class="acciones">
-                            <a href="{% url 'carga_modifica_n' servicio.clave %}" class="btn-sm btn-primary">
-                                <i class="fas fa-edit"></i> Modificar
-                            </a>
-                            <form action="{% url 'eliminar_servicio' servicio.clave %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <button class="btn-sm btn-danger" type="submit">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
-                                </button>
-                            </form>
-                            <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank" style="display: inline;">
-                                {% csrf_token %}
-                                <button class="btn-sm btn-secondary" type="submit">
-                                    <i class="fas fa-file-alt"></i> Reporte
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
+            {% endif %}
             {% else %}
-                <div class="empty-state">
-                    <i class="fas fa-clipboard-list empty-icon"></i>
-                    <p class="empty-text">No se encontraron servicios médicos</p>
-                    <a href="{% url 'formulario_servicio' %}" class="btn-empty">
-                        <i class="fas fa-plus mr-2"></i> Crear nuevo servicio
-                    </a>
-                </div>
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list empty-icon"></i>
+                <p class="empty-text">No se encontraron servicios médicos</p>
+                <a href="{% url 'formulario_servicio' %}" class="btn-empty">
+                    <i class="fas fa-plus mr-2"></i> Crear nuevo servicio
+                </a>
+            </div>
             {% endif %}
         </section>
+
     </div>
 
     <script>
@@ -724,4 +774,5 @@
         });
     </script>
 </body>
+
 </html>
