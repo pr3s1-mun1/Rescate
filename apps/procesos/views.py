@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from apps.catalogos.forms import *
-from apps.catalogos.views import requiere_tipo_paramedico
+from apps.catalogos.views import requiere_tipo_paramedico, Logs_Sistema
 from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm
 from django.http import HttpResponse
 from collections import defaultdict
@@ -21,7 +21,7 @@ def formulario_buscar(request):
         filtros = request.POST.dict()
         pacientes_servicios_query = buscar_servicios_filtrados(filtros)
     else:
-        pacientes_servicios_query = PacientexServicio.objects.all().select_related('servicio')
+        pacientes_servicios_query = PacientexServicio.objects.all().order_by('-clave').select_related('servicio')
 
     paginator_con = Paginator(pacientes_servicios_query, 8)
     page_number_con = request.GET.get('page_con')
@@ -187,6 +187,12 @@ def crear_servicio(request):
                 paramedico = Paramedicos.objects.get(clave=clave)
                 ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
 
+            # Registro de log
+            Logs_Sistema.objects.create(
+                usuario=request.session.get("user", "Desconocido"),
+                accion=f"Creó servicio con clave {servicio.clave}"
+            )
+
             print("Servicio creado con éxito:", servicio.clave)
             return redirect('carga_modifica_n', pk=servicio.clave)
 
@@ -209,6 +215,7 @@ def crear_servicio(request):
     }
 
     return render(request, 'modificar_servicio.html', context)
+
 
 
 @requiere_tipo_paramedico('P', 'A')
@@ -313,13 +320,13 @@ def carga_modifica_n(request, pk):
         'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
         'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
         'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-        'paramedicos': Paramedicos.objects.all().order_by('nombre'),
+        'paramedicos': Paramedicos.objects.filter(estatus='A').order_by('nombre'),
         'unidades': TipoUnidad.objects.all(),
-        'alergias': Alergia.objects.all(),
-        'materiales': Material.objects.all(),
-        'medicamentos': Medicamento.objects.all(),
-        'equipos': Equipo.objects.all(),
-        'procedimientos': Procedimiento.objects.all().order_by('protocolo'),
+        'alergias': Alergia.objects.all().order_by('descripcion'),
+        'materiales': Material.objects.all().order_by('descripcion'),
+        'medicamentos': Medicamento.objects.all().order_by('descripcion'),
+        'equipos': Equipo.objects.all().order_by('descripcion'),
+        'procedimientos': Procedimiento.objects.all().order_by('protocolo', 'descripcion')
     }
 
     return render(request, 'modificar_servicio.html', context)
@@ -417,6 +424,11 @@ def guardar_todo(request, pk, ps):
                 print('Error en formulario de embarazo:')
                 print(form_embarazo.errors)
 
+
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Actualizó servicio con clave {servicio.clave} y paciente con clave {paciente.clave if paciente else 'N/A'}"
+        )
         return redirect('exito_guardado', pk=servicio.clave, ps=paciente.clave)
 
     except Exception as e:
@@ -506,7 +518,10 @@ def guardar_todo_n(request, pk):
             else:
                 print('❌ Error en formulario de embarazo:', form_embarazo.errors)
 
-        print("✅ Proceso completado, redirigiendo a exito_guardado")
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Actualizó servicio con clave {servicio.clave} y paciente con clave {paciente.clave if paciente else 'N/A'}"
+        )
         return redirect('exito_guardado', pk=servicio.clave, ps=paciente.clave)
 
     except Exception as e:

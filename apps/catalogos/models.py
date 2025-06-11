@@ -161,3 +161,13 @@ class Calle_Colonia(models.Model):
 
     def __str__(self):
         return f"{self.calle} - {self.colonia}"
+    
+
+class Logs_Sistema(models.Model):
+    clave = models.AutoField(primary_key=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+    usuario = models.CharField(max_length=50)
+    accion = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.fecha} - {self.usuario} - {self.accion}"

@@ -7,6 +7,7 @@ from django.db.models.functions import Cast
 from .models import *
 from .forms import *
 
+
 CATALOGOS = {
     'alergias':             {'model': Alergia,              'form': AlergiaForm,             'template': 'alergias.html',            'update_template': 'updt/update_alergias.html'},
     'bases':                {'model': Bases,               'form': BaseForm,                'template': 'bases.html',               'update_template': 'updt/update_base.html'},
@@ -38,9 +39,21 @@ def catalogo_general(request, tipo):
     modelo = catalogo['model']
     template = catalogo['template']
     
-    objetos = modelo.objects.filter(descripcion__icontains=query) if query else modelo.objects.all()
+    # Verifica si el modelo tiene el campo 'descripcion'
+    campos = [field.name for field in modelo._meta.get_fields()]
+    tiene_descripcion = 'descripcion' in campos
+
+    if tiene_descripcion:
+        if query:
+            objetos = modelo.objects.filter(descripcion__icontains=query)
+        else:
+            objetos = modelo.objects.all().order_by('descripcion')
+    else:
+        # Si no tiene campo descripcion, no se aplica filtro ni ordenamiento
+        objetos = modelo.objects.all()
 
     return render(request, template, {tipo: objetos, 'query': query})
+
 
 def requiere_tipo_paramedico(*tipos_permitidos):
     def decorator(view_func):
@@ -70,6 +83,12 @@ def update_catalogo(request, tipo, clave):
         form = form_class(request.POST, instance=objeto)
         if form.is_valid():
             form.save()
+
+            #Registro de log
+            Logs_Sistema.objects.create(
+                usuario=request.session.get("user", "Desconocido"),
+                accion=f"Actualizó {tipo} con clave {clave}"
+            )
             return redirect('catalogo_general', tipo=tipo)
     else:
         form = form_class(instance=objeto)
@@ -93,6 +112,10 @@ def delete_catalogo(request, tipo, clave):
 
     if request.method == "POST":
         objeto.delete()
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Eliminó {tipo} con clave {clave}"
+        )
         return redirect('catalogo_general', tipo=tipo)
 
     return render(request, 'confirm_delete.html', {'objeto': objeto, 'tipo': tipo})
@@ -132,6 +155,13 @@ def add_catalogo(request, tipo):
             if not clave_manual and nueva_clave != "":
                 nuevo_registro.clave = nueva_clave
             nuevo_registro.save()
+
+            # Registro de log
+            Logs_Sistema.objects.create(
+                usuario=request.session.get("user", "Desconocido"),
+                accion=f"Agregó {tipo} con clave {nuevo_registro.clave}"
+            )
+
             return redirect('catalogo_general', tipo=tipo)
     else:
         initial_data = {}
@@ -145,6 +175,9 @@ def add_catalogo(request, tipo):
         'titulo': catalogo.get('nombre', tipo),
         'nueva_clave': nueva_clave,
     })
+
+
+
 def relacionar_calle_colonia(request):
     colonias = Colonia.objects.all().order_by('colonia')
     calles = Calle.objects.all().order_by('calle')

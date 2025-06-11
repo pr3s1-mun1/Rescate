@@ -86,7 +86,7 @@ def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
                 TS.descripcion AS tipo_servicio,
                 D.calle AS direccion,
                 C.colonia AS colonia,
-                S.calle_entre
+                S.calle_entre_id
             FROM 
                 public.procesos_servicio AS S
             INNER JOIN 

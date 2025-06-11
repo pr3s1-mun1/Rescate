@@ -166,7 +166,7 @@ class MedAdministradoxPaciente(models.Model):
     medicamento = models.ForeignKey(Medicamento, on_delete=models.SET_NULL, null=True)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
     cantidad = models.IntegerField()
-    costo = models.DecimalField(max_digits=18, decimal_places=2, default=0)
+    costo = models.DecimalField(max_digits=18, decimal_places=2, default=0, null=True)
 
 class EquipoxPaciente(models.Model):
     clave = models.AutoField(primary_key=True)

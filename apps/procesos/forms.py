@@ -89,6 +89,7 @@ class PacientesForm(forms.ModelForm):
         self.fields['enfermedad'].queryset = Enfermedad.objects.all().order_by('nombre')
         self.fields['base'].queryset = Bases.objects.all().order_by('clave')
         self.fields['ambulancia'].queryset = Ambulancias.objects.filter(estado='A').order_by('descripcion')
+        self.fields['hospital'].queryset = Hospitales.objects.order_by('nombre')
 
         for field_name, field in self.fields.items():
             if field_name in self.__class__.DATE_FIELDS:
