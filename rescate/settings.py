@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jwq=u@wby$5@yfq4-_5tj@0&h#3yga=h-87&gvn+j%s-s4^&^%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'rescate.juarez.gob.mx',]
+ALLOWED_HOSTS = ['rescate.juarez.gob.mx',]
 
 
 # Application definition
