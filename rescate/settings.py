@@ -27,6 +27,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['rescate.juarez.gob.mx']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://rescate.juarez.gob.mx',
+]
 
 # Application definition
 
