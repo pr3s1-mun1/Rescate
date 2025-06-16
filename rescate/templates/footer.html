@@ -50,6 +50,23 @@
     </div>
 
     <style>
+        /* Estructura para footer fijo */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
+            flex: 1;
+        }
+        
         .footer-guinda {
             background: linear-gradient(135deg, var(--guinda-oscuro), var(--guinda-principal));
             color: white;
@@ -57,6 +74,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: relative;
             overflow: hidden;
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            width: 100%;
         }
 
         .footer-guinda::before {
@@ -156,7 +175,6 @@
             padding: 3px;
             background: white;
         }
-
 
         .footer-dev {
             font-size: 0.9rem;

@@ -4,6 +4,7 @@ from functools import wraps
 from django.contrib import messages
 from django.db.models import Max, IntegerField
 from django.db.models.functions import Cast
+from django.contrib.auth.hashers import make_password
 from .models import *
 from .forms import *
 
@@ -154,6 +155,11 @@ def add_catalogo(request, tipo):
             nuevo_registro = form.save(commit=False)
             if not clave_manual and nueva_clave != "":
                 nuevo_registro.clave = nueva_clave
+
+            # Si el modelo es Paramedicos, hashear la contraseña
+            if tipo == 'Paramedicos' and hasattr(nuevo_registro, 'contrasena'):
+                nuevo_registro.password = make_password(nuevo_registro.password)
+            
             nuevo_registro.save()
 
             # Registro de log

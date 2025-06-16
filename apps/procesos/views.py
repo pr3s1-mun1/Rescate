@@ -29,7 +29,7 @@ def formulario_buscar(request):
 
     # Servicios sin pacientes (opcional, puedes agregar lógica similar)
     servicios_con_paciente_claves = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
-    servicios_sin_paciente = Servicio.objects.exclude(clave__in=servicios_con_paciente_claves)
+    servicios_sin_paciente = Servicio.objects.exclude(clave__in=servicios_con_paciente_claves).order_by('-clave')
 
     paginator_sin = Paginator(servicios_sin_paciente, 8)
     page_number_sin = request.GET.get('page_sin')
@@ -95,9 +95,23 @@ def buscar_servicios_filtrados(filtros):
 
     paciente = filtros.get('paciente')
     if paciente:
-        pacientes_qs = pacientes_qs.filter(
-            Q(nombre__icontains=paciente) | Q(apellido_paterno__icontains=paciente) | Q(apellido_materno__icontains=paciente)
-        )
+        paciente = paciente.strip()
+
+        if paciente.isdigit():
+            pacientes_qs = pacientes_qs.filter(clave=int(paciente))
+        
+        else:
+            palabras = paciente.split()
+            filtros_q = Q()
+
+            for palabra in palabras:
+                filtros_q |= (
+                    Q(nombre__icontains=palabra) |
+                    Q(apellido_paterno__icontains=palabra) |
+                    Q(apellido_materno__icontains=palabra)
+                )
+
+            pacientes_qs = pacientes_qs.filter(filtros_q)
 
     ropa = filtros.get('ropa')
     if ropa:
@@ -168,40 +182,81 @@ def crear_servicio(request):
     if request.method == 'POST':
         servicio_form = ServicioForm(request.POST)
 
-        if servicio_form.is_valid():
-            servicio = servicio_form.save()
+        try:
+            if servicio_form.is_valid():
+                with transaction.atomic():
+                    servicio = servicio_form.save()
 
-            unidades = json.loads(request.POST.get('unidades', '[]'))
-            for u in unidades:
-                if u.get('clave') and u.get('id_unidad'):
-                    UnidadxServicio.objects.create(
-                        servicio=servicio,
-                        unidad=TipoUnidad.objects.get(clave=u['clave']),
-                        numero_unidad=u['id_unidad'],
-                        agente_nombre=u.get('agente', '')
+                    # Procesar unidades
+                    unidades = json.loads(request.POST.get('unidades', '[]'))
+                    for u in unidades:
+                        try:
+                            if u.get('clave') and u.get('id_unidad'):
+                                UnidadxServicio.objects.create(
+                                    servicio=servicio,
+                                    unidad=TipoUnidad.objects.get(clave=u['clave']),
+                                    numero_unidad=u['id_unidad'],
+                                    agente_nombre=u.get('agente', '')
+                                )
+                        except Exception as e:
+                            print(f"Error al registrar unidad: {e}")
+                            Logs_Sistema.objects.create(
+                                usuario=request.session.get("user", "Desconocido"),
+                                accion=f"Error al registrar unidad para servicio {servicio.clave}: {e}"
+                            )
+
+                    # Procesar paramédicos
+                    paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
+                    for item in paramedicos:
+                        try:
+                            clave = item.get("clave")
+                            paramedico = Paramedicos.objects.get(clave=clave)
+                            ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
+                        except Exception as e:
+                            print(f"Error al registrar paramédico: {e}")
+                            Logs_Sistema.objects.create(
+                                usuario=request.session.get("user", "Desconocido"),
+                                accion=f"Error al registrar paramédico para servicio {servicio.clave}: {e}"
+                            )
+
+                    # Registro de log por creación exitosa
+                    Logs_Sistema.objects.create(
+                        usuario=request.session.get("user", "Desconocido"),
+                        accion=f"Creó servicio con clave {servicio.clave}"
                     )
 
-            paramedicos = json.loads(request.POST.get('paramedicos', '[]'))
-            for item in paramedicos:
-                clave = item.get("clave")
-                paramedico = Paramedicos.objects.get(clave=clave)
-                ParamedicoxPaciente.objects.create(servicio=servicio, paramedico=paramedico)
+                    print(f"Servicio creado con éxito: {servicio.clave}")
+                    return redirect('carga_modifica_n', pk=servicio.clave)
 
-            # Registro de log
+            else:
+                # Formulario inválido
+                print("Formulario inválido:", servicio_form.errors)
+                Logs_Sistema.objects.create(
+                    usuario=request.session.get("user", "Desconocido"),
+                    accion=f"Error al crear servicio: formulario inválido: {servicio_form.errors.as_json()}"
+                )
+
+                context = {
+                    'servicio_form': servicio_form,
+                    'unidades': TipoUnidad.objects.all(),
+                    'paramedicos': Paramedicos.objects.all(),
+                    'errores': servicio_form.errors,
+                }
+                return render(request, 'modificar_servicio.html', context)
+
+        except Exception as e:
+            # Error inesperado
+            print(f"Error inesperado al crear servicio: {e}")
             Logs_Sistema.objects.create(
                 usuario=request.session.get("user", "Desconocido"),
-                accion=f"Creó servicio con clave {servicio.clave}"
+                accion=f"Error inesperado al crear servicio: {e}"
             )
 
-            print("Servicio creado con éxito:", servicio.clave)
-            return redirect('carga_modifica_n', pk=servicio.clave)
-
-        else:
             context = {
                 'servicio_form': servicio_form,
                 'unidades': TipoUnidad.objects.all(),
                 'paramedicos': Paramedicos.objects.all(),
-                'errores': servicio_form.errors,
+                'error_general': 'Ocurrió un error inesperado al crear el servicio.'
             }
             return render(request, 'modificar_servicio.html', context)
 
@@ -216,120 +271,152 @@ def crear_servicio(request):
 
     return render(request, 'modificar_servicio.html', context)
 
-
-
 @requiere_tipo_paramedico('P', 'A')
 def carga_modifica(request, pk, ps):
-    servicio = get_object_or_404(Servicio, pk=pk)
-    form_servicio = ServicioForm(instance=servicio)
+    try:
+        servicio = get_object_or_404(Servicio, pk=pk)
+        form_servicio = ServicioForm(instance=servicio)
 
-    paciente = None
-    if ps is not None:
-        try:
-            paciente = PacientexServicio.objects.get(clave=ps, servicio=servicio)
-        except PacientexServicio.DoesNotExist:
-            paciente = None
+        paciente = None
+        if ps is not None:
+            try:
+                paciente = PacientexServicio.objects.get(clave=ps, servicio=servicio)
+            except PacientexServicio.DoesNotExist:
+                print(f"Paciente con clave {ps} no encontrado para el servicio {pk}")
+                Logs_Sistema.objects.create(
+                    usuario=request.session.get("user", "Desconocido"),
+                    accion=f"Paciente con clave {ps} no encontrado en carga_modifica para servicio {pk}"
+                )
 
-    if paciente:
-        form_paciente = PacientesForm(instance=paciente)
-    else:
-        form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
- 
+        if paciente:
+            form_paciente = PacientesForm(instance=paciente)
+        else:
+            form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
 
-    # 💡 Aquí obtenemos el Embarazo relacionado (si existe)
-    embarazo_instancia = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
+        # Embarazo relacionado
+        embarazo_instancia = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
+        if embarazo_instancia:
+            form_embarazo = EmbarazoAsignadoForm(instance=embarazo_instancia)
+        else:
+            max_secuencia = EmbarazoxPaciente.objects.aggregate(max_seq=Max('secuencia'))['max_seq'] or 0
+            siguiente_secuencia = max_secuencia + 1
+            form_embarazo = EmbarazoAsignadoForm(initial={'secuencia': siguiente_secuencia})
 
-    if embarazo_instancia:
-        # Si ya existe, se carga en modo edición
-        form_embarazo = EmbarazoAsignadoForm(instance=embarazo_instancia)
-    else:
-        # Si no existe, se calcula la siguiente secuencia y se carga como valor inicial
+        # Parte
+        parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
+        form_partes = PartesAsignadoForm(instance=parte_instancia)
+
+        # Log de acceso exitoso
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Accedió a modificar servicio con clave {pk} y paciente {ps if ps else 'nuevo'}"
+        )
+        print(f"Acceso exitoso a carga_modifica para servicio {pk}")
+
+        context = {
+            'form': form_servicio,
+            'form_paciente': form_paciente,
+            'form_embarazo': form_embarazo,
+            'form_partes': form_partes,
+            'editar': True,
+            'servicio': servicio,
+            'paciente_clave': ps,
+            'pacientes': PacientexServicio.objects.filter(servicio=servicio),
+            'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
+            'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
+            'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
+            'alergias_asignados': AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
+            'materiales_asignados': MaterialxPaciente.objects.filter(paciente__servicio=servicio),
+            'ingeridos_asignados': MedIngeridoxPaciente.objects.filter(paciente__servicio=servicio),
+            'administrados_asignados': MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
+            'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
+            'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
+            'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
+            'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
+            'paramedicos': Paramedicos.objects.all(),
+            'unidades': TipoUnidad.objects.all(),
+            'alergias': Alergia.objects.all(),
+            'materiales': Material.objects.all(),
+            'medicamentos': Medicamento.objects.all(),
+            'equipos': Equipo.objects.all(),
+            'procedimientos': Procedimiento.objects.all().order_by('protocolo'),
+        }
+
+        return render(request, 'modificar_servicio.html', context)
+
+    except Exception as e:
+        print(f"Error en carga_modifica: {e}")
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Error en carga_modifica para servicio {pk}: {e}"
+        )
+        return render(request, 'error.html', {'mensaje': 'Ocurrió un error al cargar el servicio.'})
+
+@requiere_tipo_paramedico('P', 'A')
+def carga_modifica_n(request, pk):
+    try:
+        servicio = get_object_or_404(Servicio, pk=pk)
+        form_servicio = ServicioForm(instance=servicio)
+
+        # Paciente nuevo: formulario sin instancia, pero con clave generada
+        siguiente_clave = PacientexServicio.obtener_siguiente_numero()
+        form_paciente = PacientesForm(initial={'clave': siguiente_clave})
+
+        # El paciente aún no existe, así que no tiene embarazos asociados
         max_secuencia = EmbarazoxPaciente.objects.aggregate(max_seq=Max('secuencia'))['max_seq'] or 0
         siguiente_secuencia = max_secuencia + 1
         form_embarazo = EmbarazoAsignadoForm(initial={'secuencia': siguiente_secuencia})
 
-    parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
-    form_partes = PartesAsignadoForm(instance=parte_instancia)
+        # Se puede cargar partes si ya existen por servicio
+        parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
+        form_partes = PartesAsignadoForm(instance=parte_instancia)
 
-    context = {
-        'form': form_servicio,
-        'form_paciente': form_paciente,
-        'form_embarazo': form_embarazo,
-        'form_partes': form_partes,
-        'editar': True,
-        'servicio': servicio,
-        'paciente_clave': ps,
-        'pacientes': PacientexServicio.objects.filter(servicio=servicio),
-        'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
-        'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
-        'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
-        'alergias_asignados': AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
-        'materiales_asignados': MaterialxPaciente.objects.filter(paciente__servicio=servicio),
-        'ingeridos_asignados': MedIngeridoxPaciente.objects.filter(paciente__servicio=servicio),
-        'administrados_asignados': MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
-        'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
-        'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
-        'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
-        'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-        'paramedicos': Paramedicos.objects.all(),
-        'unidades': TipoUnidad.objects.all(),
-        'alergias': Alergia.objects.all(),
-        'materiales': Material.objects.all(),
-        'medicamentos': Medicamento.objects.all(),
-        'equipos': Equipo.objects.all(),
-        'procedimientos': Procedimiento.objects.all().order_by('protocolo'),
-    }
+        # Log del acceso exitoso
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Accedió a carga_modifica_n para crear paciente nuevo en servicio {pk}"
+        )
+        print(f"Acceso a carga_modifica_n para servicio {pk} con paciente nuevo")
 
-    return render(request, 'modificar_servicio.html', context)
+        context = {
+            'form': form_servicio,
+            'form_paciente': form_paciente,
+            'form_embarazo': form_embarazo,
+            'form_partes': form_partes,
+            'editar': True,
+            'servicio': servicio,
+            'paciente_clave': '',  # aún no existe
+            'pacientes': PacientexServicio.objects.filter(servicio=servicio),
+            'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
+            'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
+            'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
+            'alergias_asignados': AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
+            'materiales_asignados': MaterialxPaciente.objects.filter(paciente__servicio=servicio),
+            'ingeridos_asignados': MedIngeridoxPaciente.objects.filter(paciente__servicio=servicio),
+            'administrados_asignados': MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
+            'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
+            'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
+            'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
+            'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
+            'paramedicos': Paramedicos.objects.filter(estatus='A').order_by('nombre'),
+            'unidades': TipoUnidad.objects.all(),
+            'alergias': Alergia.objects.all().order_by('descripcion'),
+            'materiales': Material.objects.all().order_by('descripcion'),
+            'medicamentos': Medicamento.objects.all().order_by('descripcion'),
+            'equipos': Equipo.objects.all().order_by('descripcion'),
+            'procedimientos': Procedimiento.objects.all().order_by('protocolo', 'descripcion')
+        }
 
-@requiere_tipo_paramedico('P', 'A')
-def carga_modifica_n(request, pk):
-    servicio = get_object_or_404(Servicio, pk=pk)
-    form_servicio = ServicioForm(instance=servicio)
+        return render(request, 'modificar_servicio.html', context)
 
-    # Paciente nuevo: formulario sin instancia, pero con clave generada
-    siguiente_clave = PacientexServicio.obtener_siguiente_numero()
-    form_paciente = PacientesForm(initial={'clave': siguiente_clave})
+    except Exception as e:
+        print(f"Error en carga_modifica_n: {e}")
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Error en carga_modifica_n para servicio {pk}: {e}"
+        )
+        return render(request, 'error.html', {'mensaje': 'Ocurrió un error al preparar el formulario para un nuevo paciente.'})
 
-    # El paciente aún no existe, así que no tiene embarazos asociados
-    max_secuencia = EmbarazoxPaciente.objects.aggregate(max_seq=Max('secuencia'))['max_seq'] or 0
-    siguiente_secuencia = max_secuencia + 1
-    form_embarazo = EmbarazoAsignadoForm(initial={'secuencia': siguiente_secuencia})
-
-    # Se puede cargar partes si ya existen por servicio
-    parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
-    form_partes = PartesAsignadoForm(instance=parte_instancia)
-
-    context = {
-        'form': form_servicio,
-        'form_paciente': form_paciente,
-        'form_embarazo': form_embarazo,
-        'form_partes': form_partes,
-        'editar': True,
-        'servicio': servicio,
-        'paciente_clave': '',  # o None, ya que no existe aún
-        'pacientes': PacientexServicio.objects.filter(servicio=servicio),
-        'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
-        'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
-        'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
-        'alergias_asignados': AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
-        'materiales_asignados': MaterialxPaciente.objects.filter(paciente__servicio=servicio),
-        'ingeridos_asignados': MedIngeridoxPaciente.objects.filter(paciente__servicio=servicio),
-        'administrados_asignados': MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
-        'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
-        'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
-        'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
-        'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-        'paramedicos': Paramedicos.objects.filter(estatus='A').order_by('nombre'),
-        'unidades': TipoUnidad.objects.all(),
-        'alergias': Alergia.objects.all().order_by('descripcion'),
-        'materiales': Material.objects.all().order_by('descripcion'),
-        'medicamentos': Medicamento.objects.all().order_by('descripcion'),
-        'equipos': Equipo.objects.all().order_by('descripcion'),
-        'procedimientos': Procedimiento.objects.all().order_by('protocolo', 'descripcion')
-    }
-
-    return render(request, 'modificar_servicio.html', context)
 
 
 @requiere_tipo_paramedico('P', 'A')
@@ -339,47 +426,53 @@ def eliminar_servicio(request, pk):
     servicio.delete()
     return redirect('formulario_buscar')
 
+
+
 def guardar_todo(request, pk, ps):
-    servicio = get_object_or_404(Servicio, pk=pk)
-
-    paciente = None
-    if ps and ps != 'None':
-        try:
-            paciente = PacientexServicio.objects.get(clave=ps, servicio=servicio)
-        except PacientexServicio.DoesNotExist:
-            paciente = None
-
-    if request.method != 'POST':
-        pacientes_form = PacientesForm(instance=paciente) if paciente else PacientesForm(
-            initial={'clave': PacientexServicio.obtener_siguiente_numero()}
-        )
-        return render(request, 'modificar_servicio.html', {
-            'form_servicio': ServicioForm(instance=servicio),
-            'pacientes_form': pacientes_form,
-            'servicio': servicio,
-            'paciente': paciente,
-            'editar': True
-        })
-
-    form_servicio = ServicioForm(request.POST, instance=servicio)
-    pacientes_form = PacientesForm(request.POST, instance=paciente)
-    partes_form = PartesAsignadoForm(request.POST, instance=servicio)
-
-    if not (form_servicio.is_valid() and pacientes_form.is_valid() and partes_form.is_valid()):
-        return render(request, 'modificar_servicio.html', {
-            'form_servicio': form_servicio,
-            'pacientes_form': pacientes_form,
-            'servicio': servicio,
-            'paciente': paciente,
-            'editar': True,
-            'errores_partes': partes_form.errors
-        })
-    if partes_form.is_valid():
-        print("SISTABNNN")
-
     try:
+        servicio = get_object_or_404(Servicio, pk=pk)
+
+        paciente = None
+        if ps and ps != 'None':
+            try:
+                paciente = PacientexServicio.objects.get(clave=ps, servicio=servicio)
+            except PacientexServicio.DoesNotExist:
+                paciente = None
+
+        if request.method != 'POST':
+            pacientes_form = PacientesForm(instance=paciente) if paciente else PacientesForm(
+                initial={'clave': PacientexServicio.obtener_siguiente_numero()}
+            )
+            return render(request, 'modificar_servicio.html', {
+                'form_servicio': ServicioForm(instance=servicio),
+                'pacientes_form': pacientes_form,
+                'servicio': servicio,
+                'paciente': paciente,
+                'editar': True
+            })
+
+        # POST request
+        form_servicio = ServicioForm(request.POST, instance=servicio)
+        pacientes_form = PacientesForm(request.POST, instance=paciente)
+        partes_form = PartesAsignadoForm(request.POST, instance=servicio)
+
+        if not (form_servicio.is_valid() and pacientes_form.is_valid() and partes_form.is_valid()):
+            print("Errores en los formularios:")
+            print("Servicio:", form_servicio.errors)
+            print("Paciente:", pacientes_form.errors)
+            print("Partes:", partes_form.errors)
+
+            return render(request, 'modificar_servicio.html', {
+                'form_servicio': form_servicio,
+                'pacientes_form': pacientes_form,
+                'servicio': servicio,
+                'paciente': paciente,
+                'editar': True,
+                'errores_partes': partes_form.errors
+            })
+
         servicio = form_servicio.save(commit=False)
-        servicio.clave = pk  # Se asegura que la clave no cambie
+        servicio.clave = pk  # Asegura que la clave no cambie
         servicio.save()
 
         paciente = pacientes_form.save(commit=False)
@@ -396,8 +489,11 @@ def guardar_todo(request, pk, ps):
         try:
             parte.save()
         except Exception as e:
-            print(e)
-
+            print(f"Error al guardar parte: {e}")
+            Logs_Sistema.objects.create(
+                usuario=request.session.get("user", "Desconocido"),
+                accion=f"Error al guardar parte del servicio {servicio.clave}: {e}"
+            )
 
         # Guardado auxiliar
         guardar_unidades(request, servicio)
@@ -423,30 +519,35 @@ def guardar_todo(request, pk, ps):
             else:
                 print('Error en formulario de embarazo:')
                 print(form_embarazo.errors)
+                Logs_Sistema.objects.create(
+                    usuario=request.session.get("user", "Desconocido"),
+                    accion=f"Error en formulario de embarazo para paciente {paciente.clave}: {form_embarazo.errors}"
+                )
 
-
+        # Log de éxito
         Logs_Sistema.objects.create(
             usuario=request.session.get("user", "Desconocido"),
-            accion=f"Actualizó servicio con clave {servicio.clave} y paciente con clave {paciente.clave if paciente else 'N/A'}"
+            accion=f"Actualizó servicio con clave {servicio.clave} y paciente con clave {paciente.clave}"
         )
+        print(f"Guardado exitoso del servicio {servicio.clave} y paciente {paciente.clave}")
         return redirect('exito_guardado', pk=servicio.clave, ps=paciente.clave)
 
     except Exception as e:
-        print(f"Error general: {e}")
+        print(f"Error general en guardar_todo: {e}")
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Error general en guardar_todo para servicio {pk}: {e}"
+        )
         return redirect('fallo_guardado', error=str(e))
 
 
-def guardar_todo_n(request, pk):
-    print("🔍 Iniciando guardar_todo_n")
-    servicio = get_object_or_404(Servicio, pk=pk)
-    print(f"📦 Servicio encontrado: {servicio}")
 
-    paciente = None  # ← Siempre será nuevo
+def guardar_todo_n(request, pk):
+    servicio = get_object_or_404(Servicio, pk=pk)
+    paciente = None  # Siempre será nuevo
 
     if request.method != 'POST':
-        print("📄 GET recibido, preparando formulario con clave nueva de paciente")
         siguiente_clave = PacientexServicio.obtener_siguiente_numero()
-        print(f"🆕 Clave generada para nuevo paciente: {siguiente_clave}")
         pacientes_form = PacientesForm(initial={'clave': siguiente_clave})
         return render(request, 'modificar_servicio.html', {
             'form_servicio': ServicioForm(instance=servicio),
@@ -456,15 +557,15 @@ def guardar_todo_n(request, pk):
             'editar': True
         })
 
-    print("📨 POST recibido, procesando formularios")
     form_servicio = ServicioForm(request.POST, instance=servicio)
     pacientes_form = PacientesForm(request.POST)
 
     if not form_servicio.is_valid():
-        print("❌ Formulario de servicio inválido")
+        print("Formulario de servicio inválido")
         print(form_servicio.errors)
+
     if not pacientes_form.is_valid():
-        print("❌ Formulario de paciente inválido")
+        print("Formulario de paciente inválido")
         print(pacientes_form.errors)
 
     if not (form_servicio.is_valid() and pacientes_form.is_valid()):
@@ -477,22 +578,16 @@ def guardar_todo_n(request, pk):
         })
 
     try:
-        # Guardar servicio
         servicio = form_servicio.save(commit=False)
-        servicio.clave = pk  # Asegura clave original
+        servicio.clave = pk
         servicio.save()
-        print(f"✅ Servicio guardado: {servicio}")
 
-        # Guardar paciente nuevo
         paciente = pacientes_form.save(commit=False)
         clave_generada = PacientexServicio.obtener_siguiente_numero()
         paciente.clave = clave_generada
         paciente.servicio = servicio
         paciente.save()
-        print(f"✅ Paciente guardado con clave {paciente.clave}")
 
-        # Guardado auxiliar
-        print("💾 Guardando auxiliares")
         guardar_unidades(request, servicio)
         guardar_paramedicos(request, servicio, paciente)
         guardar_procedimientos(request, paciente)
@@ -504,29 +599,35 @@ def guardar_todo_n(request, pk):
         guardar_lesiones(request, paciente)
         guardar_impactos(request, paciente)
         guardar_testigos(request, paciente)
-        print("✅ Todos los datos auxiliares guardados")
 
-        # Guardar embarazo si aplica
         if request.POST.get('embarazo') == 'true':
-            print("🤰 Embarazo marcado como verdadero, procesando formulario")
             form_embarazo = EmbarazoAsignadoForm(request.POST)
             if form_embarazo.is_valid():
                 embarazo_obj = form_embarazo.save(commit=False)
                 embarazo_obj.paciente = paciente
                 embarazo_obj.save()
-                print("✅ Embarazo guardado correctamente")
             else:
-                print('❌ Error en formulario de embarazo:', form_embarazo.errors)
+                print('Error en formulario de embarazo:')
+                print(form_embarazo.errors)
+                Logs_Sistema.objects.create(
+                    usuario=request.session.get("user", "Desconocido"),
+                    accion=f"Error en formulario de embarazo para paciente {paciente.clave}: {form_embarazo.errors}"
+                )
 
         Logs_Sistema.objects.create(
             usuario=request.session.get("user", "Desconocido"),
-            accion=f"Actualizó servicio con clave {servicio.clave} y paciente con clave {paciente.clave if paciente else 'N/A'}"
+            accion=f"Guardó nuevo paciente con clave {paciente.clave} en servicio {servicio.clave}"
         )
         return redirect('exito_guardado', pk=servicio.clave, ps=paciente.clave)
 
     except Exception as e:
-        print(f"❌ Error general en guardar_todo_n: {e}")
+        print(f"Error general en guardar_todo_n: {e}")
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Error general en guardar_todo_n para servicio {pk}: {e}"
+        )
         return redirect('fallo_guardado', error=str(e))
+
 
 
 def exito_guardado(request, pk, ps):

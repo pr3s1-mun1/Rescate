@@ -39,7 +39,7 @@ class Paramedicos(models.Model):
     clave = models.IntegerField(primary_key=1)
     nombre = models.CharField(max_length=100)
     usuario = models.CharField(max_length=10)
-    contrasena = models.CharField(max_length=10)
+    contrasena = models.CharField(max_length=130)
     mando = models.CharField(max_length=1)
     conocimiento = models.CharField(max_length=1)
     tipo = models.CharField(max_length=1)

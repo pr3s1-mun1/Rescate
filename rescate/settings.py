@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jwq=u@wby$5@yfq4-_5tj@0&h#3yga=h-87&gvn+j%s-s4^&^%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -81,13 +81,14 @@ WSGI_APPLICATION = 'rescate.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'rescater',
-        'USER': 'postgres',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',  
-        'PORT': '5432',  
+        'NAME': 'rescate',
+        'USER': 'rescate_user',
+        'PASSWORD': 'R35cUrP.25',
+        'HOST': '10.236.62.59',
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
