@@ -192,10 +192,11 @@ class PartexServico(models.Model):
 class TestigoxPaciente(models.Model):
     clave = models.AutoField(primary_key=True)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100, null=True)
     edad = models.IntegerField()
-    domicilio = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=20)
+    domicilio = models.CharField(max_length=100, null=True)
+    telefono = models.CharField(max_length=20, null=True)
+
 
 class EmbarazoxPaciente(models.Model):
     secuencia = models.IntegerField(primary_key=True)
