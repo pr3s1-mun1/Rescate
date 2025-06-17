@@ -31,10 +31,12 @@
                 <tr>
                     <td>{{ calle.calle }}</td>
                     <td class="d-flex justify-content-center">
-                        <a href="{% url 'update_catalogo' 'calles' calle.clave%}" class="btn btn-warning btn-sm me-2">✏️</a>
+                        <a href="{% url 'update_catalogo' 'calles' calle.clave%}" class="btn btn-warning btn-sm me-2"><i class="bi bi-pencil-fill"></i> Editar
+</a>
                         <form action="{% url 'delete_catalogo' 'calles' calle.clave %}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta calle?');">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
+</button>
                         </form>
                     </td>
                 </tr>

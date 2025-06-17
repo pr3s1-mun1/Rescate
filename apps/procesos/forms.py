@@ -203,5 +203,34 @@ class PartesAsignadoForm(forms.ModelForm):
             }),
         }
 
+class CombustibleForm(forms.ModelForm):
+    class Meta:
+        model = Combustible
+        fields = '__all__'
+        widgets = {
+            'fecha': forms.DateInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'supervisor': forms.Select(attrs={'class': 'form-control'}),
+            'encargado': forms.Select(attrs={'class': 'form-control'}),
+            'turno': forms.NumberInput(attrs={'class': 'form-control'}),
+            'ambulancia': forms.Select(attrs={'class': 'form-control'}),
+            'litros': forms.NumberInput(attrs={'class': 'form-control'}),
+            'valor': forms.NumberInput(attrs={'class': 'form-control'}),
+            'remision': forms.TextInput(attrs={'class': 'form-control'}),
+            'factura': forms.TextInput(attrs={'class': 'form-control'}),
+            'tipo': forms.Select(
+                choices=[
+                    ('G', 'GASOLINA'),
+                    ('D', 'DIESEL'),
+                ],
+                attrs={'class': 'form-control'}
+            ),
+        }
 
-    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ajustar el formato inicial del campo de fecha
+        if self.instance and self.instance.fecha:
+            self.initial['fecha'] = self.instance.fecha.strftime('%Y-%m-%dT%H:%M')

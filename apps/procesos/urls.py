@@ -16,5 +16,8 @@ urlpatterns = [
     path('exito/<str:pk>/<str:ps>/', exito_guardado, name='exito_guardado'),
     path('fallo/', fallo_guardado, name='fallo_guardado'),
     path('ajax/calles_por_colonia/', obtener_calles_por_colonia, name='ajax_calles_por_colonia'),
+    path('combustible/', lista_combustible, name='lista_combustible'),
+    path('combustible/nuevo/', crear_combustible, name='crear_combustible'),
+    path('combustible/editar/<int:clave>/', editar_combustible, name='editar_combustible'),
 
 ]

@@ -35,10 +35,12 @@
                             <span class="ms-2">{{ base.clave }}</span>
                         </td>
                         <td class="text-center">
-                            <a href="{% url 'update_catalogo' 'bases' base.clave %}" class="btn btn-warning btn-sm">✏️</a>
+                            <a href="{% url 'update_catalogo' 'bases' base.clave %}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
+</a>
                             <form method="POST" action="{% url 'delete_catalogo' 'bases' base.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta base?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
+</button>
                             </form>
                         </td>
                     </tr>

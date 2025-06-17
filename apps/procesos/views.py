@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from apps.catalogos.forms import *
 from apps.catalogos.views import requiere_tipo_paramedico, Logs_Sistema
-from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm
+from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm, CombustibleForm
 from django.http import HttpResponse
 from collections import defaultdict
 from django.template.loader import get_template
@@ -23,7 +23,7 @@ def formulario_buscar(request):
     else:
         pacientes_servicios_query = PacientexServicio.objects.all().order_by('-clave').select_related('servicio')
 
-    paginator_con = Paginator(pacientes_servicios_query, 8)
+    paginator_con = Paginator(pacientes_servicios_query, 9)
     page_number_con = request.GET.get('page_con')
     pacientes_servicios = paginator_con.get_page(page_number_con)
 
@@ -31,7 +31,7 @@ def formulario_buscar(request):
     servicios_con_paciente_claves = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
     servicios_sin_paciente = Servicio.objects.exclude(clave__in=servicios_con_paciente_claves).order_by('-clave')
 
-    paginator_sin = Paginator(servicios_sin_paciente, 8)
+    paginator_sin = Paginator(servicios_sin_paciente, 9)
     page_number_sin = request.GET.get('page_sin')
     servicios_sin_paciente_page = paginator_sin.get_page(page_number_sin)
 
@@ -850,4 +850,55 @@ def agregar_paciente(request, pk):
     }
 
     return render(request, 'agregar_paciente.html', context)
+
+
+
+def lista_combustible(request):
+    combustibles = Combustible.objects.all().order_by('-fecha')
+
+    # Filtros
+    fecha = request.GET.get('fecha')
+    factura = request.GET.get('factura')
+    remision = request.GET.get('remision')
+
+    if fecha:
+        combustibles = combustibles.filter(fecha__date=fecha)
+    if factura:
+        combustibles = combustibles.filter(factura__icontains=factura)
+    if remision:
+        combustibles = combustibles.filter(remision__icontains=remision)
+
+    # Paginación
+    paginator = Paginator(combustibles, 10)  # 10 registros por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'combustible/gasolina.html', {
+        'page_obj': page_obj,
+        'fecha': fecha,
+        'factura': factura,
+        'remision': remision,
+    })
+
+def crear_combustible(request):
+    if request.method == 'POST':
+        form = CombustibleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_combustible')
+    else:
+        form = CombustibleForm()
+    return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Crear'})
+
+def editar_combustible(request, clave):
+    combustible = get_object_or_404(Combustible, clave=clave)
+    if request.method == 'POST':
+        form = CombustibleForm(request.POST, instance=combustible)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_combustible')
+    else:
+        form = CombustibleForm(instance=combustible)
+    return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Editar'})
+
 

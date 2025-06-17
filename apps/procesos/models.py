@@ -215,3 +215,17 @@ class EmbarazoxPaciente(models.Model):
 
     def __str__(self):
         return f"{self.secuencia}"  
+
+
+class Combustible(models.Model):
+    clave = models.AutoField(primary_key=True)
+    supervisor = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True)
+    encargado = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True, related_name='encargado_combustible')
+    fecha = models.DateTimeField()
+    turno = models.IntegerField()
+    ambulancia = models.ForeignKey(Ambulancias, on_delete=models.SET_NULL, null=True)
+    litros = models.DecimalField(max_digits=7, decimal_places=2)
+    valor = models.DecimalField(max_digits=7, decimal_places=2)
+    remision = models.CharField(max_length=20, null=True)
+    factura = models.CharField(max_length=20, null=True)
+    tipo = models.CharField(max_length=1, null=True)
