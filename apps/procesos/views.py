@@ -17,7 +17,6 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime 
 import json
 
-@login_required
 def formulario_buscar(request):
     if request.method == 'POST':
         filtros = request.POST.dict()
