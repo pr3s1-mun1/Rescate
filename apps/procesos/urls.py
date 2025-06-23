@@ -19,5 +19,9 @@ urlpatterns = [
     path('combustible/', lista_combustible, name='lista_combustible'),
     path('combustible/nuevo/', crear_combustible, name='crear_combustible'),
     path('combustible/editar/<int:clave>/', editar_combustible, name='editar_combustible'),
+    path('reloj/', ver_reloj, name='ver_reloj'),
+    path('reloj/imprimir/', imprimir_reporte, name='imprimir_reporte'),
+
+
 
 ]

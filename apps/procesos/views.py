@@ -7,30 +7,45 @@ from django.http import HttpResponse
 from collections import defaultdict
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.urls import reverse
+from urllib.parse import urlencode
+from django.contrib.auth.decorators import login_required
 
-
-import datetime
+from datetime import datetime 
 import json
 
-
+@login_required
 def formulario_buscar(request):
     if request.method == 'POST':
         filtros = request.POST.dict()
+        # Obtener la consulta base de pacientexservicio filtrada
         pacientes_servicios_query = buscar_servicios_filtrados(filtros)
     else:
-        pacientes_servicios_query = PacientexServicio.objects.all().order_by('-clave').select_related('servicio')
+        # Caso sin filtros
+        pacientes_servicios_query = PacientexServicio.objects.all().order_by('-servicio__clave').select_related('servicio')
 
+    # Paginación para servicios CON pacientes (manteniendo nombre original)
     paginator_con = Paginator(pacientes_servicios_query, 9)
     page_number_con = request.GET.get('page_con')
     pacientes_servicios = paginator_con.get_page(page_number_con)
 
-    # Servicios sin pacientes (opcional, puedes agregar lógica similar)
+    # Obtener servicios SIN pacientes (optimizado)
     servicios_con_paciente_claves = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
-    servicios_sin_paciente = Servicio.objects.exclude(clave__in=servicios_con_paciente_claves).order_by('-clave')
+    
+    # Aplicar los mismos filtros a servicios sin pacientes si hay filtros activos
+    if request.method == 'POST':
+        servicios_sin_paciente = buscar_servicios_sin_pacientes(filtros).exclude(
+            clave__in=servicios_con_paciente_claves
+        )
+    else:
+        servicios_sin_paciente = Servicio.objects.exclude(
+            clave__in=servicios_con_paciente_claves
+        ).order_by('-clave')
 
+    # Paginación para servicios SIN pacientes (manteniendo nombre original)
     paginator_sin = Paginator(servicios_sin_paciente, 9)
     page_number_sin = request.GET.get('page_sin')
     servicios_sin_paciente_page = paginator_sin.get_page(page_number_sin)
@@ -41,38 +56,17 @@ def formulario_buscar(request):
         'filtros': filtros if request.method == 'POST' else {},
     })
 
-
-def buscar_servicios_filtrados(filtros):
-    """
-    filtros: dict con las claves de filtro y sus valores, por ejemplo:
-    {
-        'clave': 'abc',
-        'fecha_inicio': '2025-01-01',
-        'fecha_fin': '2025-01-31',
-        'base': 'Base 1',
-        'direccion': 'Calle 123',
-        'paciente': 'Juan',
-        'ropa': 'Azul',
-        'sintoma': 'Dolor',
-        'antecedente': 'Ninguno',
-        'placas': 'XYZ123',
-        'sexo': 'M',
-        'servicio_realizado': 'Traslado',
-        'enfermedad': 'Diabetes',
-        'hospital': 'Hospital Central',
-        'ambulancia': 'Ambulancia 1'
-    }
-    """
+def buscar_servicios_sin_pacientes(filtros):
+    """Función auxiliar para aplicar los mismos filtros a servicios sin pacientes"""
     from django.db.models import Q
-
+    
     servicios = Servicio.objects.all()
-
-    # Filtro por clave (en Servicio)
+    
+    # Aplicar los mismos filtros que en buscar_servicios_filtrados
     clave = filtros.get('clave')
     if clave:
         servicios = servicios.filter(clave__icontains=clave)
 
-    # Filtro fechas (en Servicio.fecha)
     fecha_inicio = filtros.get('fecha_inicio')
     fecha_fin = filtros.get('fecha_fin')
     if fecha_inicio:
@@ -80,78 +74,74 @@ def buscar_servicios_filtrados(filtros):
     if fecha_fin:
         servicios = servicios.filter(fecha__lte=fecha_fin)
 
-    # Filtro base (asumiendo que es un campo en Servicio)
     base = filtros.get('base')
     if base:
         servicios = servicios.filter(base__icontains=base)
 
-    # Filtro dirección (en Servicio.direccion_emergencia.calle)
     direccion = filtros.get('direccion')
     if direccion:
         servicios = servicios.filter(direccion_emergencia__calle__icontains=direccion)
+    
+    return servicios
 
-    # Ahora, para los filtros que involucran a pacientes o detalles de PacientexServicio:
-    pacientes_qs = PacientexServicio.objects.filter(servicio__in=servicios)
+def buscar_servicios_filtrados(filtros):
+    """
+    Versión optimizada pero manteniendo la estructura original
+    """
+    from django.db.models import Q
 
+    # Base query ahora es sobre PacientexServicio (como en tu versión original)
+    pacientes_qs = PacientexServicio.objects.all().select_related('servicio')
+
+    # Filtros en campos del servicio (a través de la relación)
+    clave = filtros.get('clave')
+    if clave:
+        pacientes_qs = pacientes_qs.filter(servicio__clave__icontains=clave)
+
+    fecha_inicio = filtros.get('fecha_inicio')
+    fecha_fin = filtros.get('fecha_fin')
+    if fecha_inicio:
+        pacientes_qs = pacientes_qs.filter(servicio__fecha__gte=fecha_inicio)
+    if fecha_fin:
+        pacientes_qs = pacientes_qs.filter(servicio__fecha__lte=fecha_fin)
+
+    base = filtros.get('base')
+    if base:
+        pacientes_qs = pacientes_qs.filter(servicio__base__icontains=base)
+
+    direccion = filtros.get('direccion')
+    if direccion:
+        pacientes_qs = pacientes_qs.filter(servicio__direccion_emergencia__calle__icontains=direccion)
+
+    # Filtros en campos del paciente (manteniendo tu lógica original)
     paciente = filtros.get('paciente')
     if paciente:
         paciente = paciente.strip()
-
         if paciente.isdigit():
             pacientes_qs = pacientes_qs.filter(clave=int(paciente))
-        
         else:
             palabras = paciente.split()
             filtros_q = Q()
-
             for palabra in palabras:
                 filtros_q |= (
                     Q(nombre__icontains=palabra) |
                     Q(apellido_paterno__icontains=palabra) |
                     Q(apellido_materno__icontains=palabra)
                 )
-
             pacientes_qs = pacientes_qs.filter(filtros_q)
 
-    ropa = filtros.get('ropa')
-    if ropa:
-        pacientes_qs = pacientes_qs.filter(ropa__icontains=ropa)
+    # Resto de filtros (manteniendo tus nombres originales)
+    campos_filtro = [
+        'ropa', 'sintoma', 'antecedente', 'placas', 'sexo',
+        'servicio_realizado', 'enfermedad', 'hospital', 'ambulancia'
+    ]
+    
+    for campo in campos_filtro:
+        valor = filtros.get(campo)
+        if valor:
+            pacientes_qs = pacientes_qs.filter(**{f"{campo}__icontains": valor})
 
-    sintoma = filtros.get('sintoma')
-    if sintoma:
-        pacientes_qs = pacientes_qs.filter(sintomas__icontains=sintoma)
-
-    antecedente = filtros.get('antecedente')
-    if antecedente:
-        pacientes_qs = pacientes_qs.filter(antecedentes__icontains=antecedente)
-
-    placas = filtros.get('placas')
-    if placas:
-        pacientes_qs = pacientes_qs.filter(placas__icontains=placas)
-
-    sexo = filtros.get('sexo')
-    if sexo:
-        pacientes_qs = pacientes_qs.filter(sexo=sexo)
-
-    servicio_realizado = filtros.get('servicio_realizado')
-    if servicio_realizado:
-        pacientes_qs = pacientes_qs.filter(servicio_realizado__icontains=servicio_realizado)
-
-    enfermedad = filtros.get('enfermedad')
-    if enfermedad:
-        pacientes_qs = pacientes_qs.filter(enfermedad__icontains=enfermedad)
-
-    hospital = filtros.get('hospital')
-    if hospital:
-        pacientes_qs = pacientes_qs.filter(hospital__icontains=hospital)
-
-    ambulancia = filtros.get('ambulancia')
-    if ambulancia:
-        pacientes_qs = pacientes_qs.filter(ambulancia__icontains=ambulancia)
-
-    # Devuelve la queryset filtrada (puedes usar .select_related si quieres optimizar)
-    return pacientes_qs.select_related('servicio')
-
+    return pacientes_qs.order_by('-servicio__clave')
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
 @requiere_tipo_paramedico('P', 'A')
@@ -168,7 +158,7 @@ def formulario_servicio(request):
 def vista_principal(request):
     total_servicios = Servicio.objects.count()
     servicios_activos = Servicio.objects.filter(estatus='P').count()
-    hojas_hoy = Servicio.objects.filter(fecha=datetime.date.today()).count()
+    hojas_hoy = Servicio.objects.filter(fecha=timezone.now().date()).count()    
     pendientes = Servicio.objects.count()
 
     return render(request, 'serv_principal.html', {
@@ -255,7 +245,7 @@ def crear_servicio(request):
             context = {
                 'servicio_form': servicio_form,
                 'unidades': TipoUnidad.objects.all(),
-                'paramedicos': Paramedicos.objects.all(),
+                'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
                 'error_general': 'Ocurrió un error inesperado al crear el servicio.'
             }
             return render(request, 'modificar_servicio.html', context)
@@ -266,7 +256,7 @@ def crear_servicio(request):
     context = {
         'servicio_form': servicio_form,
         'unidades': TipoUnidad.objects.all(),
-        'paramedicos': Paramedicos.objects.all(),
+        'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
     }
 
     return render(request, 'modificar_servicio.html', context)
@@ -322,7 +312,7 @@ def carga_modifica(request, pk, ps):
             'servicio': servicio,
             'paciente_clave': ps,
             'pacientes': PacientexServicio.objects.filter(servicio=servicio),
-            'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
+            'paramedicos_asignados': ParamedicoxPaciente.objects.filter(paciente__servicio=servicio),
             'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
             'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
             'alergias_asignados': AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
@@ -331,9 +321,10 @@ def carga_modifica(request, pk, ps):
             'administrados_asignados': MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
             'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
             'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
+            'quemaduras_asignados': QuemaduraxPaciente.objects.filter(paciente__servicio=servicio),
             'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
             'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-            'paramedicos': Paramedicos.objects.all(),
+            'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
             'unidades': TipoUnidad.objects.all(),
             'alergias': Alergia.objects.all(),
             'materiales': Material.objects.all(),
@@ -350,7 +341,7 @@ def carga_modifica(request, pk, ps):
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Error en carga_modifica para servicio {pk}: {e}"
         )
-        return render(request, 'error.html', {'mensaje': 'Ocurrió un error al cargar el servicio.'})
+        return render(request, '404.html', {'mensaje': 'Ocurrió un error al cargar el servicio.'})
 
 @requiere_tipo_paramedico('P', 'A')
 def carga_modifica_n(request, pk):
@@ -396,9 +387,10 @@ def carga_modifica_n(request, pk):
             'administrados_asignados': MedAdministradoxPaciente.objects.filter(paciente__servicio=servicio),
             'equipos_asignados': EquipoxPaciente.objects.filter(paciente__servicio=servicio),
             'lesiones_asignados': LesionxPaciente.objects.filter(paciente__servicio=servicio),
+            'quemaduras_asignados': QuemaduraxPaciente.objects.filter(paciente__servicio=servicio),
             'impactos_asignados': ImpactoxVehiculo.objects.filter(paciente__servicio=servicio),
             'testigos_asignados': TestigoxPaciente.objects.filter(paciente__servicio=servicio),
-            'paramedicos': Paramedicos.objects.filter(estatus='A').order_by('nombre'),
+            'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
             'unidades': TipoUnidad.objects.all(),
             'alergias': Alergia.objects.all().order_by('descripcion'),
             'materiales': Material.objects.all().order_by('descripcion'),
@@ -415,7 +407,7 @@ def carga_modifica_n(request, pk):
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Error en carga_modifica_n para servicio {pk}: {e}"
         )
-        return render(request, 'error.html', {'mensaje': 'Ocurrió un error al preparar el formulario para un nuevo paciente.'})
+        return render(request, '404.html', {'mensaje': 'Ocurrió un error al preparar el formulario para un nuevo paciente.'})
 
 
 
@@ -454,7 +446,11 @@ def guardar_todo(request, pk, ps):
         # POST request
         form_servicio = ServicioForm(request.POST, instance=servicio)
         pacientes_form = PacientesForm(request.POST, instance=paciente)
-        partes_form = PartesAsignadoForm(request.POST, instance=servicio)
+        # Buscar si ya existe un PartexServico relacionado con ese servicio
+        parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
+
+        # Crear el formulario con la instancia si existe, o sin instancia si es nuevo
+        partes_form = PartesAsignadoForm(request.POST or None, instance=parte_instancia)
 
         if not (form_servicio.is_valid() and pacientes_form.is_valid() and partes_form.is_valid()):
             print("Errores en los formularios:")
@@ -486,14 +482,9 @@ def guardar_todo(request, pk, ps):
         paciente.save()
 
         parte.servicio = servicio
-        try:
-            parte.save()
-        except Exception as e:
-            print(f"Error al guardar parte: {e}")
-            Logs_Sistema.objects.create(
-                usuario=request.session.get("user", "Desconocido"),
-                accion=f"Error al guardar parte del servicio {servicio.clave}: {e}"
-            )
+        parte.save()
+
+
 
         # Guardado auxiliar
         guardar_unidades(request, servicio)
@@ -505,6 +496,7 @@ def guardar_todo(request, pk, ps):
         guardar_administrados(request, paciente)
         guardar_equipos(request, paciente)
         guardar_lesiones(request, paciente)
+        guardar_quemaduras(request, paciente)
         guardar_impactos(request, paciente)
         guardar_testigos(request, paciente)
 
@@ -538,7 +530,10 @@ def guardar_todo(request, pk, ps):
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Error general en guardar_todo para servicio {pk}: {e}"
         )
-        return redirect('fallo_guardado', error=str(e))
+        base_url = reverse('fallo_guardado')
+        query_string = urlencode({'error': str(e)})
+        url = f"{base_url}?{query_string}"
+        return redirect(url)
 
 
 
@@ -634,8 +629,8 @@ def exito_guardado(request, pk, ps):
     return render(request, 'resp/exito_guardado.html', {'clave': pk, 'paciente' : ps})
 
 def fallo_guardado(request):
-    error = request.GET.get('error', 'Ocurrió un error inesperado.')
-    return render(request, 'resp/fallo_guardado.html', {'error': error})
+    error = request.GET.get('error', 'Error desconocido')
+    return render(request, 'fallo_guardado.html', {'error': error})
 
 
 def guardar_unidades(request, servicio):
@@ -719,6 +714,15 @@ def guardar_lesiones(request, paciente):
         val_formato = float(cantidad.replace(',', '.'))
         LesionxPaciente.objects.create(paciente=paciente, lesion=descripcion, valor=val_formato)
 
+def guardar_quemaduras(request, paciente):
+    QuemaduraxPaciente.objects.filter(paciente=paciente).delete()
+    quemaduras = json.loads(request.POST.get('quemaduras', '[]'))
+    for i in quemaduras:
+        descripcion = i.get('descripcion')
+        cantidad = i.get('valor') or '0'
+        val_formato = float(cantidad.replace(',', '.'))
+        QuemaduraxPaciente.objects.create(paciente=paciente, quemadura=descripcion, valor=val_formato)
+
 def guardar_impactos(request, paciente):
     ImpactoxVehiculo.objects.filter(paciente=paciente).delete()
     impactos = json.loads(request.POST.get('impacto', '[]'))
@@ -727,17 +731,30 @@ def guardar_impactos(request, paciente):
         ImpactoxVehiculo.objects.create(paciente=paciente, impacto=descripcion)
 
 def guardar_testigos(request, paciente):
+    # Borra los testigos previos asociados al paciente
     TestigoxPaciente.objects.filter(paciente=paciente).delete()
+    
     try:
         testigos = json.loads(request.POST.get('testigos', '[]'))
     except json.JSONDecodeError:
         testigos = []
-    for i in testigos:
-        nombre = i.get('nombre')
-        edad = i.get('edad')
-        direccion = i.get('direccion')
-        telefono = i.get('telefono')
-        TestigoxPaciente.objects.create(paciente=paciente, nombre=nombre, edad=edad, domicilio=direccion, telefono=telefono)
+    
+    for testigo_data in testigos:
+        nombre = testigo_data.get('nombre')
+        edad = testigo_data.get('edad')
+        direccion = testigo_data.get('direccion')
+        telefono = testigo_data.get('telefono')
+        
+
+        print(f"Guardando testigo: {nombre}, Edad: {edad}, Dirección: {direccion}, Teléfono: {telefono}")
+        # Crear y guardar cada testigo
+        TestigoxPaciente.objects.create(
+            paciente=paciente,
+            nombre=nombre,
+            edad=edad,
+            domicilio=direccion,
+            telefono=telefono
+        )
 
 def reporte_servicio(request, clave):
     servicio = get_object_or_404(Servicio, clave=clave)
@@ -839,7 +856,7 @@ def agregar_paciente(request, pk):
         'siguiente_clave': siguiente_clave,  # <- Aquí se agrega
         'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
         'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
-        'paramedicos': Paramedicos.objects.all(),
+        'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
         'unidades': TipoUnidad.objects.all(),
         'alergias': Alergia.objects.all(),
         'materiales': Material.objects.all(),
@@ -902,3 +919,163 @@ def editar_combustible(request, clave):
     return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Editar'})
 
 
+from datetime import datetime
+from django.utils import timezone
+from django.db.models import Q, OuterRef, Exists
+from django.shortcuts import render, redirect
+from .models import Paramedicos, Reloj, Logs_Sistema
+
+def ver_reloj(request):
+    alerta_fecha_futura = False
+    hoy = timezone.now().date()
+
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            if key.startswith('estatus_'):
+                try:
+                    paramedico_id = int(key.replace('estatus_', ''))
+                    estatus = value
+                    observacion = request.POST.get(f'observacion_{paramedico_id}', '').strip()
+                    fecha_actual = timezone.now()
+
+                    ya_existe = Reloj.objects.filter(
+                        paramedico_id=paramedico_id,
+                        fecha__date=fecha_actual.date()
+                    ).exists()
+
+                    if not ya_existe:
+                        Reloj.objects.create(
+                            paramedico_id=paramedico_id,
+                            fecha=fecha_actual,
+                            estatus=estatus,
+                            observacion=observacion
+                        )
+
+                        Logs_Sistema.objects.create(
+                            usuario=request.session.get("user", "Desconocido"),
+                            accion=f"Registró asistencia de paramédico ID {paramedico_id} con estatus {estatus} el {fecha_actual}"
+                        )
+
+                        print(f"✅ Registrado paramédico {paramedico_id} con estatus {estatus}")
+                    else:
+                        print(f"⚠️ Ya existe asistencia para el paramédico {paramedico_id} hoy")
+
+                except Exception as e:
+                    print(f"❌ Error registrando asistencia de paramédico {paramedico_id}: {e}")
+                    Logs_Sistema.objects.create(
+                        usuario=request.session.get("user", "Desconocido"),
+                        accion=f"Error registrando asistencia de paramédico {paramedico_id}: {e}"
+                    )
+
+        return redirect('ver_reloj')
+
+    # Procesar filtro de fecha
+    fecha_str = request.GET.get('fecha')
+    if fecha_str:
+        try:
+            fecha_filtrada = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        except ValueError:
+            fecha_filtrada = hoy
+    else:
+        fecha_filtrada = hoy
+
+    if fecha_filtrada > hoy:
+        alerta_fecha_futura = True
+        paramedicos = []
+    else:
+        # Solo paramédicos con registros ese día (exacto o hasta hoy si es hoy)
+        if fecha_filtrada == hoy:
+            relojes = Reloj.objects.filter(
+                paramedico=OuterRef('pk'),
+                fecha__date__lte=fecha_filtrada
+            )
+        else:
+            relojes = Reloj.objects.filter(
+                paramedico=OuterRef('pk'),
+                fecha__date=fecha_filtrada
+            )
+
+        paramedicos = Paramedicos.objects.filter(
+            Q(estatus='A') & (Q(tipo='P') | Q(tipo='A') | Q(tipo='S')),
+            Exists(relojes)
+        ).order_by('nombre')
+
+        for p in paramedicos:
+            if fecha_filtrada == hoy:
+                ultimo = Reloj.objects.filter(
+                    paramedico=p,
+                    fecha__date__lte=fecha_filtrada
+                ).order_by('-fecha').first()
+            else:
+                ultimo = Reloj.objects.filter(
+                    paramedico=p,
+                    fecha__date=fecha_filtrada
+                ).order_by('-fecha').first()
+
+            p.ultimo_estatus = ultimo.estatus if ultimo else ''
+            p.ultima_observacion = ultimo.observacion if ultimo else ''
+
+    status_options = [
+        ('A', 'ACTIVO'), ('F', 'BAJA'), ('D', 'DESCANSO'), ('E', 'DESCANSO ADICIONAL'),
+        ('N', 'FALTA INJUSTIFICADA'), ('J', 'FALTA JUSTIFICADA'), ('I', 'INCAPACIDAD'),
+        ('P', 'PERMISO'), ('S', 'SUSPENSION'), ('V', 'VACACIONES')
+    ]
+
+    return render(request, 'reloj/reloj.html', {
+        'paramedicos': paramedicos,
+        'status_options': status_options,
+        'fecha_filtrada': fecha_filtrada.strftime('%Y-%m-%d'),
+        'alerta_fecha_futura': alerta_fecha_futura,
+    })
+
+
+def imprimir_reporte(request):
+    from django.template.loader import get_template
+    from django.http import HttpResponse
+    import io
+    from xhtml2pdf import pisa
+    from django.utils import timezone
+    from datetime import datetime
+    from django.db.models import Q
+
+    fecha_str = request.GET.get('fecha')
+    fecha = timezone.now().date()
+    if fecha_str:
+        try:
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+
+    paramedicos = Paramedicos.objects.filter(
+        Q(estatus='A') & (Q(tipo='P') | Q(tipo='A') | Q(tipo='S'))
+    ).order_by('nombre')
+
+    for p in paramedicos:
+        ultimo = Reloj.objects.filter(
+            paramedico=p,
+            fecha__date=fecha
+        ).order_by('-fecha').first()
+
+        p.ultimo_estatus = ultimo.estatus if ultimo else ''
+        p.ultima_observacion = ultimo.observacion if ultimo else ''
+
+    # Renderizar template a HTML string
+    template = get_template('reloj/reporte_imprimible.html')
+    html = template.render({
+        'paramedicos': paramedicos,
+        'fecha': fecha.strftime('%Y-%m-%d'),
+        'request': request,  # Para resolver static en el template
+    })
+
+    # Crear PDF en memoria
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="reporte_asistencia.pdf"'
+
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode('UTF-8')), result)
+
+    if not pdf.err:
+        response.write(result.getvalue())
+        return response
+    else:
+        return HttpResponse('Error al generar PDF', status=500)

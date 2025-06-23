@@ -60,6 +60,23 @@ h2 {
 }
 
 
+
+.parte-cuerpo-quem {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.parte-cuerpo-quem:hover {
+  opacity: 0.9;
+  stroke: #ff0000 !important;
+  stroke-width: 2px !important;
+}
+
+.parte-cuerpo-quem.active {
+  filter: drop-shadow(0 0 8px rgba(255, 46, 46, 0.7));
+  stroke: #ff5900 !important;
+}
+
 /*Estilos para imagenes de vehiculo */
 .imagenes {
   display: flex;

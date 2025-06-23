@@ -210,6 +210,16 @@
         <h2 class="title-section" id="info-paciente">Información del Paciente</h2>
         <table class="info-table">
             <tr>
+                <th class="label"> Fecha Salida </th>
+                <td> {{ paciente.fecha_salida }}</td>
+                <th class="label"> Fecha Llegada </th>
+                <td> {{ paciente.fecha_salida }}</td>
+            </tr>
+            <tr>
+                <th class="label"> Fecha Retorno </th>
+                <td> {{ paciente.fecha_salida }}</td>
+            </tr>
+            <tr>
                 <th class="label"> Ambulancia </th>
                 <td> {{ paciente.ambulancia }}</td>
                 <th class="label"> Base </th>
@@ -549,7 +559,39 @@
         </table>
     </div>
 
+    <div class="section" aria-labelledby="datos-liberacion">
+        <h3 id="datos-liberacion" style="margin-bottom: 10px;">Testigos</h3>
+
+        {% if testigos_asignados %}
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Edad</th>
+                        <th>Domicilio</th>
+                        <th>Teléfono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for proc in testigos_asignados %}
+                        <tr>
+                            <td>{{ proc.nombre }}</td>
+                            <td>{{ proc.edad }}</td>
+                            <td>{{ proc.domicilio }}</td>
+                            <td>{{ proc.telefono }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="font-size: 14px;">No hay testigos registrados.</p>
+        {% endif %}
+    </div>
+
+
+
     <div class="section" aria-labelledby="otros-datos">
+        <h2 class="title-section" id="datos-liberacion"></h2>
         <table class="info-table">
             <tr>
                 <td>

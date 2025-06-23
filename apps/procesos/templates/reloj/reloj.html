@@ -1,0 +1,74 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<h2>Registro de Asistencia</h2>
+
+
+<form method="GET" class="mb-3">
+  <label for="fecha">Fecha:</label>
+  <input type="date" id="fecha" name="fecha" value="{{ fecha_filtrada }}" class="form-control mb-2" required>
+  <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+</form>
+
+<a href="{% url 'imprimir_reporte' %}?fecha={{ fecha_filtrada }}" target="_blank" class="btn btn-secondary btn-sm mb-3">
+   Imprimir Reporte
+</a>
+
+
+<form method="POST" onsubmit="return confirmarEnvio()">
+    {% csrf_token %}
+    <p id="contador-filas" class="fw-bold mt-2"></p>     
+    <button type="submit" class="btn btn-primary mb-2">Guardar Asistencias</button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Paramédico</th>
+                <th>Estatus</th>
+                <th>Observación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in paramedicos %}
+            <tr>
+                <td>{{ p.nombre }}</td>
+                <td>
+                    <input type="text" name="observacion_{{ p.clave }}" class="form-control" placeholder="Opcional"
+                        value="{{ p.ultima_observacion }}">
+                </td>
+                <td>
+                    <select name="estatus_{{ p.clave }}" class="form-select">
+                        {% for code, label in status_options %}
+                          <option value="{{ code }}" {% if p.ultimo_estatus == code %}selected{% endif %}>{{ label }}</option>
+                          </option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+            </tr>
+            {% endfor %}
+
+
+
+
+        </tbody>
+    </table>
+</form>
+
+<script>
+    
+    function confirmarEnvio() {
+        return confirm("¿Estás seguro de que deseas guardar las asistencias?");
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabla = document.querySelector('table tbody');
+        const numFilas = tabla.querySelectorAll('tr').length;
+
+        const contador = document.getElementById('contador-filas');
+        contador.textContent = `Total de paramédicos: ${numFilas}`;
+
+
+    });
+
+
+</script>
+{% endblock %}

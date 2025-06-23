@@ -133,6 +133,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'rescate/static',  # Directorio para archivos estáticos
 ]
 
+LOGIN_URL = '/login/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

@@ -102,6 +102,12 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="quemaduras-tab" data-bs-toggle="tab" data-bs-target="#quemaduras"
+                            type="button" role="tab" aria-controls="quemaduras" aria-selected="false">
+                                <i class="fa-solid fa-fire me-2"></i>Quemaduras
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="impacto-tab" data-bs-toggle="tab" data-bs-target="#impacto"
                             type="button" role="tab" aria-controls="impacto" aria-selected="false">
                             <i class="fa-solid fa-car me-2"></i>Impacto
@@ -274,6 +280,18 @@
                         {% include 'crear/lesion.html' %}
                         <div class="d-flex justify-content-between mt-3">
                             <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="equipo-tab">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
+                            </button>
+                            <button type="button" class="btn btn-primary next-tab" data-next-tab="quemadura-tab">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="quemaduras" role="tabpanel" aria-labelledby="pestana16-tab">
+                        {% include 'crear/quemaduras.html' %}
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="lesion-tab">
                                 <i class="fas fa-arrow-left me-2"></i> Anterior
                             </button>
                             <button type="button" class="btn btn-primary next-tab" data-next-tab="impacto-tab">

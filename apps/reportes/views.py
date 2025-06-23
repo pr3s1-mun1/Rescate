@@ -46,7 +46,7 @@ def reporte_servicios(request: HttpRequest):
                 conteos[tipo][base] += 1
 
     context = {
-        'conteos': dict(conteos),
+        'conteos': {k: dict(v) for k, v in conteos.items()},
         'tipos_servicio': sorted(tipos_servicio, key=lambda x: x.clave),
         'basees': sorted(basees),
         'fecha_inicio': fecha_inicio,
@@ -414,7 +414,7 @@ def reporte_sobresalientes(request):
 
             texto = (
                 f"POR COMISIÓN DE {safe_upper(r['nombre_persona_reporta'])}. DE LA BASE {safe_upper(r['base_id'])}, PARTIÓ LA AMBULANCIA #{safe_upper(r['ambulancia_id'])}\n"
-                f"NOS ACERCAMOS A LA CALLES {safe_upper(r['direccion_emergencia'])} CRUCE CON {safe_upper(r['calle_entre'])} COLONIA {safe_upper(r['colonia_emergencia'])}.\n"
+                f"NOS ACERCAMOS A LA CALLES {safe_upper(r['direccion_emergencia'])} CRUCE CON {safe_upper(r['calle_entre_id'])} COLONIA {safe_upper(r['colonia_emergencia'])}.\n"
                 f"SE REPORTA UN SERVICIO DE TIPO {safe_upper(r['descripcion'])}.\n"
                 f"EL PACIENTE DE NOMBRE: {safe_upper(nombre_completo)} CON DIRECCIÓN {safe_upper(r['direccion_paciente'])} #{r['domicilio_numero']}. DE SEXO {safe_upper(sexo)} DE EDAD {r['edad']} AÑOS,\n"
                 f"ESTATURA {r['estatura']} CM, COMPLEXIÓN {safe_upper(complexion)}, TEZ {safe_upper(tez)},\n"

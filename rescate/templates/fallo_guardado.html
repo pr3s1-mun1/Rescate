@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Error al guardar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffecec;
+            color: #d8000c;
+            padding: 20px;
+            text-align: center;
+        }
+        .error-box {
+            border: 1px solid #d8000c;
+            background-color: #fff3f3;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #d8000c;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-box">
+        <h1>Ocurrió un error al guardar</h1>
+        <p>{{ error }}</p>
+        <a href="{% url 'formulario_buscar' %}">Regresar</a>
+    </div>
+</body>
+</html>
