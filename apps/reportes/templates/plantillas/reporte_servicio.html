@@ -93,9 +93,17 @@
             {% for tipo in tipos_servicio %}
             <tr>
                 <td>{{ tipo }}</td>
-                {% for base in basees %}
-                <td>{{ conteos|get_item:tipo|get_item:base }}</td>
-                {% endfor %}
+                {% with conteos|get_item:tipo as fila %}
+                    {% if fila %}
+                        {% for base in basees %}
+                            <td>{{ fila|get_item:base|default:0 }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for base in basees %}
+                            <td>0</td>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <td><strong>{{ conteos|get_item:tipo|sum_row }}</strong></td>
             </tr>
             {% endfor %}
@@ -107,6 +115,7 @@
                 <td><strong>{{ conteos|grand_total }}</strong></td>
             </tr>
         </tbody>
+
     </table>
     {% else %}
     <p>No se encontraron datos para el rango de fechas.</p>

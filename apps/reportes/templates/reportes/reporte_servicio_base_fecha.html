@@ -42,11 +42,18 @@
             <tr class="data-row" data-tipo="{{ tipo }}">
                 <td>{{ tipo }}</td>
                 {% for base in basees %}
-                    <td class="cell-value" data-base="{{ base }}">{{ conteos|get_item:tipo|get_item:base|default:0 }}</td>
+                    {% with conteos|get_item:tipo as fila %}
+                        {% if fila %}
+                            <td class="cell-value" data-base="{{ base }}">{{ fila|get_item:base|default:0 }}</td>
+                        {% else %}
+                            <td class="cell-value" data-base="{{ base }}">0</td>
+                        {% endif %}
+                    {% endwith %}
                 {% endfor %}
                 <td class="row-total text-center"><strong>0</strong></td>
             </tr>
             {% endfor %}
+
             
             <!-- Fila de totales por columna -->
             <tr id="totals-row">

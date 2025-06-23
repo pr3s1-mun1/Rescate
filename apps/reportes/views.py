@@ -82,16 +82,27 @@ def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
                 P.fecha_salida, 
                 P.fecha_llegada, 
                 P.fecha_retorno,
-                CA.descripcion,
+                
+                CA.descripcion AS ambulancia,
+                P.ambulancia_id,
+                
+                S.tipo_servicio_realizado_id,
                 TS.descripcion AS tipo_servicio,
+                
+                S.direccion_emergencia_id,
                 D.calle AS direccion,
+                
+                S.colonia_emergencia_id,
                 C.colonia AS colonia,
-                S.calle_entre_id
+                
+                S.calle_entre_id,
+                CE.calle AS calle_entre
+
             FROM 
                 public.procesos_servicio AS S
             INNER JOIN 
                 public.procesos_pacientexservicio AS P 
-                ON S.clave = P.clave
+                ON S.clave = P.servicio_id
             LEFT JOIN 
                 public.catalogos_tiposservicio AS TS 
                 ON S.tipo_servicio_realizado_id = TS.clave
@@ -101,13 +112,16 @@ def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
             LEFT JOIN 
                 public.catalogos_colonia AS C 
                 ON S.colonia_emergencia_id = C.clave
+            LEFT JOIN 
+                public.catalogos_calle AS CE 
+                ON S.calle_entre_id = CE.clave
             LEFT JOIN
                 public.catalogos_ambulancias AS CA 
                 ON P.ambulancia_id = CA.clave
             WHERE 
                 S.fecha BETWEEN %s AND %s
             ORDER BY 
-                P.ambulancia_id, S.fecha
+                P.ambulancia_id, S.fecha DESC
         """, [fecha_inicio, fecha_fin])
 
         columnas = [col[0] for col in cursor.description]
@@ -126,7 +140,7 @@ def reporte_servicios_x_ambulancia(request):
     if fecha_inicio and fecha_fin:
         servicios = obtener_servicios_ambulancia(fecha_inicio, fecha_fin)
         for s in servicios:
-            ambulancia = s['descripcion']
+            ambulancia = s['ambulancia']
             servicios_por_ambulancia[ambulancia].append(s)
 
     context = {
@@ -149,7 +163,7 @@ def imprimir_reporte_ambulancia_pdf(request):
 
         # Agrupar por ambulancia
         for s in servicios_raw:
-            ambu = s['descripcion']
+            ambu = s['ambulancia']
             if ambu not in servicios_por_ambulancia:
                 servicios_por_ambulancia[ambu] = []
             servicios_por_ambulancia[ambu].append(s)
@@ -182,7 +196,7 @@ def obtener_servicios_por_tipo(fecha_inicio, fecha_fin):
                 public.procesos_servicio AS S
             INNER JOIN 
                 public.procesos_pacientexservicio AS P 
-                ON S.clave = P.clave
+                ON S.clave = P.servicio_id
             LEFT JOIN 
                 public.catalogos_tiposservicio AS TS
                 ON TS.clave = S.tipo_servicio_realizado_id
@@ -198,6 +212,7 @@ def obtener_servicios_por_tipo(fecha_inicio, fecha_fin):
         resultados = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]
     
     return resultados
+
 
 def reporte_servicios_x_tipo(request):
     from collections import defaultdict
@@ -223,8 +238,8 @@ def reporte_servicios_x_tipo(request):
 
     context = {
         'tabla': tabla,
-        'filas': sorted(filas),
-        'columnas': sorted(columnas),
+        'filas': sorted(f for f in filas if f is not None),
+        'columnas': sorted(c for c in columnas if c is not None),
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     }
@@ -414,7 +429,7 @@ def reporte_sobresalientes(request):
 
             texto = (
                 f"POR COMISIÓN DE {safe_upper(r['nombre_persona_reporta'])}. DE LA BASE {safe_upper(r['base_id'])}, PARTIÓ LA AMBULANCIA #{safe_upper(r['ambulancia_id'])}\n"
-                f"NOS ACERCAMOS A LA CALLES {safe_upper(r['direccion_emergencia'])} CRUCE CON {safe_upper(r['calle_entre_id'])} COLONIA {safe_upper(r['colonia_emergencia'])}.\n"
+                f"NOS ACERCAMOS A LA CALLES {safe_upper(r['direccion_emergencia'])} CRUCE CON {(r['calle_entre_id'])} COLONIA {safe_upper(r['colonia_emergencia'])}.\n"
                 f"SE REPORTA UN SERVICIO DE TIPO {safe_upper(r['descripcion'])}.\n"
                 f"EL PACIENTE DE NOMBRE: {safe_upper(nombre_completo)} CON DIRECCIÓN {safe_upper(r['direccion_paciente'])} #{r['domicilio_numero']}. DE SEXO {safe_upper(sexo)} DE EDAD {r['edad']} AÑOS,\n"
                 f"ESTATURA {r['estatura']} CM, COMPLEXIÓN {safe_upper(complexion)}, TEZ {safe_upper(tez)},\n"
@@ -459,7 +474,7 @@ def imprimir_reporte_sobresalientes_pdf(request):
 
             texto = (
                 f"POR COMISIÓN DE {safe_upper(r['nombre_persona_reporta'])}. DE LA BASE {safe_upper(r['base_id'])}, PARTIÓ LA AMBULANCIA #{safe_upper(r['ambulancia_id'])}<br>"
-                f"NOS ACERCAMOS A LA CALLES {safe_upper(r['direccion_emergencia'])} CRUCE CON {safe_upper(r['calle_entre'])} COLONIA {safe_upper(r['colonia_emergencia'])}.<br>"
+                f"NOS ACERCAMOS A LA CALLES {safe_upper(r['direccion_emergencia'])} CRUCE CON {(r['calle_entre_id'])} COLONIA {safe_upper(r['colonia_emergencia'])}.<br>"
                 f"SE REPORTA UN SERVICIO DE TIPO {safe_upper(r['descripcion'])}.<br>"
                 f"EL PACIENTE DE NOMBRE: {safe_upper(nombre_completo)} CON DIRECCIÓN {safe_upper(r['direccion_paciente'])} #{r['domicilio_numero']}. DE SEXO {safe_upper(sexo)} DE EDAD {r['edad']} AÑOS,<br>"
                 f"ESTATURA {r['estatura']} CM, COMPLEXIÓN {safe_upper(complexion)}, TEZ {safe_upper(tez)},<br>"
@@ -577,8 +592,8 @@ def reporte_paramedico_base(request):
                     p.base_id
                 FROM public.procesos_servicio AS s
                 INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
-                INNER JOIN public.procesos_paramedicoxpaciente AS pp ON s.clave = pp.servicio_id
-                INNER JOIN public.catalogos_paramedicos AS paramedicos ON paramedicos.clave = pp.paramedico_id
+                LEFT JOIN public.procesos_paramedicoxpaciente AS pp ON s.clave = pp.servicio_id
+                LEFT JOIN public.catalogos_paramedicos AS paramedicos ON paramedicos.clave = pp.paramedico_id
                 WHERE s.fecha BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             datos_crudos = cursor.fetchall()
@@ -591,27 +606,35 @@ def reporte_paramedico_base(request):
         bases_detectadas.add(base_id)
 
     # Ordenar bases
-    bases_ordenadas = sorted(bases_detectadas)
+    bases_ordenadas = (bases_detectadas)
 
-    # Estructurar datos para el template
+    # Inicializar total general y total por base
+    total_general = 0
     total_por_base = defaultdict(int)
+
+    # Preparar resultados para el template
     resultados = []
-    for paramedico_nombre in sorted(tabla.keys()):
+    for paramedico_nombre in tabla.keys():
         fila = {'paramedico_nombre': paramedico_nombre}
-        total_paramedico = 0
+        subtotal = 0
         for base_id in bases_ordenadas:
             valor = tabla[paramedico_nombre].get(base_id, 0)
             fila[base_id] = valor
-            total_paramedico += valor
-        fila['total'] = total_paramedico  # ← total por paramédico
+            subtotal += valor
+            total_por_base[base_id] += valor
+        fila['total'] = subtotal
+        total_general += subtotal
         resultados.append(fila)
+
     return render(request, 'reportes/reporte_paramedico_base.html', {
         'resultados': resultados,
         'bases': bases_ordenadas,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
-        'total': total_paramedico
+        'total': total_general,
+        'total_por_base': dict(total_por_base),  # convertimos a dict para facilitar uso en template
     })
+
 
 def reporte_paramedico_base_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
@@ -860,7 +883,7 @@ def reporte_pacientes_por_sexo(request):
         sexos_detectados.add(sexo_nombre)
 
     sexos_ordenados = sorted(sexos_detectados)
-    bases_ordenadas = sorted(tabla.keys())
+    bases_ordenadas = tabla.keys()
 
     resultados = []
     for base_id in bases_ordenadas:
