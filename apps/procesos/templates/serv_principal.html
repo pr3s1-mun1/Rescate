@@ -3,71 +3,339 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Servicios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Médico</title>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #eef2ff;
+            --primary-dark: #3a0ca3;
+            --secondary: #3f37c9;
+            --success: #4cc9a0;
+            --success-light: #e6fcf5;
+            --success-dark: #38a37f;
+            --warning: #f8961e;
+            --warning-light: #fff3e6;
+            --warning-dark: #e07b0c;
+            --danger: #f94144;
+            --danger-light: #ffe3e3;
+            --danger-dark: #e03131;
+            --info: #4895ef;
+            --info-light: #e7f5ff;
+            --dark: #212529;
+            --dark-light: #343a40;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+
         body {
-            background-color: #f1f4f9;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark);
+            line-height: 1.6;
         }
 
         .dashboard-container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 3rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
         }
 
-        .card-tile {
-            background: linear-gradient(to bottom right, #ffffff, #f7f9fc);
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            height: 100%;
+        /* Section Titles */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
             position: relative;
+            padding-bottom: 0.75rem;
+            color: var(--dark);
         }
 
-        .card-tile:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
         }
 
-        .card-tile i {
-            font-size: 2.8rem;
-            color: #4e73df;
-            margin-bottom: 1rem;
-        }
-
-        .card-tile h4 {
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .badge-info-box {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .summary-badge {
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.6rem;
+        /* Quick Access Tiles */
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
 
         .tile-link {
             text-decoration: none;
             color: inherit;
+            transition: transform 0.2s ease;
         }
 
-        .section-title {
-            font-size: 1.75rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            color: #343a40;
+        .tile-link:hover {
+            transform: translateY(-3px);
+        }
+
+        .card-tile {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-tile:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-tile i {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            background: var(--primary-light);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-tile h4 {
+            font-size: 1.25rem;
             font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+
+        .card-tile p {
+            color: var(--gray);
+            margin-bottom: 0;
+        }
+
+        .tile-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            border-radius: 12px;
+            padding: 1.75rem;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 1.75rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .stat-title {
+            font-size: 1rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        /* Service Cards */
+        .service-card {
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .service-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        /* Summary Cards */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn-outline-primary {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .main-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+        }
+
+        .main-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                padding: 1.5rem 1rem;
+            }
+            
+            .card-tile {
+                padding: 1.5rem;
+            }
+            
+            .card-tile i {
+                font-size: 2rem;
+                width: 60px;
+                height: 60px;
+            }
+            
+            .stat-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
 </head>
@@ -75,45 +343,274 @@
     {% include 'navbar.html' %}
 
     <div class="dashboard-container">
-        <h1 class="section-title">Panel de Gestión de Servicios</h1>
+        <header class="main-header animate-fade">
+            <h2 class="main-title">Panel de Administración de Servicios</h2>
+        </header>
+        <!-- Quick Access Tiles -->
+        <div class="tile-grid animate-fade">
+            <a href="{% url 'formulario_servicio' %}" class="tile-link">
+                <div class="card-tile">
+                    <i class="fas fa-file-medical"></i>
+                    <h4>Crear Hoja de Servicio</h4>
+                    <p>Genera una nueva hoja de servicio médica</p>
+                    <span class="tile-badge bg-success text-white">Nuevo</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'formulario_buscar' %}" class="tile-link">
+                <div class="card-tile">
+                    <i class="fas fa-tasks"></i>
+                    <h4>Gestionar Servicios</h4>
+                    <p>Consulta y administra los servicios existentes</p>
+                    <span class="tile-badge bg-primary text-white">Total: {{ total_servicios }}</span>
+                </div>
+            </a>
+            
+        </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-6">
-                <a href="{% url 'formulario_servicio' %}" class="tile-link">
-                    <div class="card-tile text-center">
-                        <i class="fas fa-file-medical"></i>
-                        <h4>Crear Hoja de Servicio</h4>
-                        <p class="text-muted">Genera una nueva hoja de servicio médica.</p>
-                        <span class="badge bg-success position-absolute top-0 end-0 m-3">Nuevo</span>
+        <h1 class="section-title animate-fade">Resumen del Día</h1>
+        
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4 animate-fade">
+            <!-- Servicios Hoy -->
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--primary);">
+                        <i class="fas fa-procedures"></i>
                     </div>
-                </a>
+                    <h3 class="stat-value">{{ servicios_hoy }}</h3>
+                    <p class="stat-title">Servicios Hoy</p>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-arrow-up text-success"></i> 
+                            {% if servicios_hoy_tendencia > 0 %}+{% endif %}{{ servicios_hoy_tendencia }}% vs ayer
+                        </small>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <a href="{% url 'formulario_buscar' %}" class="tile-link">
-                    <div class="card-tile text-center">
-                        <i class="fas fa-tasks"></i>
-                        <h4>Gestionar Servicios</h4>
-                        <p class="text-muted">Consulta y administra los servicios existentes.</p>
-                        <span class="badge bg-primary position-absolute top-0 end-0 m-3">Total: {{ total_servicios }}</span>
+            
+            <!-- Pacientes Hoy -->
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--success);">
+                        <i class="fas fa-user-injured"></i>
                     </div>
-                </a>
+                    <h3 class="stat-value">{{ pacientes_hoy }}</h3>
+                    <p class="stat-title">Pacientes Hoy</p>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            <i class="fas {% if pacientes_hoy_tendencia >= 0 %}fa-arrow-up text-success{% else %}fa-arrow-down text-danger{% endif %}"></i> 
+                            {% if pacientes_hoy_tendencia > 0 %}+{% endif %}{{ pacientes_hoy_tendencia }}% vs ayer
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Servicios Mes -->
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--warning);">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="stat-value">{{ servicios_mes }}</h3>
+                    <p class="stat-title">Servicios Este Mes</p>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            <i class="fas {% if servicios_mes_tendencia >= 0 %}fa-arrow-up text-success{% else %}fa-arrow-down text-danger{% endif %}"></i> 
+                            {% if servicios_mes_tendencia > 0 %}+{% endif %}{{ servicios_mes_tendencia }}% vs mes pasado
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Últimos Registros -->
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--danger);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="stat-value">{{ ultimos_servicios_pacientes|length }}</h3>
+                    <p class="stat-title">Últimos Registros</p>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">Últimas 24 horas</small>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="badge-info-box">
-            <h5 class="mb-4 text-center">Resumen de Actividad</h5>
-            <div class="row text-center">
-                <div class="col-md-4 mb-3">
-                    <p><strong>Servicios Activos:</strong><br><span class="badge summary-badge bg-info">{{ servicios_activos }}</span></p>
+        <div class="row g-4 animate-fade">
+            <!-- Columna principal - Últimos servicios -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="section-title">Últimos servicios realizados</h2>
+                        
+                        {% if ultimos_servicios_pacientes %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Paciente</th>
+                                            <th>Fecha</th>
+                                            <th>Ubicación</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pxservicio in ultimos_servicios_pacientes %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ pxservicio.paciente_nombre }}</strong>
+                                                <div class="small text-muted">Servicio #{{ pxservicio.servicio.clave }}</div>
+                                            </td>
+                                            <td>
+                                                {{ pxservicio.servicio.fecha|date:"d/m/Y" }}
+                                                <div class="small text-muted">{{ pxservicio.servicio.fecha|date:"H:i" }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>
+                                                    <span class="small">{{ pxservicio.colonia.colonia }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="service-badge" 
+                                                      style="background: {% if pxservicio.servicio.estatus == 'P' %}var(--primary-light){% elif pxservicio.servicio.estatus == 'T' %}var(--success-light){% else %}var(--danger-light){% endif %}; 
+                                                             color: {% if pxservicio.servicio.estatus == 'P' %}var(--primary){% elif pxservicio.servicio.estatus == 'T' %}var(--success-dark){% else %}var(--danger-dark){% endif %};">
+                                                    {% if pxservicio.servicio.estatus == 'P' %}
+                                                        <i class="fas fa-spinner fa-pulse me-1"></i> En Proceso
+                                                    {% elif pxservicio.servicio.estatus == 'T' %}
+                                                        <i class="fas fa-check-circle me-1"></i> Terminado
+                                                    {% else %}
+                                                        <i class="fas fa-times-circle me-1"></i> Cancelado
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'carga_modifica' pxservicio.servicio.clave pxservicio.clavepaciente %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> Ver
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-info-circle fa-3x mb-3 text-muted"></i>
+                                <h5 class="text-muted">No hay servicios recientes</h5>
+                                <p class="text-muted">No se han registrado servicios en las últimas 24 horas</p>
+                                <a href="{% url 'formulario_servicio' %}" class="btn btn-primary mt-2">
+                                    <i class="fas fa-plus me-2"></i> Crear nuevo servicio
+                                </a>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="text-center mt-4">
+                            <a href="{% url 'formulario_buscar' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-list me-2"></i> Ver todos los servicios
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <p><strong>Hojas Creadas Hoy:</strong><br><span class="badge summary-badge bg-success">{{ hojas_hoy }}</span></p>
+            </div>
+            
+            <!-- Columna secundaria - Resumen y acciones -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="section-title">Resumen Mensual</h5>
+
+                        <div class="summary-item">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon bg-primary">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Servicios completados</h6>
+                                    <small class="text-muted">Este mes</small>
+                                </div>
+                            </div>
+                            <span class="summary-value text-primary">{{ servicios_mes }}</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon bg-success">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Pacientes atendidos</h6>
+                                    <small class="text-muted">Este mes</small>
+                                </div>
+                            </div>
+                            <span class="summary-value text-success">{{ pacientes_mes }}</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon bg-warning">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Servicios pendientes</h6>
+                                    <small class="text-muted">Por completar</small>
+                                </div>
+                            </div>
+                            <span class="summary-value text-warning">{{ servicios_pendientes }}</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon bg-info">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Promedio diario</h6>
+                                    <small class="text-muted">Servicios por día</small>
+                                </div>
+                            </div>
+                            <span class="summary-value text-info">{{ promedio_diario }}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <p><strong>Pendientes:</strong><br><span class="badge summary-badge bg-warning text-dark">{{ pendientes }}</span></p>
+
+                <!-- Quick Actions -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="section-title">Acciones Rápidas</h5>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'formulario_servicio' %}" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i> Nuevo Servicio
+                            </a>
+                            <a href="{% url 'formulario_buscar' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-search me-2"></i> Buscar Servicio
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Custom JS -->
+    <script>
+        // Animaciones al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.animate-fade');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 </body>
 </html>

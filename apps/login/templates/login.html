@@ -425,6 +425,7 @@
         @media (max-width: 400px) {
             .login-form {
                 padding: 1.5rem 1.25rem;
+                background-color: red;
             }
             
             .d-flex.justify-content-between {
@@ -557,6 +558,20 @@
                 }
             }
         });
+
+                // Ajustar altura del contenedor en dispositivos pequeños
+        function adjustLoginHeight() {
+            const loginContainer = document.querySelector('.login-container');
+            if (window.innerWidth <= 768) {
+                loginContainer.style.minHeight = 'auto';
+            } else {
+                loginContainer.style.minHeight = '600px';
+            }
+        }
+
+        // Ejecutar al cargar y al redimensionar
+        window.addEventListener('load', adjustLoginHeight);
+        window.addEventListener('resize', adjustLoginHeight);
     </script>
 </body>
 </html>

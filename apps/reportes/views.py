@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from io import BytesIO
 from collections import defaultdict
 from django.db import connection
-from datetime import date
+from datetime import date, timedelta
 
 def cargar_reportes(request):
     return render(request, 'main.html')
@@ -1022,6 +1022,127 @@ def reporte_enfermedades_por_grupo(request):
         "fecha_inicio": fecha_inicio,
         "fecha_fin": fecha_fin
     })
+
+from datetime import timedelta, date
+from django.db import connection
+from django.shortcuts import render
+
+def reporte_asistencia_paramedicos(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    datos = []
+    fechas = []
+
+    if fecha_inicio and fecha_fin:
+        fecha_inicio = date.fromisoformat(fecha_inicio)
+        fecha_fin = date.fromisoformat(fecha_fin)
+        
+        # Generar la lista de fechas sin usar daterange
+        fechas = []
+        current_date = fecha_inicio
+        while current_date <= fecha_fin:
+            fechas.append(current_date)
+            current_date += timedelta(days=1)
+
+        # Generar columnas dinámicas por fecha
+        columnas_sql = ",\n".join([
+            f"""MAX(CASE 
+                        WHEN DATE(r.fecha) = '{f.isoformat()}' 
+                        THEN r.estatus 
+                        ELSE NULL 
+                    END) AS "{f.strftime('%d/%m')}" """
+            for f in fechas
+        ])
+
+
+        query = f"""
+            SELECT 
+                p.nombre,
+                {columnas_sql}
+            FROM catalogos_paramedicos p
+            LEFT JOIN procesos_reloj r ON r.paramedico_id = p.clave
+            WHERE DATE(r.fecha) BETWEEN %s AND %s
+            GROUP BY p.nombre
+            ORDER BY p.nombre;
+        """
+
+
+        with connection.cursor() as cursor:
+            cursor.execute(query, [fecha_inicio, fecha_fin])
+            datos = cursor.fetchall()
+
+    return render(request, "reportes/reporte_lista_asistencia.html", {
+        "datos": datos,
+        "fechas": [f.day for f in fechas],
+        "fecha_inicio": fecha_inicio.isoformat() if fecha_inicio else "",
+        "fecha_fin": fecha_fin.isoformat() if fecha_fin else ""
+    })
+
+import io
+
+def reporte_asistencia_pdf(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    datos = []
+    fechas = []
+
+    # Generar rango de fechas
+    def generar_fechas(start, end):
+        current = start
+        while current <= end:
+            fechas.append(current)
+            current += timedelta(days=1)
+
+    if fecha_inicio and fecha_fin:
+        fecha_inicio_date = date.fromisoformat(fecha_inicio)
+        fecha_fin_date = date.fromisoformat(fecha_fin)
+        generar_fechas(fecha_inicio_date, fecha_fin_date)
+
+        columnas_sql = ",\n".join([
+            f"""MAX(CASE 
+                    WHEN DATE(r.fecha) = '{f.isoformat()}' 
+                    THEN r.estatus 
+                    ELSE NULL 
+                END) AS "{f.strftime('%d/%m')}" """
+            for f in fechas
+        ])
+
+        query = f"""
+            SELECT 
+                p.nombre,
+                {columnas_sql}
+            FROM catalogos_paramedicos p
+            LEFT JOIN procesos_reloj r ON r.paramedico_id = p.clave
+            WHERE DATE(r.fecha) BETWEEN %s AND %s
+            GROUP BY p.nombre
+            ORDER BY p.nombre;
+        """
+
+
+        with connection.cursor() as cursor:
+            cursor.execute(query, [fecha_inicio_date, fecha_fin_date])
+            datos = cursor.fetchall()
+
+    # Renderizar HTML
+    template = get_template("plantillas/reporte_pdf_asistencia.html")
+    html = template.render({
+        "datos": datos,
+        "fechas": [f.strftime('%d/%m') for f in fechas],
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin
+    })
+
+    # Generar PDF
+    result = io.BytesIO()
+    pisa_status = pisa.CreatePDF(io.StringIO(html), dest=result)
+
+    if pisa_status.err:
+        return HttpResponse("Error al generar el PDF", status=500)
+
+    response = HttpResponse(result.getvalue(), content_type="application/pdf")
+    response['Content-Disposition'] = 'inline; filename="plantillas/reporte_pdf_asistencia.html.pdf"'
+    return response
+
 
 def reporte_enfermedades_por_grupo_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")

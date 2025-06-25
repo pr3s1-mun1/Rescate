@@ -38,8 +38,9 @@
 </a>
                         <form action="{% url 'delete_catalogo' 'equipos' equipo.clave %}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este equipo?');">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
-</button>
+                            <!--                                 <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
+</button> -->
+
                         </form>                        
                     </td>
                 </tr>

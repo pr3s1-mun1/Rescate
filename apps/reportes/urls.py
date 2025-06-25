@@ -28,4 +28,6 @@ urlpatterns = [
     path('reportes/serviciosmaterialespaciente/pdf', reporte_materiales_pacientes_pdf, name='reporte_materiales_pacientes_pdf'),
     path('reportes/serviciosmedicamentospaciente/', reporte_medicamentos_pacientes, name='reporte_medicamentos_pacientes'),
     path('reportes/serviciosmedicamentospaciente/pdf', reporte_medicamentos_pacientes_pdf, name='reporte_medicamentos_pacientes_pdf'),
+    path('reportes/serviciosasistencia/', reporte_asistencia_paramedicos, name='reporte_asistencia_paramedicos'),
+    path('reportes/serviciosasistencia/pdf', reporte_asistencia_pdf, name='reporte_asistencia_pdf'),
 ]

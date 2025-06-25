@@ -48,181 +48,104 @@
             </div>
         </div>
     </div>
+<style>
+    /* Footer principal */
+    .footer-guinda {
+        background-color: #7d0a42; /* Color guinda */
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem 0;
+    }
 
-    <style>
-        /* Estructura para footer fijo */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        
-        main {
-            flex: 1;
-        }
-        
-        .footer-guinda {
-            background: linear-gradient(135deg, var(--guinda-oscuro), var(--guinda-principal));
-            color: white;
-            padding: 2rem 0 1rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            position: relative;
-            overflow: hidden;
-            margin-top: auto; /* Empuja el footer hacia abajo */
-            width: 100%;
-        }
+    /* Logo del footer */
+    .footer-logo {
+        height: 60px;
+        width: auto;
+        object-fit: contain;
+        background-color: white;
+        padding: 2px;
+        border-radius: 5px;
+    }
 
-        .footer-guinda::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--dorado-accento);
-        }
+    /* Subtítulo */
+    .footer-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
 
-        .footer-logo {
-            height: 60px;
-            transition: transform 0.3s;
-        }
+    /* Enlaces */
+    .footer-links {
+        flex-wrap: wrap;
+    }
 
-        .footer-logo:hover {
-            transform: scale(1.05);
-        }
+    .footer-link {
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
 
-        .footer-guinda h4 {
-            font-weight: 700;
-            color: white;
-            letter-spacing: 0.5px;
-        }
+    .footer-link:hover {
+        color: #ffcc00; /* Amarillo para hover */
+        transform: translateY(-2px);
+    }
 
-        .footer-subtitle {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            color: rgba(255, 255, 255, 0.8);
-        }
+    .footer-link i {
+        margin-right: 5px;
+        font-size: 1rem;
+    }
 
+    /* Texto del desarrollador */
+    .footer-dev-name {
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+
+    /* Logo del desarrollador */
+    .developer-logo {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+        background-color: white;
+        padding: 2px;
+        border-radius: 5px;
+    }
+
+    /* Copyright */
+    .footer-copyright {
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+
+    .footer-copyright i {
+        margin-right: 3px;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
         .footer-links {
-            display: flex;
-            flex-wrap: wrap;
+            margin: 15px 0;
         }
-
+        
         .footer-link {
-            color: white;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 0;
-            position: relative;
+            margin: 0 10px 10px 10px !important;
         }
-
-        .footer-link i {
-            margin-right: 8px;
-            color: var(--dorado-accento);
-            font-size: 1.1rem;
-        }
-
-        .footer-link::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--dorado-accento);
-            transition: width 0.3s;
-        }
-
-        .footer-link:hover {
-            color: var(--dorado-accento);
-        }
-
-        .footer-link:hover::after {
-            width: 100%;
-        }
-
-        .footer-copyright {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 1rem;
-        }
-
-        .footer-copyright i {
-            margin-right: 5px;
-        }
-
-        .developer-logo {
-            height: 75px;
-            border-radius: 5%;
-            border: 2px solid var(--dorado-accento);
-            padding: 5px;
-            background: white;
-        }
-
-        .footer-logo {
-            height: 75px;
-            border-radius: 5%;
-            border: 2px solid var(--dorado-accento);
-            padding: 3px;
-            background: white;
-        }
-
-        .footer-dev {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.2;
-        }
-
+        
         .footer-dev-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: white;
-            line-height: 1.2;
+            text-align: center !important;
         }
+    }
 
-        @media (max-width: 992px) {
-            .footer-logo {
-                height: 50px;
-            }
-            
-            .footer-links {
-                justify-content: center !important;
-                margin-bottom: 1rem;
-            }
-            
-            .developer-logo {
-                height: 45px;
-            }
+    @media (max-width: 576px) {
+        .footer-logo {
+            height: 50px;
         }
-
-        @media (max-width: 768px) {
-            .footer-guinda {
-                text-align: center;
-                padding: 1.5rem 0;
-            }
-            
-            .footer-links {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .footer-link {
-                margin: 0.5rem 0 !important;
-            }
-            
-            .d-flex.justify-content-lg-end {
-                justify-content: center !important;
-                margin-top: 1rem;
-            }
+        
+        .developer-logo {
+            height: 35px;
         }
-    </style>
+    }
+</style>
 </footer>

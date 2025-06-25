@@ -460,7 +460,7 @@ def defunciones(request):
         buffer.seek(0)
         grafica_base64 = base64.b64encode(buffer.getvalue()).decode()
 
-    return render(request, "reportes/intoxicaciones.html", {
+    return render(request, "reportes/defunciones.html", {
         "resultados": resultados,
         "fecha_inicio": fecha_inicio,
         "fecha_fin": fecha_fin,

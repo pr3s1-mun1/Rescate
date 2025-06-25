@@ -1,0 +1,51 @@
+{% load static %}
+{% load extra_tags %}
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4" id="titulo">Reporte de Asistencia de Paramédicos</h2>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <label>Desde:</label>
+            <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-5">
+            <label>Hasta:</label>
+            <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+
+    <form class="my-3" method="get" action="{% url 'reporte_asistencia_pdf' %}" target="_blank">
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <button class="btn btn-danger" type="submit">Imprimir PDF</button>
+    </form>
+
+    {% if datos %}
+    <table class="table table-bordered table-sm" id="tabla-reporte">
+        <thead>
+            <tr>
+                <th>Paramédico</th>
+                {% for dia in fechas %}
+                    <th>{{ dia }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in datos %}
+                <tr>
+                    {% for celda in fila %}
+                        <td>{% if celda %}{{ celda }}{% else %}&nbsp;{% endif %}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="alert alert-warning">No se encontraron asistencias para el rango seleccionado.</p>
+    {% endif %}
+</div>

@@ -38,8 +38,9 @@
 </a>
                             <form method="POST" action="{% url 'delete_catalogo' 'hospitales' hospital.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este hospital?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
-</button>
+                                <!--                                 <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
+</button> -->
+
                             </form>
                         </td>
                     </tr>

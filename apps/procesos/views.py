@@ -155,17 +155,64 @@ def formulario_servicio(request):
 
 #Función para mostrar conteos de hojas de servicio además de los botones de selección
 def vista_principal(request):
-    total_servicios = Servicio.objects.count()
-    servicios_activos = Servicio.objects.filter(estatus='P').count()
-    hojas_hoy = Servicio.objects.filter(fecha=timezone.now().date()).count()    
-    pendientes = Servicio.objects.count()
+    hoy = timezone.now().date()
 
-    return render(request, 'serv_principal.html', {
-        'total_servicios': total_servicios,
-        'servicios_activos': servicios_activos,
-        'hojas_hoy': hojas_hoy,
-        'pendientes': pendientes,
-    })
+    # Servicios realizados hoy
+    servicios_hoy = Servicio.objects.filter(fecha=hoy).count()
+
+    # Servicios en total
+    servicios_tot = Servicio.objects.count()
+
+    # Pacientes únicos hoy (por nombre + apellidos) — como no hay FK a paciente
+    pacientes_hoy = PacientexServicio.objects.filter(
+        servicio__fecha=hoy
+    ).values('nombre', 'apellido_paterno', 'apellido_materno').distinct().count()
+
+    # Servicios del mes actual
+    servicios_mes = Servicio.objects.filter(
+        fecha__year=hoy.year,
+        fecha__month=hoy.month
+    ).count()
+
+    # Pacientes únicos del mes
+    pacientes_mes = PacientexServicio.objects.filter(
+        servicio__fecha__year=hoy.year,
+        servicio__fecha__month=hoy.month
+    ).values('nombre', 'apellido_paterno', 'apellido_materno').distinct().count()
+
+    # Últimos 3 servicios ordenados por fecha y hora descendente
+    ultimos_servicios = Servicio.objects.order_by('-clave')[:10]
+
+    # Obtener pacientes asociados a esos servicios y preparar datos para la plantilla
+    ultimos_servicios_con_pacientes = []
+    for servicio in ultimos_servicios:
+        pacientes = PacientexServicio.objects.filter(servicio=servicio)
+        for pxservicio in pacientes:
+            nombre_completo = f"{pxservicio.nombre} {pxservicio.apellido_paterno} {pxservicio.apellido_materno}".strip()
+            paciente = pxservicio.clave
+            ultimos_servicios_con_pacientes.append({
+                'servicio': servicio,
+                'paciente_nombre': nombre_completo,
+                'registro': pxservicio,
+                'domicilio': pxservicio.domicilio,
+                'colonia': pxservicio.colonia,
+                'clavepaciente': paciente,
+            })
+
+    # Limitar a 3 registros para no saturar la vista
+    ultimos_servicios_con_pacientes = ultimos_servicios_con_pacientes[:10]
+
+    context = {
+        'servicios_hoy': servicios_hoy,
+        'pacientes_hoy': pacientes_hoy,
+        'servicios_mes': servicios_mes,
+        'pacientes_mes': pacientes_mes,
+        'ultimos_servicios_pacientes': ultimos_servicios_con_pacientes,
+        'total_servicios': servicios_tot,
+        'hoy': hoy,  # Por si quieres usar en plantilla para fechas u otras referencias
+    }
+
+    return render(request, 'serv_principal.html', context)
 
 def crear_servicio(request):
     if request.method == 'POST':
