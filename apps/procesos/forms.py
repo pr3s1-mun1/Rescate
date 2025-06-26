@@ -82,6 +82,7 @@ class PacientesForm(forms.ModelForm):
             'edad_tipo': forms.Select(choices=[('1', 'DIAS'), ('2', 'SEMANAS'), ('3', 'MESES'), ('4', 'AÑOS')]),
             'color_vehiculo': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'BLANCO'), ('3', 'NEGRO'), ('4', 'ROJO'), ('5', 'AMARILLO'), ('6', 'VERDE'), ('7', 'CAFE'), ('8', 'GRIS')]),
             'parentesco_acompanante': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'PADRE'), ('3', 'MADRE'), ('4', 'HERMANO(A)'), ('5', 'TIO(A)'), ('6', 'ABUELO(A)'), ('7', 'CUÑADO(A)'), ('8', 'HIJO(A)')]),
+            'sexo_acompanante' : forms.Select(choices=[('N', 'NO ESPECIFICA'), ('M', 'MASCULINO'), ('F', 'FEMENINO')]),
         }
 
     def __init__(self, *args, **kwargs):
