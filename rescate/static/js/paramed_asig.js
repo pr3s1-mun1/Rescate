@@ -81,4 +81,15 @@ document.addEventListener("DOMContentLoaded", function () {
     eliminarSeleccionadosParamedicos();
     actualizarContador("tabla-paramedicos-disponibles", "contador-paramedicos-disponibles");
     actualizarContador("tabla-paramedicos-asignados", "contador-paramedicos-asignados");
+
+    const filasAsignadasParamedicos = document.querySelectorAll("#tabla-paramedicos-asignados tbody tr");
+    filasAsignadasParamedicos.forEach(fila => {
+        const clave = fila.cells[0]?.textContent.trim();
+        const nombre = fila.cells[1]?.textContent.trim();
+
+        fila.ondblclick = function () {
+            moverAOriginales(this, clave, nombre);
+        };
+    });
+
 });

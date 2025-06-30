@@ -70,4 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
     actualizarContador("tabla-unidades", "contador-unidades");
     actualizarContador("tabla-seleccionados", "contados-unidades");
     llenarInputs();
+    const filasSeleccionadas = document.querySelectorAll("#tabla-seleccionados tbody tr");
+    filasSeleccionadas.forEach(fila => {
+    fila.ondblclick = function () {
+        fila.remove();
+        llenarInputs();
+        actualizarContador("tabla-seleccionados", "contados-unidades");
+    };
+    });
 });
