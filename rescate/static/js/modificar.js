@@ -186,3 +186,7 @@ function habilitarEliminacionPorDobleClick(idTabla) {
         }
     });
 }
+
+function confirmarGuardar() {
+    return confirm("¿Estás seguro de que deseas guardar los cambios?");
+}

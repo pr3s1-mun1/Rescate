@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-jwq=u@wby$5@yfq4-_5tj@0&h#3yga=h-87&gvn+j%s-s4^&^%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['rescate.juarez.gob.mx', 'localhost']
 

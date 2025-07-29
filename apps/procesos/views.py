@@ -12,9 +12,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
 from urllib.parse import urlencode
-from django.contrib.auth.decorators import login_required
-
-from datetime import datetime 
+from datetime import datetime, timedelta
 import json
 
 def formulario_buscar(request):
@@ -202,6 +200,10 @@ def vista_principal(request):
     # Limitar a 3 registros para no saturar la vista
     ultimos_servicios_con_pacientes = ultimos_servicios_con_pacientes[:10]
 
+
+    hace_24_horas = timezone.now() - timedelta(hours=24)
+    ult_24_horas = Servicio.objects.filter(fecha__gte=hace_24_horas).count()
+
     context = {
         'servicios_hoy': servicios_hoy,
         'pacientes_hoy': pacientes_hoy,
@@ -209,6 +211,7 @@ def vista_principal(request):
         'pacientes_mes': pacientes_mes,
         'ultimos_servicios_pacientes': ultimos_servicios_con_pacientes,
         'total_servicios': servicios_tot,
+        'conteo_ultimos': ult_24_horas,
         'hoy': hoy,  # Por si quieres usar en plantilla para fechas u otras referencias
     }
 
