@@ -28,6 +28,11 @@ class BaseForm(BootstrapFormMixin, forms.ModelForm):
         widgets = {
             'color_hex': forms.TextInput(attrs={'type': 'color'}),
         }
+        labels = {
+            'estacion' : 'Estación',
+            'ubicacion' : 'Ubicación',
+            'color_hex' : 'Selecciona el color'
+        }
 
 class AmbulanciaForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -41,12 +46,18 @@ class AmbulanciaForm(BootstrapFormMixin, forms.ModelForm):
             ]),
             'base': forms.Select(attrs={'class': 'form-control mb-3'})
         }
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 
 class AlergiaForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Alergia
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -84,11 +95,18 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
                 ('C', 'DESCANSO ADICIONAL'),
             ])
         }
+        labels = {
+            'contrasena' : 'Contraseña',
+            'observacion': 'Observación'
+        }
 
 class HospitalesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Hospitales
         fields = '__all__'
+        labels = {
+            'ubicacion' : 'Ubicación'
+        }
 
 class TiposServicioForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -104,11 +122,19 @@ class TiposServicioForm(BootstrapFormMixin, forms.ModelForm):
                 ('N', 'NO'),
             ])
         }
+        labels = {
+            'descripcion' : 'Descripción',
+            'gruposervicio' : 'Grupo servicio',
+            'engrafica' : 'Engráfica'
+        }
 
 class GruposServicioForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = GrupoServicio
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class ProcedimientoForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -121,11 +147,17 @@ class ProcedimientoForm(BootstrapFormMixin, forms.ModelForm):
                 ('E', 'ESPECIAL'),
             ])
         }
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class TiposUnidadesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = TipoUnidad
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class EnfermedadesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -137,11 +169,18 @@ class EnfermedadesForm(BootstrapFormMixin, forms.ModelForm):
                 ('N', 'NO'),
             ])
         }
+        labels = {
+            'grupoenfermedad' : 'Grupo de enfermedad',
+            'engrafica' : 'Engráfica'
+        }
 
 class GruposEnfermedadesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = GrupoEnfermedad
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class MedicamentosForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
@@ -153,21 +192,33 @@ class MedicamentosForm(BootstrapFormMixin, forms.ModelForm):
                 ('N', 'NO'),
             ])
         }
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class MaterialesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Material
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class EquiposForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Equipo
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class MarcasVehiculosForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = MarcaVehiculo
         fields = '__all__'
+        labels = {
+            'descripcion' : 'Descripción'
+        }
 
 class CallesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:

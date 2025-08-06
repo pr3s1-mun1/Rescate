@@ -10,24 +10,132 @@ from .forms import *
 
 
 CATALOGOS = {
-    'alergias':             {'model': Alergia,              'form': AlergiaForm,             'template': 'alergias.html',            'update_template': 'updt/update_alergias.html'},
-    'bases':                {'model': Bases,               'form': BaseForm,                'template': 'bases.html',               'update_template': 'updt/update_base.html'},
-    'ambulancias':          {'model': Ambulancias,         'form': AmbulanciaForm,          'template': 'ambulancias.html',         'update_template': 'updt/update_ambulancias.html'},
-    'paramedicos':          {'model': Paramedicos,         'form': ParamedicoForm,          'template': 'paramedicos.html',         'update_template': 'updt/update_paramedicos.html'},
-    'hospitales':           {'model': Hospitales,          'form': HospitalesForm,          'template': 'hospitales.html',          'update_template': 'updt/update_hospitales.html'},
-    'tipos_servicio':       {'model': TiposServicio,       'form': TiposServicioForm,       'template': 'tipos_servicio.html',      'update_template': 'updt/update_tipos_servicio.html'},
-    'grupos_servicio':      {'model': GrupoServicio,       'form': GruposServicioForm,      'template': 'grupos_servicio.html',     'update_template': 'updt/update_grupos_servicio.html'},
-    'procedimientos':       {'model': Procedimiento,       'form': ProcedimientoForm,      'template': 'procedimientos.html',      'update_template': 'updt/update_procedimientos.html'},
-    'tipos_unidades':       {'model': TipoUnidad,         'form': TiposUnidadesForm,        'template': 'tipos_unidades.html',      'update_template': 'updt/update_tipos_unidades.html'},
-    'enfermedades':         {'model': Enfermedad,          'form': EnfermedadesForm,        'template': 'enfermedades.html',        'update_template': 'updt/update_enfermedades.html'},
-    'grupos_enfermedades':  {'model': GrupoEnfermedad,     'form': GruposEnfermedadesForm,  'template': 'grupos_enfermedades.html', 'update_template': 'updt/update_grupos_enfermedades.html'},
-    'medicamentos':         {'model': Medicamento,        'form': MedicamentosForm,        'template': 'medicamentos.html',        'update_template': 'updt/update_medicamentos.html'},
-    'materiales':           {'model': Material,           'form': MaterialesForm,          'template': 'materiales.html',          'update_template': 'updt/update_materiales.html'},
-    'equipos':              {'model': Equipo,             'form': EquiposForm,             'template': 'equipos.html',             'update_template': 'updt/update_equipos.html'},
-    'marcas_vehiculos':     {'model': MarcaVehiculo,      'form': MarcasVehiculosForm,     'template': 'marcas_vehiculos.html',    'update_template': 'updt/update_marcas_vehiculos.html'},
-    'calles':               {'model': Calle,              'form': CallesForm,              'template': 'calles.html',              'update_template': 'updt/update_calles.html'},
-    'colonias':             {'model': Colonia,            'form': ColoniasForm,            'template': 'colonias.html',            'update_template': 'updt/update_colonias.html'},
-    'callexcolonias':        {'model': Calle_Colonia,       'form': CalleColoniaForm,        'template': 'calle_colonia.html',       'update_template': 'updt/calle_colonia.html'},
+    'alergias': {
+        'model': Alergia,
+        'form': AlergiaForm,
+        'template': 'alergias.html',
+        'update_template': 'updt/update_alergias.html',
+        'nombre': 'Alergia'
+    },
+    'bases': {
+        'model': Bases,
+        'form': BaseForm,
+        'template': 'bases.html',
+        'update_template': 'updt/update_base.html',
+        'nombre': 'Base'
+    },
+    'ambulancias': {
+        'model': Ambulancias,
+        'form': AmbulanciaForm,
+        'template': 'ambulancias.html',
+        'update_template': 'updt/update_ambulancias.html',
+        'nombre': 'Ambulancia'
+    },
+    'paramedicos': {
+        'model': Paramedicos,
+        'form': ParamedicoForm,
+        'template': 'paramedicos.html',
+        'update_template': 'updt/update_paramedicos.html',
+        'nombre': 'Paramédico'
+    },
+    'hospitales': {
+        'model': Hospitales,
+        'form': HospitalesForm,
+        'template': 'hospitales.html',
+        'update_template': 'updt/update_hospitales.html',
+        'nombre': 'Hospital'
+    },
+    'tipos_servicio': {
+        'model': TiposServicio,
+        'form': TiposServicioForm,
+        'template': 'tipos_servicio.html',
+        'update_template': 'updt/update_tipos_servicio.html',
+        'nombre': 'Tipo de Servicio'
+    },
+    'grupos_servicio': {
+        'model': GrupoServicio,
+        'form': GruposServicioForm,
+        'template': 'grupos_servicio.html',
+        'update_template': 'updt/update_grupos_servicio.html',
+        'nombre': 'Grupo de Servicio'
+    },
+    'procedimientos': {
+        'model': Procedimiento,
+        'form': ProcedimientoForm,
+        'template': 'procedimientos.html',
+        'update_template': 'updt/update_procedimientos.html',
+        'nombre': 'Procedimiento'
+    },
+    'tipos_unidades': {
+        'model': TipoUnidad,
+        'form': TiposUnidadesForm,
+        'template': 'tipos_unidades.html',
+        'update_template': 'updt/update_tipos_unidades.html',
+        'nombre': 'Tipo de Unidad'
+    },
+    'enfermedades': {
+        'model': Enfermedad,
+        'form': EnfermedadesForm,
+        'template': 'enfermedades.html',
+        'update_template': 'updt/update_enfermedades.html',
+        'nombre': 'Enfermedad'
+    },
+    'grupos_enfermedades': {
+        'model': GrupoEnfermedad,
+        'form': GruposEnfermedadesForm,
+        'template': 'grupos_enfermedades.html',
+        'update_template': 'updt/update_grupos_enfermedades.html',
+        'nombre': 'Grupo de Enfermedad'
+    },
+    'medicamentos': {
+        'model': Medicamento,
+        'form': MedicamentosForm,
+        'template': 'medicamentos.html',
+        'update_template': 'updt/update_medicamentos.html',
+        'nombre': 'Medicamento'
+    },
+    'materiales': {
+        'model': Material,
+        'form': MaterialesForm,
+        'template': 'materiales.html',
+        'update_template': 'updt/update_materiales.html',
+        'nombre': 'Material'
+    },
+    'equipos': {
+        'model': Equipo,
+        'form': EquiposForm,
+        'template': 'equipos.html',
+        'update_template': 'updt/update_equipos.html',
+        'nombre': 'Equipo'
+    },
+    'marcas_vehiculos': {
+        'model': MarcaVehiculo,
+        'form': MarcasVehiculosForm,
+        'template': 'marcas_vehiculos.html',
+        'update_template': 'updt/update_marcas_vehiculos.html',
+        'nombre': 'Marca de Vehículo'
+    },
+    'calles': {
+        'model': Calle,
+        'form': CallesForm,
+        'template': 'calles.html',
+        'update_template': 'updt/update_calles.html',
+        'nombre': 'Calle'
+    },
+    'colonias': {
+        'model': Colonia,
+        'form': ColoniasForm,
+        'template': 'colonias.html',
+        'update_template': 'updt/update_colonias.html',
+        'nombre': 'Colonia'
+    },
+    'callexcolonias': {
+        'model': Calle_Colonia,
+        'form': CalleColoniaForm,
+        'template': 'calle_colonia.html',
+        'update_template': 'updt/calle_colonia.html',
+        'nombre': 'Calle por Colonia'
+    },
 }
 
 #Envío de listas de catalogos a HTML
