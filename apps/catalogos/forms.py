@@ -37,7 +37,7 @@ class AmbulanciaForm(BootstrapFormMixin, forms.ModelForm):
             'estado': forms.Select(choices=[
                 ('A', 'ACTIVO'),
                 ('I', 'INACTIVO'),
-                ('R', 'REPARACION'),
+                ('R', 'REPARACIÓN'),
             ]),
             'base': forms.Select(attrs={'class': 'form-control mb-3'})
         }
@@ -54,17 +54,17 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
         fields = '__all__'
         widgets = {
             'mando': forms.Select(choices=[
-                ('C', 'CAPITAN'),
+                ('C', 'CAPITÁN'),
                 ('O', 'COMANDANTE'),
                 ('T', 'TENIENTE'),
-                ('P', 'PARAMEDICO'),
+                ('P', 'PARAMÉDICO'),
                 ('S', 'SARGENTO'),
                 ('A', 'ADMINISTRATIVO'),
             ]),
             'conocimiento': forms.Select(choices=[
-                ('B', 'BASICO'),
+                ('B', 'BÁSICO'),
                 ('I', 'INTERMEDIO'),
-                ('P', 'PARAMEDICO'),
+                ('P', 'PARAMÉDICO'),
                 ('E', 'EMPLEADO'),
 
             ]),
@@ -75,13 +75,13 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
             ]),
             'estatus': forms.Select(choices=[
                 ('I', 'INCAPACIDAD'),
-                ('S', 'SUSPENSION'),
+                ('S', 'SUSPENSIÓN'),
                 ('D', 'DESCANSO'),
-                ('B', 'BASICO'),
+                ('B', 'BÁSICO'),
                 ('F', 'BAJA'),
                 ('A', 'ACTIVO'),
                 ('V', 'VACACIONES'),
-                ('D', 'DESCANSO ADICIONAL'),
+                ('C', 'DESCANSO ADICIONAL'),
             ])
         }
 
@@ -116,7 +116,7 @@ class ProcedimientoForm(BootstrapFormMixin, forms.ModelForm):
         fields = '__all__'
         widgets = {
             'protocolo': forms.Select(choices=[
-                ('B', 'BASICO'),
+                ('B', 'BÁSICO'),
                 ('A', 'AVANZADO'),
                 ('E', 'ESPECIAL'),
             ])

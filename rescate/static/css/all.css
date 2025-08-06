@@ -49,3 +49,10 @@ body {
     border-color: #00509e;
     color: white;
 }
+
+.main-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
