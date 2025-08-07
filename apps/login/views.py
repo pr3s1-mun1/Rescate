@@ -8,7 +8,6 @@ def login_view(request):
     if request.method == "POST":
         usuario = request.POST.get("usuario", "").strip()
         contrasena = request.POST.get("contrasena", "").strip()
-        tipo = request.POST.get("tipo", "").strip()
 
         if not usuario or not contrasena:
             messages.warning(request, "Por favor, completa todos los campos.")
@@ -17,10 +16,10 @@ def login_view(request):
         try:
             paramedico = Paramedicos.objects.get(usuario=usuario)
 
-            if check_password(contrasena, paramedico.contrasena):  # ← usar campo `contrasena`
+            if check_password(contrasena, paramedico.contrasena):
                 request.session["clave"] = paramedico.clave
                 request.session["user"] = paramedico.nombre
-                request.session["tipo"] = paramedico.tipo
+                request.session["permisos"] = paramedico.permisos
                 return redirect("catalogo_general", "alergias")
             else:
                 messages.error(request, "Usuario o contraseña incorrectos.")
@@ -30,6 +29,7 @@ def login_view(request):
             messages.error(request, f"Ocurrió un error: {str(e)}")
 
     return render(request, "login.html")
+
 
 
 

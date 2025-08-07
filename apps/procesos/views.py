@@ -141,7 +141,6 @@ def buscar_servicios_filtrados(filtros):
     return pacientes_qs.order_by('-servicio__clave')
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
-@requiere_tipo_paramedico('P', 'A')
 def formulario_servicio(request):    
     context = {
         'form': ServicioForm(initial={'clave': Servicio.obtener_siguiente_numero()}),
@@ -310,7 +309,6 @@ def crear_servicio(request):
 
     return render(request, 'modificar_servicio.html', context)
 
-@requiere_tipo_paramedico('P', 'A')
 def carga_modifica(request, pk, ps):
     try:
         servicio = get_object_or_404(Servicio, pk=pk)
@@ -322,15 +320,23 @@ def carga_modifica(request, pk, ps):
                 paciente = PacientexServicio.objects.get(clave=ps, servicio=servicio)
             except PacientexServicio.DoesNotExist:
                 print(f"Paciente con clave {ps} no encontrado para el servicio {pk}")
-                Logs_Sistema.objects.create(
-                    usuario=request.session.get("user", "Desconocido"),
-                    accion=f"Paciente con clave {ps} no encontrado en carga_modifica para servicio {pk}"
-                )
+
+        permisos = request.session.get("permisos", 1)  # por defecto 1 si no se encuentra
+        formularios_editables = permisos == 2
+        print(formularios_editables)
+
+        es_paciente_nuevo = False
 
         if paciente:
             form_paciente = PacientesForm(instance=paciente)
+            if permisos == 1:
+                es_paciente_nuevo = False  # usuario 1 no puede editar
+            else:
+                es_paciente_nuevo = True   # usuario 2 sí puede editar
         else:
             form_paciente = PacientesForm(initial={'clave': PacientexServicio.obtener_siguiente_numero()})
+            es_paciente_nuevo = True  # ambos pueden crear
+
 
         # Embarazo relacionado
         embarazo_instancia = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
@@ -380,6 +386,8 @@ def carga_modifica(request, pk, ps):
             'medicamentos': Medicamento.objects.all(),
             'equipos': Equipo.objects.all(),
             'procedimientos': Procedimiento.objects.all().order_by('protocolo'),
+            'paciente_nuevo' : es_paciente_nuevo,
+            'formularios_editables': formularios_editables,
         }
 
         return render(request, 'modificar_servicio.html', context)
@@ -392,9 +400,12 @@ def carga_modifica(request, pk, ps):
         )
         return render(request, '404.html', {'mensaje': 'Ocurrió un error al cargar el servicio.'})
 
-@requiere_tipo_paramedico('P', 'A')
 def carga_modifica_n(request, pk):
     try:
+        permisos = request.session.get("permisos", 1)  # por defecto 1
+        formularios_editables = permisos == 2
+        es_paciente_nuevo = True
+        print(formularios_editables)
         servicio = get_object_or_404(Servicio, pk=pk)
         form_servicio = ServicioForm(instance=servicio)
 
@@ -411,7 +422,6 @@ def carga_modifica_n(request, pk):
         parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
         form_partes = PartesAsignadoForm(instance=parte_instancia)
 
-        # Log del acceso exitoso
         Logs_Sistema.objects.create(
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Accedió a carga_modifica_n para crear paciente nuevo en servicio {pk}"
@@ -445,7 +455,9 @@ def carga_modifica_n(request, pk):
             'materiales': Material.objects.all().order_by('descripcion'),
             'medicamentos': Medicamento.objects.all().order_by('descripcion'),
             'equipos': Equipo.objects.all().order_by('descripcion'),
-            'procedimientos': Procedimiento.objects.all().order_by('protocolo', 'descripcion')
+            'procedimientos': Procedimiento.objects.all().order_by('protocolo', 'descripcion'),
+            'paciente_nuevo': es_paciente_nuevo,
+            'formularios_editables': formularios_editables,
         }
 
         return render(request, 'modificar_servicio.html', context)
@@ -460,7 +472,7 @@ def carga_modifica_n(request, pk):
 
 
 
-@requiere_tipo_paramedico('P', 'A')
+@requiere_tipo_paramedico(2)
 def eliminar_servicio(request, pk):
     print("Eliminando servicio con pk:", pk)
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -552,18 +564,30 @@ def guardar_todo(request, pk, ps):
         # Guardado de embarazo (si aplica)
         embarazo = request.POST.get('embarazo') == 'true'
         if embarazo:
-            form_embarazo = EmbarazoAsignadoForm(request.POST)
+            # Buscar si ya existe un embarazo del paciente
+            embarazo_existente = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
+
+            if embarazo_existente:
+                # Si existe, pasar como 'instance' para actualizar
+                form_embarazo = EmbarazoAsignadoForm(request.POST, instance=embarazo_existente)
+            else:
+                # Si no, crear nuevo
+                form_embarazo = EmbarazoAsignadoForm(request.POST)
+
             if form_embarazo.is_valid():
                 embarazo_obj = form_embarazo.save(commit=False)
                 embarazo_obj.paciente = paciente
+
+                # Si es nuevo, asignar secuencia
+                if not embarazo_existente:
+                    from django.db.models import Max
+                    ultima_secuencia = EmbarazoxPaciente.objects.aggregate(Max('secuencia'))['secuencia__max'] or 0
+                    embarazo_obj.secuencia = ultima_secuencia + 1
+
                 embarazo_obj.save()
             else:
                 print('Error en formulario de embarazo:')
                 print(form_embarazo.errors)
-                Logs_Sistema.objects.create(
-                    usuario=request.session.get("user", "Desconocido"),
-                    accion=f"Error en formulario de embarazo para paciente {paciente.clave}: {form_embarazo.errors}"
-                )
 
         # Log de éxito
         Logs_Sistema.objects.create(
@@ -844,9 +868,8 @@ def obtener_calles_por_colonia(request):
     calles = Calle_Colonia.objects.filter(colonia_id=colonia_id).select_related('calle').order_by('calle__calle')
     data = [{'id': c.calle.clave, 'nombre': c.calle.calle} for c in calles]
     return JsonResponse(data, safe=False)
-from django.db import transaction
 
-@requiere_tipo_paramedico('P', 'A')
+from django.db import transaction
 
 def agregar_paciente(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -918,7 +941,7 @@ def agregar_paciente(request, pk):
     return render(request, 'agregar_paciente.html', context)
 
 
-
+@requiere_tipo_paramedico(2)
 def lista_combustible(request):
     combustibles = Combustible.objects.all().order_by('-fecha')
 
@@ -946,6 +969,7 @@ def lista_combustible(request):
         'remision': remision,
     })
 
+@requiere_tipo_paramedico(2)
 def crear_combustible(request):
     if request.method == 'POST':
         form = CombustibleForm(request.POST)
@@ -956,6 +980,7 @@ def crear_combustible(request):
         form = CombustibleForm()
     return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Crear'})
 
+@requiere_tipo_paramedico(2)
 def editar_combustible(request, clave):
     combustible = get_object_or_404(Combustible, clave=clave)
     if request.method == 'POST':
@@ -974,6 +999,7 @@ from django.db.models import Q, OuterRef, Exists
 from django.shortcuts import render, redirect
 from .models import Paramedicos, Reloj, Logs_Sistema
 
+@requiere_tipo_paramedico(2)
 def ver_reloj(request):
     alerta_fecha_futura = False
     hoy = timezone.now().date()
@@ -1077,7 +1103,7 @@ def ver_reloj(request):
         'alerta_fecha_futura': alerta_fecha_futura,
     })
 
-
+@requiere_tipo_paramedico(2)
 def imprimir_reporte(request):
     from django.template.loader import get_template
     from django.http import HttpResponse

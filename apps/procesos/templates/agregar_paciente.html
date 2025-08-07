@@ -12,7 +12,7 @@
 <body>
     {% include 'navbar.html' %}
 
-    <h1 class="text-center my-4 text-primary fw-bold">Agregar paciente nuevo</h1>
+    <h1 class="text-center my-4 main-title">Agregar paciente nuevo</h1>
     <div class="d-flex">
         <div class="container">
             <form method="post" id="servicioForm" action="{% url 'guardar_todo' servicio.clave siguiente_clave %}" enctype="multipart/form-data" novalidate>

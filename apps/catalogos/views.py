@@ -138,7 +138,22 @@ CATALOGOS = {
     },
 }
 
+
+
+def requiere_tipo_paramedico(*niveles_permitidos):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            permisos = request.session.get("permisos")
+            if permisos not in niveles_permitidos:
+                return render(request, "bloqueo.html")
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+
 #Envío de listas de catalogos a HTML
+@requiere_tipo_paramedico(2)
 def catalogo_general(request, tipo):
     if tipo not in CATALOGOS:
         return render(request, '404.html', {'error': 'Catálogo no encontrado'})
@@ -163,21 +178,8 @@ def catalogo_general(request, tipo):
 
     return render(request, template, {tipo: objetos, 'query': query})
 
-
-def requiere_tipo_paramedico(*tipos_permitidos):
-    def decorator(view_func):
-        @wraps(view_func)
-        def _wrapped_view(request, *args, **kwargs):
-            tipo = request.session.get("tipo")
-            if tipo not in tipos_permitidos:
-                messages.warning(request, "🚫 No tienes permisos para acceder a esta sección.")
-                return render(request, "bloqueo.html")
-            return view_func(request, *args, **kwargs)
-        return _wrapped_view
-    return decorator
-
 #Actualización de rows de las bases de datos
-@requiere_tipo_paramedico('A')
+@requiere_tipo_paramedico(2)
 def update_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
         return redirect('error')
@@ -210,7 +212,7 @@ def update_catalogo(request, tipo, clave):
 
 
 #Eliminar rows de la base de datos
-@requiere_tipo_paramedico('A')
+@requiere_tipo_paramedico(2)
 def delete_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS:
         return redirect('error')
@@ -229,6 +231,7 @@ def delete_catalogo(request, tipo, clave):
 
     return render(request, 'confirm_delete.html', {'objeto': objeto, 'tipo': tipo})
 
+@requiere_tipo_paramedico(2)
 def add_catalogo(request, tipo):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
         return redirect('error')
@@ -291,7 +294,7 @@ def add_catalogo(request, tipo):
     })
 
 
-
+@requiere_tipo_paramedico(2)
 def relacionar_calle_colonia(request):
     colonias = Colonia.objects.all().order_by('colonia')
     calles = Calle.objects.all().order_by('calle')
