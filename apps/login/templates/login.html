@@ -91,9 +91,8 @@
 
         .login-container {
             display: flex;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 600px;
+            max-width: 900px;
+            min-height: 400px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: var(--radius-lg);
             overflow: hidden;
@@ -103,7 +102,8 @@
 
         .login-hero {
             flex: 1;
-            background: linear-gradient(180deg, #5e242400, #440011);
+            /*background: linear-gradient(0deg, #5e242400, #440011);*/
+            background-color: white;
             color: white;
             padding: 60px;
             display: flex;
@@ -171,7 +171,14 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background: white;
+            background: linear-gradient(135deg, #2b1a1f 0%, #6c001f 100%);
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-form-container label {
+            color: white;
         }
 
         .form-header {
@@ -188,12 +195,12 @@
         .form-title {
             font-size: 1.75rem;
             font-weight: 700;
-            color: var(--primary);
+            color: white;
             margin-bottom: 8px;
         }
 
         .form-subtitle {
-            color: var(--text-light);
+            color: rgb(161, 161, 161);
             font-size: 1rem;
         }
 
@@ -575,23 +582,6 @@
             <div class="login-hero">
                 <div class="hero-content">
                     <img src="{% static 'img/LogMuni.png' %}" alt="Logo Protección Civil" class="hero-logo">
-                    <h1 class="hero-title">Sistema de Rescate</h1>
-                    
-                        <div class="hero-features">
-                            <div class="feature-item">
-                                <i class="fas fa-cogs"></i>
-                                <span>Funcionalidad intuitiva</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-sync-alt"></i>
-                                <span>Experiencia fluida</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-layer-group"></i>
-                                <span>Diseño adaptable</span>
-                            </div>
-                        </div>
-
                 </div>
             </div>
             
