@@ -13,11 +13,11 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator, MultipleLocator
 from matplotlib.patches import Patch
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def cargar_graficas(request):
     return render(request, 'maingraficos.html')
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def traslados(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -71,7 +71,7 @@ def traslados(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def traslados_hospitalarios(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -125,7 +125,7 @@ def traslados_hospitalarios(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def pacientes_sector(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -187,7 +187,7 @@ def pacientes_sector(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def pacientes_sector_m(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -249,7 +249,7 @@ def pacientes_sector_m(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def pacientes_sector_f(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -311,7 +311,7 @@ def pacientes_sector_f(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def intoxicaciones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -367,7 +367,7 @@ def intoxicaciones(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def pacientes_por_colonia(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -418,7 +418,7 @@ def pacientes_por_colonia(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def defunciones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -474,7 +474,7 @@ def defunciones(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2)
+@requiere_tipo_paramedico(2, 3)
 def lesiones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")

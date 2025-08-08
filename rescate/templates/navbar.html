@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="{% static 'css/all.css' %}">
   <link rel="icon" type="image/x-icon" href="{% static 'img/Rescate.ico' %}">
-  
+
   <style>
     :root {
       --color-primary: #7A003C;
@@ -23,12 +23,12 @@
       --transition-fast: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
       --navbar-height: 70px;
     }
-    
+
     body {
       background-color: #f8f9fa;
       padding-top: var(--navbar-height);
     }
-    
+
     /* Barra de navegación principal - Versión Mejorada */
     .rsc-navbar {
       background: linear-gradient(145deg, var(--color-primary-dark), var(--color-primary));
@@ -42,13 +42,13 @@
       z-index: 1030;
       border-bottom: 2px solid var(--color-accent);
     }
-    
+
     .rsc-navbar .container {
       height: 100%;
       display: flex;
       align-items: center;
     }
-    
+
     .rsc-navbar-brand {
       font-weight: 700;
       color: white !important;
@@ -62,12 +62,12 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .rsc-navbar-brand:hover {
       transform: translateY(0);
       background-color: rgba(255, 255, 255, 0.08);
     }
-    
+
     .rsc-navbar-brand::after {
       content: '';
       position: absolute;
@@ -78,22 +78,22 @@
       background-color: var(--color-accent);
       transition: var(--transition-fast);
     }
-    
+
     .rsc-navbar-brand:hover::after {
       width: 100%;
     }
-    
+
     .rsc-navbar-brand img {
       border: 2px solid var(--color-accent);
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
       transition: var(--transition-fast);
       height: 45px;
     }
-    
+
     .rsc-navbar-brand:hover img {
       transform: rotate(-5deg) scale(1.05);
     }
-    
+
     .rsc-nav-link {
       color: rgba(255, 255, 255, 0.95) !important;
       font-weight: 600;
@@ -106,13 +106,13 @@
       align-items: center;
       height: 100%;
     }
-    
+
     .rsc-nav-link i {
       margin-right: 10px;
       font-size: 1.1rem;
       transition: var(--transition-fast);
     }
-    
+
     .rsc-nav-link::before {
       content: '';
       position: absolute;
@@ -125,28 +125,28 @@
       transition: var(--transition-fast);
       border-radius: 3px 3px 0 0;
     }
-    
-    .rsc-nav-link:hover, 
-    .rsc-nav-link:focus, 
+
+    .rsc-nav-link:hover,
+    .rsc-nav-link:focus,
     .rsc-nav-link.active {
       color: white !important;
       background-color: rgba(255, 255, 255, 0.1);
       transform: translateY(0);
     }
-    
-    .rsc-nav-link:hover i, 
-    .rsc-nav-link:focus i, 
+
+    .rsc-nav-link:hover i,
+    .rsc-nav-link:focus i,
     .rsc-nav-link.active i {
       color: var(--color-accent);
       transform: scale(1.15);
     }
-    
-    .rsc-nav-link:hover::before, 
-    .rsc-nav-link:focus::before, 
+
+    .rsc-nav-link:hover::before,
+    .rsc-nav-link:focus::before,
     .rsc-nav-link.active::before {
       width: 80%;
     }
-    
+
     .rsc-dropdown-menu {
       border: none;
       box-shadow: 0 10px 30px rgba(122, 0, 60, 0.2);
@@ -156,7 +156,7 @@
       margin-top: 0 !important;
       border: 1px solid rgba(122, 0, 60, 0.1);
     }
-    
+
     .rsc-dropdown-item {
       padding: 0.75rem 1.75rem;
       transition: var(--transition-fast);
@@ -166,36 +166,36 @@
       display: flex;
       align-items: center;
     }
-    
-    .rsc-dropdown-item:hover, 
+
+    .rsc-dropdown-item:hover,
     .rsc-dropdown-item:focus {
       background-color: rgba(122, 0, 60, 0.05) !important;
       color: var(--color-primary) !important;
       padding-left: 2rem;
     }
-    
+
     .rsc-dropdown-item i {
       width: 24px;
       text-align: center;
       margin-right: 10px;
       color: var(--color-primary);
     }
-    
-    .rsc-dropdown-item:hover i, 
+
+    .rsc-dropdown-item:hover i,
     .rsc-dropdown-item:focus i {
       color: var(--color-accent);
     }
-    
+
     .rsc-dropdown-toggle::after {
       transition: transform 0.3s ease;
       margin-left: 0.6em;
       vertical-align: 0.18em;
     }
-    
+
     .show .rsc-dropdown-toggle::after {
       transform: rotate(-180deg);
     }
-    
+
     .rsc-user-btn {
       background-color: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(212, 175, 55, 0.4);
@@ -211,12 +211,12 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .rsc-user-btn i {
       margin-right: 8px;
       font-size: 1.2rem;
     }
-    
+
     .rsc-user-btn::before {
       content: '';
       position: absolute;
@@ -227,17 +227,17 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
       transition: var(--transition-fast);
     }
-    
+
     .rsc-user-btn:hover {
       background-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
-    
+
     .rsc-user-btn:hover::before {
       left: 100%;
     }
-    
+
     .rsc-nav-toggler {
       border-color: rgba(212, 175, 55, 0.4);
       color: white;
@@ -245,18 +245,18 @@
       transition: var(--transition-fast);
       margin-left: 1rem;
     }
-    
+
     .rsc-nav-toggler:hover {
       background-color: rgba(255, 255, 255, 0.15);
       transform: rotate(90deg);
     }
-    
+
     .rsc-nav-toggler-icon {
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28212, 175, 55, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
       width: 1.5em;
       height: 1.5em;
     }
-    
+
     .rsc-main-content {
       padding-top: 2rem;
     }
@@ -266,19 +266,19 @@
       border-radius: 30%;
       padding: 2px;
     }
-    
+
     /* Efecto para navbar al hacer scroll */
     .rsc-navbar.scrolled {
       box-shadow: 0 6px 25px rgba(122, 0, 60, 0.3);
       background: linear-gradient(145deg, var(--color-primary), var(--color-primary-dark));
     }
-    
+
     @media (max-width: 992px) {
       .rsc-navbar {
         height: auto;
         min-height: var(--navbar-height);
       }
-      
+
       .rsc-navbar-collapse {
         background: linear-gradient(145deg, var(--color-primary-dark), var(--color-primary));
         box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -286,13 +286,13 @@
         margin-top: 0;
         border-top: 2px solid var(--color-accent);
       }
-      
+
       .rsc-nav-link {
         padding: 1rem 1.5rem !important;
         margin: 0.3rem 0;
         height: auto;
       }
-      
+
       .rsc-nav-link::before {
         bottom: auto;
         top: 0;
@@ -301,14 +301,14 @@
         height: 100%;
         width: 3px;
       }
-      
-      .rsc-nav-link:hover::before, 
-      .rsc-nav-link:focus::before, 
+
+      .rsc-nav-link:hover::before,
+      .rsc-nav-link:focus::before,
       .rsc-nav-link.active::before {
         width: 3px;
         height: 100%;
       }
-      
+
       .rsc-dropdown-menu {
         background-color: rgba(0, 0, 0, 0.2);
         border: none;
@@ -316,19 +316,19 @@
         margin-left: 2rem;
         width: calc(100% - 4rem);
       }
-      
+
       .rsc-dropdown-item {
         color: white !important;
       }
-      
+
       .rsc-dropdown-item:hover {
         background-color: rgba(255, 255, 255, 0.1) !important;
       }
-      
+
       .rsc-dropdown-item i {
         color: var(--color-accent-light);
       }
-      
+
       .rsc-user-btn {
         margin: 1rem 0 0.5rem;
         width: 100%;
@@ -343,11 +343,14 @@
 
   <nav class="navbar navbar-expand-lg rsc-navbar sticky-top">
     <div class="container">
-      <a class="navbar-brand rsc-navbar-brand d-flex align-items-center" href="{% url 'catalogo_general' 'ambulancias' %}">
-        <img src="{% static 'img/escudorescate.gif' %}" class="rsc-rounded-circle me-2" style="height: 45px;" alt="Rescate Logo">
+      <a class="navbar-brand rsc-navbar-brand d-flex align-items-center"
+        href="{% url 'catalogo_general' 'ambulancias' %}">
+        <img src="{% static 'img/escudorescate.gif' %}" class="rsc-rounded-circle me-2" style="height: 45px;"
+          alt="Rescate Logo">
         <span>Rescate</span>
       </a>
-      <button class="navbar-toggler rsc-nav-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#rscNavbar" aria-controls="rscNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler rsc-nav-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#rscNavbar"
+        aria-controls="rscNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon rsc-nav-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="rscNavbar">
@@ -358,13 +361,17 @@
             </a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link rsc-nav-link rsc-dropdown-toggle" href="#" id="rscProcesosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link rsc-nav-link rsc-dropdown-toggle" href="#" id="rscProcesosDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
               <i class="bi bi-gear"></i> Procesos
             </a>
             <ul class="dropdown-menu rsc-dropdown-menu" aria-labelledby="rscProcesosDropdown">
-              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'vista_main' %}"><i class="bi bi-calendar"></i> Servicios</a></li>
-              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'ver_reloj' %}"><i class="bi bi-clock"></i> Reloj</a></li>
-              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'lista_combustible' %}"><i class="bi bi-fuel-pump"></i> Gasolina</a></li>
+              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'vista_main' %}"><i
+                    class="bi bi-calendar"></i> Servicios</a></li>
+              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'ver_reloj' %}"><i class="bi bi-clock"></i>
+                  Reloj</a></li>
+              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'lista_combustible' %}"><i
+                    class="bi bi-fuel-pump"></i> Gasolina</a></li>
             </ul>
           </li>
           <li class="nav-item">
@@ -377,20 +384,30 @@
               <i class="bi bi-bar-chart"></i> Gráficas
             </a>
           </li>
+          {% if request.session.permisos == 3 %}
+          <li class="nav-item">
+            <a class="nav-link rsc-nav-link" href="{% url 'administracion_sistema' %}">
+              <i class="bi bi-gear"></i> Panel de control
+            </a>
+          </li>
+          {% endif %}
         </ul>
         <div class="dropdown ms-lg-2">
-          <button class="btn rsc-user-btn dropdown-toggle d-flex align-items-center" type="button" id="rscUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle"></i> 
+          <button class="btn rsc-user-btn dropdown-toggle d-flex align-items-center" type="button" id="rscUserMenu"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i>
             <span>{{ request.session.user|default:"Iniciar sesión" }}</span>
           </button>
           <ul class="dropdown-menu rsc-dropdown-menu dropdown-menu-end" aria-labelledby="rscUserMenu">
             {% if request.session.user %}
-              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
+            <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'logout' %}"><i
+                  class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
             {% else %}
-              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a></li>
+            <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'login' %}"><i
+                  class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a></li>
             {% endif %}
           </ul>
-        </div>        
+        </div>
       </div>
     </div>
   </nav>
@@ -401,7 +418,7 @@
 
   <script>
     // Efecto al hacer scroll
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
       const navbar = document.querySelector('.rsc-navbar');
       if (window.scrollY > 10) {
         navbar.classList.add('scrolled');
@@ -409,13 +426,13 @@
         navbar.classList.remove('scrolled');
       }
     });
-    
+
     // Animación para los dropdowns
-    document.querySelectorAll('.dropdown').forEach(function(dropdown) {
-      dropdown.addEventListener('show.bs.dropdown', function() {
+    document.querySelectorAll('.dropdown').forEach(function (dropdown) {
+      dropdown.addEventListener('show.bs.dropdown', function () {
         this.querySelector('.dropdown-toggle').classList.add('active');
       });
-      dropdown.addEventListener('hide.bs.dropdown', function() {
+      dropdown.addEventListener('hide.bs.dropdown', function () {
         this.querySelector('.dropdown-toggle').classList.remove('active');
       });
     });

@@ -1,6 +1,6 @@
 {% include 'navbar.html' %}
 
-<body >
+<body>
     <div class="container">
         {% include 'pestanas.html' %}
     </div>
@@ -10,14 +10,16 @@
 
         <form method="GET" class="row g-2 mb-3">
             <div class="col-md-10">
-                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar grupo de enfermedad...">
+                <input type="text" name="q" value="{{ query }}" class="form-control"
+                    placeholder="Buscar grupo de enfermedad...">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">🔍</button>
             </div>
         </form>
 
-        <a href="{% url 'add_catalogo' 'grupos_enfermedades' %}" class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</a>
+        <a href="{% url 'add_catalogo' 'grupos_enfermedades' %}" class="btn btn-success mb-3">Nuevo {{ catalogo|title
+            }}</a>
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
@@ -34,12 +36,17 @@
                         <td>{{ genfermedad.clave }}</td>
                         <td>{{ genfermedad.descripcion }}</td>
                         <td class="text-center">
-                            <a href="{% url 'update_catalogo' 'grupos_enfermedades' genfermedad.clave %}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
-</a>
-                            <form method="POST" action="{% url 'delete_catalogo' 'grupos_enfermedades' genfermedad.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este grupo de enfermedad?');">
+                            <a href="{% url 'update_catalogo' 'grupos_enfermedades' genfermedad.clave %}"
+                                class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
+                            </a>
+                            <form method="POST"
+                                action="{% url 'delete_catalogo' 'grupos_enfermedades' genfermedad.clave %}"
+                                class="d-inline"
+                                onsubmit="return confirm('¿Estás seguro de eliminar este grupo de enfermedad?');">
                                 {% csrf_token %}
-                                <!--                                 <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
-</button> -->
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
+                                    Eliminar
+                                </button>
 
                             </form>
                         </td>
@@ -53,4 +60,5 @@
             </table>
         </div>
     </div>
+    {% include 'footer.html' %}
 </body>

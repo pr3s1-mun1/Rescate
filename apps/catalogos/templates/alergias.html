@@ -1,6 +1,6 @@
 {% include 'navbar.html' %}
 
-<body >
+<body>
     <div class="container">
         {% include 'pestanas.html' %}
     </div>
@@ -34,12 +34,15 @@
                         <td>{{ alergia.clave }}</td>
                         <td>{{ alergia.descripcion }}</td>
                         <td class="text-center">
-                            <a href="{% url 'update_catalogo' 'alergias' alergia.clave %}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
-</a>
-                            <form method="POST" action="{% url 'delete_catalogo' 'alergias' alergia.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta alergia?');">
+                            <a href="{% url 'update_catalogo' 'alergias' alergia.clave %}"
+                                class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
+                            </a>
+                            <form method="POST" action="{% url 'delete_catalogo' 'alergias' alergia.clave %}"
+                                class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta alergia?');">
                                 {% csrf_token %}
-<!--                                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
-</button> -->
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
+                                    Eliminar
+                                </button>
 
                             </form>
                         </td>
@@ -54,4 +57,5 @@
         </div>
     </div>
 
+    {% include 'footer.html' %}
 </body>

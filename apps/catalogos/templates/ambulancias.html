@@ -7,7 +7,7 @@
 
     <div class="container bg-white p-4 rounded shadow-sm mt-4">
         <h2 class="text-center mb-4 main-title">Catálogo de Ambulancias</h2>
-        
+
         <form method="GET" class="row g-2">
             <div class="col-md-10">
                 <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar ambulancia...">
@@ -21,45 +21,50 @@
             Nuevo {{ catalogo|title }}
         </a>
 
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Clave</th>
-                        <th>Ambulancia</th>
-                        <th>Estado</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ambulancia in ambulancias %}
-                    <tr>
-                        <td>{{ ambulancia.clave }}</td>
-                        <td>{{ ambulancia.descripcion }}</td>
-                        <td>
-                            {% if ambulancia.estado == "A" %}
-                                <span class="badge bg-success">Activo</span>
-                            {% elif ambulancia.estado == "R" %}
-                                <span class="badge bg-warning text-dark">Reparación</span>
-                            {% else %}
-                                <span class="badge bg-danger">Inactivo</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            <a href="{% url 'update_catalogo' 'ambulancias' ambulancia.clave %}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
-</a>
-                            <form method="POST" action="{% url 'delete_catalogo' 'ambulancias' ambulancia.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta ambulancia?');">
-                                {% csrf_token %}
-<!--                                                                  <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
-</button> -->
-                            </form>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No se encontraron ambulancias</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Clave</th>
+                    <th>Ambulancia</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ambulancia in ambulancias %}
+                <tr>
+                    <td>{{ ambulancia.clave }}</td>
+                    <td>{{ ambulancia.descripcion }}</td>
+                    <td>
+                        {% if ambulancia.estado == "A" %}
+                        <span class="badge bg-success">Activo</span>
+                        {% elif ambulancia.estado == "R" %}
+                        <span class="badge bg-warning text-dark">Reparación</span>
+                        {% else %}
+                        <span class="badge bg-danger">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'update_catalogo' 'ambulancias' ambulancia.clave %}"
+                            class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <form method="POST" action="{% url 'delete_catalogo' 'ambulancias' ambulancia.clave %}"
+                            class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta ambulancia?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No se encontraron ambulancias</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+
+    {% include 'footer.html' %}
 </body>

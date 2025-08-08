@@ -1,5 +1,6 @@
 {% include 'navbar.html' %}
-<body >
+
+<body>
     <div class="container">
         {% include 'pestanas.html' %}
     </div>
@@ -17,7 +18,7 @@
 
         <a href="{% url 'add_catalogo' 'materiales' %}">
             <button class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</button>
-        </a>  
+        </a>
         <table class="table table-bordered table-hover">
             <thead class="table-light">
                 <tr>
@@ -36,20 +37,26 @@
                     <td>{{ material.unidad }}</td>
                     <td>$ {{ material.costo }}</td>
                     <td class="d-flex justify-content-center">
-                        <a href="{% url 'update_catalogo' 'materiales' material.clave%}" class="btn btn-warning btn-sm me-2"><i class="bi bi-pencil-fill"></i> Editar
-</a>
-                        <form action="{% url 'delete_catalogo' 'materiales' material.clave %}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta paramédico?');">
+                        <a href="{% url 'update_catalogo' 'materiales' material.clave%}"
+                            class="btn btn-warning btn-sm me-2"><i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <form action="{% url 'delete_catalogo' 'materiales' material.clave %}" method="POST"
+                            onsubmit="return confirm('¿Estás seguro de eliminar esta paramédico?');">
                             {% csrf_token %}
-                            <!--                                 <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i> Eliminar
-</button> -->
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
+                                Eliminar
+                            </button>
 
-                        </form>                        
+                        </form>
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5" class="text-center">No se encontraron materiales</td></tr>
+                <tr>
+                    <td colspan="5" class="text-center">No se encontraron materiales</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    {% include 'footer.html' %}
 </body>

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import logout
-from apps.catalogos.models import Paramedicos 
+from apps.catalogos.models import Paramedicos, Logs_Sistema
 from django.contrib.auth.hashers import check_password
 
 def login_view(request):
@@ -20,6 +20,12 @@ def login_view(request):
                 request.session["clave"] = paramedico.clave
                 request.session["user"] = paramedico.nombre
                 request.session["permisos"] = paramedico.permisos
+
+                Logs_Sistema.objects.create(
+                    usuario=paramedico.nombre,
+                    accion=f"Inició sesión"
+                )
+
                 return redirect("catalogo_general", "alergias")
             else:
                 messages.error(request, "Usuario o contraseña incorrectos.")
@@ -31,8 +37,13 @@ def login_view(request):
     return render(request, "login.html")
 
 
-
-
 def logout_view(request):
+    usuario = request.session.get("user", "Desconocido")
+
+    Logs_Sistema.objects.create(
+        usuario=usuario,
+        accion=f"Cerró sesión"
+    )
+
     request.session.flush()
     return redirect('login')

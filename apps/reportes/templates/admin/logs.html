@@ -1,0 +1,248 @@
+{% include 'navbar.html' %}
+
+{% block content %}
+{% load tz %}
+
+<div class="container-fluid my-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <!-- Encabezado con título y contador -->
+        <div class="card-header bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h5 mb-0">
+                        <i class="bi bi-activity me-2"></i>Registro de Actividades del Sistema
+                    </h2>
+                    <small class="text-white-50">Monitorización de acciones de usuarios</small>
+                </div>
+                <span class="badge bg-light text-primary fs-6">Total: {{ logs.paginator.count|default:"0" }}</span>
+            </div>
+        </div>
+
+        <!-- Panel de filtros colapsable -->
+        <div class="card-body border-bottom">
+            <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosPanel" aria-expanded="false" aria-controls="filtrosPanel">
+                <i class="bi bi-funnel me-1"></i> Mostrar/Ocultar Filtros
+            </button>
+            
+            <div class="collapse show" id="filtrosPanel">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="usuario" name="usuario"
+                            value="{{ request.GET.usuario }}" placeholder="Filtrar por usuario...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="fecha_inicio" class="form-label">Fecha desde</label>
+                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
+                            value="{{ request.GET.fecha_inicio }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="fecha_fin" class="form-label">Fecha hasta</label>
+                        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin"
+                            value="{{ request.GET.fecha_fin }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="accion" class="form-label">Tipo de acción</label>
+                        <select class="form-select" id="accion" name="accion">
+                            <option value="">Todas las acciones</option>
+                            <option value="login" {% if request.GET.accion == "login" %}selected{% endif %}>Inicio de sesión</option>
+                            <option value="logout" {% if request.GET.accion == "logout" %}selected{% endif %}>Cierre de sesión</option>
+                            <option value="create" {% if request.GET.accion == "create" %}selected{% endif %}>Creación</option>
+                            <option value="update" {% if request.GET.accion == "update" %}selected{% endif %}>Modificación</option>
+                            <option value="delete" {% if request.GET.accion == "delete" %}selected{% endif %}>Eliminación</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="d-grid gap-2 w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-funnel-fill me-1"></i> Filtrar
+                            </button>
+                            <a href="?" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de resultados -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 180px;">
+                                <i class="bi bi-calendar-event me-1"></i>Fecha/Hora
+                            </th>
+                            <th scope="col" class="text-center" style="width: 150px;">
+                                <i class="bi bi-person me-1"></i>Usuario
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-info-circle me-1"></i>Acción
+                            </th>
+                            <th scope="col" class="text-center" style="width: 120px;">
+                                <i class="bi bi-gear me-1"></i>Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td class="text-center">
+                                <span class="d-block fw-bold">{{ log.fecha|date:"d/m/Y" }}</span>
+                                <small class="text-muted">{{ log.fecha|date:"H:i:s" }}</small>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-info bg-opacity-10 text-info">{{ log.usuario|default:"Sistema" }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if "login" in log.accion|lower %}
+                                    <span class="badge bg-success bg-opacity-10 text-success me-2">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                    </span>
+                                    {% elif "logout" in log.accion|lower %}
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary me-2">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                    </span>
+                                    {% elif "cre" in log.accion|lower %}
+                                    <span class="badge bg-primary bg-opacity-10 text-primary me-2">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </span>
+                                    {% elif "modif" in log.accion|lower or "actualiz" in log.accion|lower %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning me-2">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </span>
+                                    {% elif "elimin" in log.accion|lower %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger me-2">
+                                        <i class="bi bi-trash"></i>
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-light text-dark me-2">
+                                        <i class="bi bi-info-circle"></i>
+                                    </span>
+                                    {% endif %}
+                                    <span>{{ log.accion }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver detalles">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Exportar">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center">
+                                    <i class="bi bi-database-exclamation fs-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted">No se encontraron registros</h5>
+                                    <p class="text-muted">Intenta ajustar los filtros de búsqueda</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie de página con paginación y resumen -->
+        <div class="card-footer bg-white">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="mb-2 mb-md-0">
+                    <p class="mb-0 text-muted">
+                        Mostrando <span class="fw-bold">{{ logs.start_index }}</span> a 
+                        <span class="fw-bold">{{ logs.end_index }}</span> de 
+                        <span class="fw-bold">{{ logs.paginator.count }}</span> registros
+                    </p>
+                </div>
+                
+                <nav aria-label="Paginación de logs">
+                    <ul class="pagination pagination-sm mb-0">
+                        {% if logs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="Primera">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ logs.previous_page_number }}" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;&laquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in logs.paginator.page_range %}
+                            {% if logs.number == num %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > logs.number|add:'-3' and num < logs.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if logs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ logs.next_page_number }}" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ logs.paginator.num_pages }}" aria-label="Última">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+</style>
+
+<script>
+    // Activar tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

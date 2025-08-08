@@ -45,7 +45,7 @@ class Paramedicos(models.Model):
     tipo = models.CharField(max_length=1)
     estatus = models.CharField(max_length=1)
     observacion = models.CharField(max_length=50)
-    permisos = models.IntegerField(choices=[(1, 'Lectura'), (2, 'Lectura y escritura')], default=1)
+    permisos = models.IntegerField(default=1)
     def __str__(self):
         return f"{self.nombre}"
 

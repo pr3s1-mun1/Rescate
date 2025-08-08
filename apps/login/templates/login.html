@@ -16,11 +16,11 @@
 
     <style>
         :root {
-            --primary: #7a001f; /* Rojo institucional vibrante */
-            --primary-dark: #C00510;
+            --primary: #7a001f;
+            --primary-dark: #5a0018;
             --primary-light: #ffeaea;
-            --secondary: #303030; /* Azul complementario */
-            --accent: #FFC72C; /* Amarillo para acentos */
+            --secondary: #303030;
+            --accent: #FFC72C;
             --text: #1A1A1A;
             --text-light: #4D4D4D;
             --light: #F5F7FA;
@@ -47,19 +47,19 @@
         body {
             font-family: 'Inter', sans-serif;
             background: 
-                linear-gradient(rgba(255, 255, 255, 0.7), 
-                rgb(0, 0, 0)),
+                linear-gradient(rgba(0, 0, 0, 0.7), 
+                rgba(0, 0, 0, 0.9)),
                 url('{% static "img/bg-rescate1.png" %}') no-repeat center center fixed;
             background-size: cover;
-            color: var(--text);
+            color: white;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 24px;
             line-height: 1.5;
             position: relative;
-            overflow-x: hidden;
         }
 
         .background-pattern {
@@ -69,24 +69,41 @@
             width: 100%;
             height: 100%;
             background: url('{% static "img/pattern.png" %}') repeat;
-            opacity: 0.03;
+            opacity: 0.05;
             z-index: -1;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         .login-container {
             display: flex;
             width: 100%;
             max-width: 1000px;
-            min-height: 300px;
-            background: white;
+            min-height: 600px;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: var(--shadow-lg);
+            position: relative;
         }
 
         .login-hero {
             flex: 1;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(180deg, #5e242400, #440011);
             color: white;
             padding: 60px;
             display: flex;
@@ -115,15 +132,13 @@
         }
 
         .hero-logo {
-            width: 100%; /* o un valor fijo como 200px si prefieres */
-            background-color: white;
-            border-radius: var(--radius-md);
-            max-width: 300px; /* evita que el logo sea demasiado ancho en pantallas grandes */
-            height: auto; /* mantiene la proporción de aspecto */
-            margin: 0 auto 24px; /* versión abreviada (top, right/left, bottom) */
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin: 0 auto 24px;
             display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
         }
-
 
         .hero-title {
             font-size: 2.5rem;
@@ -131,13 +146,23 @@
             margin-bottom: 16px;
             line-height: 1.2;
             text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .hero-subtitle {
-            font-size: 1.25rem;
-            font-weight: 400;
-            margin-bottom: 32px;
-            opacity: 0.9;
+        .hero-features {
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .feature-item i {
+            margin-right: 12px;
+            color: var(--accent);
+            font-size: 1.2rem;
         }
 
         .login-form-container {
@@ -146,6 +171,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            background: white;
         }
 
         .form-header {
@@ -154,8 +180,9 @@
         }
 
         .form-logo {
-            width: 72px;
+            width: 80px;
             margin-bottom: 16px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .form-title {
@@ -228,7 +255,7 @@
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+            box-shadow: 0 0 0 3px rgba(122, 0, 31, 0.1);
             background-color: white;
         }
 
@@ -244,6 +271,13 @@
 
         .password-toggle:hover {
             color: var(--primary);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
         .remember-me {
@@ -282,6 +316,8 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
         }
 
         .submit-btn:hover {
@@ -294,10 +330,23 @@
             transform: translateY(0);
         }
 
-        /* Efectos de carga */
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
         .submit-btn.loading {
             pointer-events: none;
-            position: relative;
         }
 
         .submit-btn.loading::after {
@@ -311,6 +360,13 @@
             animation: spin 1s linear infinite;
         }
 
+        .juarez-conectado-logo {
+            height: 50px;
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -320,6 +376,7 @@
             .login-container {
                 flex-direction: column;
                 min-height: auto;
+                max-width: 600px;
             }
             
             .login-hero {
@@ -355,59 +412,264 @@
                 gap: 16px;
             }
         }
+
+        
+        /* Nuevos estilos para el footer */
+        .footer {
+            background:  #5a5a5a33;
+            color: rgb(255, 255, 255);
+            width: 100%;
+            max-width: 1200px;
+            border-radius: var(--radius-md);
+            margin-top: 40px;
+            padding: 20px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-container {
+            width: 100%;
+            padding: 0 20px;
+            margin: 0 auto;
+        }
+
+        .footer-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-row img {
+            height: 60px; /* ajusta según lo que se vea mejor */
+            width: auto;
+
+        }
+
+
+        .footer-col {
+            flex: 1; /* <-- Hace que las 3 columnas se repartan igual */
+            min-width: 250px; /* Opcional: para control en pantallas pequeñas */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer-logo-container {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 992px) {
+            .footer-logo-container {
+                justify-content: flex-start;
+            }
+        }
+
+        .footer-logo {
+            height: 50px;
+            margin-right: 15px;
+            object-fit: contain;
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .footer-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .footer-links {
+            height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .footer-link i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        .developer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 992px) {
+            .developer-container {
+                justify-content: flex-end;
+            }
+        }
+
+        .developer-logo {
+            height: 70px;
+            margin-left: 10px;
+            object-fit: contain;
+        }
+
+        .footer-dev-name {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .footer-copyright {
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-copyright i {
+            margin-right: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-col {
+                flex: 100%;
+                text-align: center;
+            }
+            
+            .footer-logo-container, .developer-container {
+                justify-content: center;
+            }
+            
+            .footer-logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="background-pattern"></div>
     
-    <div class="login-container">
-        <div class="login-hero">
-            <div class="hero-content">
-                <img src="{% static 'img/LogMuni.png' %}" alt="Logo Protección Civil" class="hero-logo">
-                <h1 class="hero-title">Sistema de Rescate</h1>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-hero">
+                <div class="hero-content">
+                    <img src="{% static 'img/LogMuni.png' %}" alt="Logo Protección Civil" class="hero-logo">
+                    <h1 class="hero-title">Sistema de Rescate</h1>
+                    
+                        <div class="hero-features">
+                            <div class="feature-item">
+                                <i class="fas fa-cogs"></i>
+                                <span>Funcionalidad intuitiva</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Experiencia fluida</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-layer-group"></i>
+                                <span>Diseño adaptable</span>
+                            </div>
+                        </div>
 
+                </div>
+            </div>
+            
+            <div class="login-form-container">
+                <div class="form-header">
+                    <img src="{% static 'img/escudorescate.gif' %}" alt="Logo" class="form-logo">
+                    <h2 class="form-title">Iniciar Sesión</h2>
+                    <p class="form-subtitle">Ingrese sus credenciales para acceder al sistema</p>
+                </div>
+
+                {% for message in messages %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>{{ message }}</div>
+                </div>
+                {% endfor %}
+                
+                <form method="POST" id="loginForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="usuario" name="usuario" class="form-input" placeholder="Usuario" required autofocus>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contrasena" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="contrasena" name="contrasena" class="form-input" placeholder="Contraseña" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-sign-in-alt"></i> Acceder al sistema
+                    </button>
+                </form>
             </div>
         </div>
-        
-        <div class="login-form-container">
-            <div class="form-header">
-                <img src="{% static 'img/escudorescate.gif' %}" alt="Logo" class="form-logo">
-                <h2 class="form-title">Iniciar Sesión</h2>
-        </div>
-            
-            {% for message in messages %}
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <div>{{ message }}</div>
+
+<!-- Nuevo Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-row">
+                    <!-- Logo y Nombre Institucional -->
+                    <div class="footer-col">
+                        <div class="footer-logo-container">
+                            <img src="{% static 'img/proteccion-logo2.png' %}" alt="Protección Civil" class="footer-logo">
+                        </div>
+                    </div>
+
+                    <!-- Enlaces Rápidos -->
+                    <div class="footer-col">
+                        <div class="footer-links">
+                            <img src="{% static 'img/juarez-conectado.png' %}" alt="Juárez Conectado" class="juarez-conectado-logo">
+                        </div>
+                    </div>
+
+                    <!-- Desarrollador con Logo -->
+                    <div class="footer-col">
+                        <div class="developer-container">
+                            <div class="text-end">
+                                <p class="footer-dev-name">Desarrollado por</p>
+                            </div>
+                            <img src="{% static 'img/LOGO DGIC 24-27 V.png' %}" alt="Logo Desarrollador" class="developer-logo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Derechos de Autor -->
+                <div class="footer-copyright">
+                    <i class="far fa-copyright"></i> <span id="currentYear"></span> Gobierno Municipal - Todos los derechos reservados.
+                </div>
             </div>
-            {% endfor %}
-            
-            <form method="POST" id="loginForm">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="usuario" class="form-label">Usuario</label>
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="usuario" name="usuario" class="form-input" placeholder="Usuario" required autofocus>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contrasena" class="form-label">Contraseña</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="contrasena" name="contrasena" class="form-input" placeholder="Contraseña" required>
-                    </div>
-                </div>
-                
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-sign-in-alt"></i> Acceder al sistema
-                </button>
-            </form>
-            
-        </div>
+        </footer>
     </div>
 
     <script>

@@ -93,12 +93,17 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
                 ('A', 'ACTIVO'),
                 ('V', 'VACACIONES'),
                 ('C', 'DESCANSO ADICIONAL'),
+            ]),
+            'permisos': forms.Select(choices=[
+                (1, 'Lectura'),
+                (2, 'Lectura y escritura'),
             ])
         }
         labels = {
             'contrasena' : 'Contraseña',
             'observacion': 'Observación'
         }
+        
 
 class HospitalesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
