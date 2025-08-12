@@ -384,6 +384,11 @@
               <i class="bi bi-bar-chart"></i> Gráficas
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link rsc-nav-link" href="{% url 'manual_home' %}">
+              <i class="bi bi-file-earmark-text"></i> Manual de usuario
+            </a>
+          </li>
           {% if request.session.permisos == 3 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'administracion_sistema' %}">
