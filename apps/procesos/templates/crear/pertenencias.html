@@ -16,24 +16,24 @@
                             <label for="{{ form_paciente.entregan_pertenencias.id_for_label }}">Se Entregaron</label>
                             {{ form_paciente.entregan_pertenencias }}
                         </div>
-                        <div class="form-group col-md-10">
-                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Descripción</label>
-                            {{ form_paciente.descripcion_pertenencias }}
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Nombre de quien
-                                recibe</label>
-                            {{ form_paciente.nombre_recibe }}
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Cargo de quien
-                                recibe</label>
-                            {{ form_paciente.cargo_recibe }}
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Empleado quien
-                                entrega</label>
-                            {{ form_paciente.empleado_recibe }}
+
+                        <div id="campos-pertenencias" class="row" style="width:100%">
+                            <div class="form-group col-md-12">
+                                <label for="{{ form_paciente.descripcion_pertenencias.id_for_label }}">Descripción</label>
+                                {{ form_paciente.descripcion_pertenencias }}
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="{{ form_paciente.nombre_recibe.id_for_label }}">Nombre de quien recibe</label>
+                                {{ form_paciente.nombre_recibe }}
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="{{ form_paciente.cargo_recibe.id_for_label }}">Cargo de quien recibe</label>
+                                {{ form_paciente.cargo_recibe }}
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="{{ form_paciente.empleado_recibe.id_for_label }}">Empleado quien entrega</label>
+                                {{ form_paciente.empleado_recibe }}
+                            </div>
                         </div>
                     </div>
                 </div>

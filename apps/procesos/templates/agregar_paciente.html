@@ -319,6 +319,45 @@
     </div>
 
     <script src="{% static 'js/modificar.js' %}"></script>
+        <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if not paciente_nuevo %}
+        // Deshabilitar todos los campos de los formularios excepto botones de navegación
+        document.querySelectorAll("input, select, textarea, button[type='submit']").forEach(el => {
+            el.disabled = true;
+        });
+        {% endif %}
+
+        {% if not formularios_editables %}
+        
+        // Deshabilitar campos del formulario de servicio
+        const contenedor = document.querySelector(".form-container");
+        if (contenedor) {
+            contenedor.querySelectorAll("input, select, textarea, button").forEach(el => {
+            el.disabled = true;
+            });
+        }
+
+        // Deshabilitar doble clic en tablas de paramédicos y unidades
+        const tablas = [
+            "#tabla-paramedicos-disponibles",
+            "#tabla-unidades",
+            "#tabla-paramedicos-asignados",
+            "#tabla-seleccionados"
+        ];
+        tablas.forEach(id => {
+            const tabla = document.querySelector(id);
+            if (tabla) {
+                tabla.addEventListener("dblclick", function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, true);
+            }
+        });
+
+        {% endif %}
+    });
+    </script>
 </body>
 
 </html>

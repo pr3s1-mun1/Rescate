@@ -73,26 +73,32 @@ class PacientexServicio(models.Model):
 
     
     enfermedad = models.ForeignKey(Enfermedad, on_delete=models.SET_NULL, null=True)
-    marca_vehiculo = models.ForeignKey(MarcaVehiculo, on_delete=models.SET_NULL, null=True)
-    placa_vehiculo = models.CharField(max_length=10, null=True)
+
+    #Vehículo
+    marca_vehiculo = models.ForeignKey(MarcaVehiculo, on_delete=models.SET_NULL, null=True, blank=True)
+    placa_vehiculo = models.CharField(max_length=10, null=True, blank=True)
     color_vehiculo = models.CharField(max_length=10, null=True)
-    fecha_ultima_comida = models.DateTimeField()
+
+
+    fecha_ultima_comida = models.DateTimeField(null=True, blank=True) #Null True
     fallecio = models.BooleanField(default=False)
-    hospital = models.ForeignKey(Hospitales, on_delete=models.SET_NULL, null=True)
+    hospital = models.ForeignKey(Hospitales, on_delete=models.SET_NULL, null=True, blank=True)
+
+    #Acompañante
     tiene_acompanante = models.BooleanField(default=False)
-    nombre_acompanante = models.CharField(max_length=100)
-    edad_acompanante = models.IntegerField()
-    domicilio_acompanante = models.CharField(max_length=150)
-    parentesco_acompanante = models.CharField(max_length=2)
-    sexo_acompanante = models.CharField(max_length=10)
+    nombre_acompanante = models.CharField(max_length=100, null=True, blank=True)
+    edad_acompanante = models.IntegerField(null=True, blank=True)
+    domicilio_acompanante = models.CharField(max_length=150, null=True, blank=True)
+    parentesco_acompanante = models.CharField(max_length=2, null=True, blank=True)
+    sexo_acompanante = models.CharField(max_length=10, null=True, blank=True)
 
 
     #Datos de liberación
     entregan_pertenencias = models.BooleanField(default=False)
     descripcion_pertenencias = models.TextField(null=True, blank=True)
-    nombre_recibe = models.CharField(max_length=100, null=True)
-    cargo_recibe = models.CharField(max_length=100, null=True)
-    empleado_recibe = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, null=True, related_name='recibe_paciente')
+    nombre_recibe = models.CharField(max_length=100, null=True, blank=True)
+    cargo_recibe = models.CharField(max_length=100, null=True, blank=True)
+    empleado_recibe = models.ForeignKey(Paramedicos, on_delete=models.SET_NULL, related_name='recibe_paciente', null=True, blank=True)
 
 
 
@@ -104,6 +110,7 @@ class PacientexServicio(models.Model):
     nombre_agente = models.CharField(max_length=100, null=True, blank=True)
     numero_agente = models.CharField(max_length=10, null=True, blank=True)
 
+    #Impresión Diagnóstica
     nivel_concienciaa = models.CharField(max_length=10, null=True, blank=True)
     piel = models.CharField(max_length=10, null=True, blank=True)
     antecedente = models.CharField(max_length=255, null=True, blank=True)
@@ -112,7 +119,9 @@ class PacientexServicio(models.Model):
     respiracion_diagnostico = models.CharField(max_length=10, null=True, blank=True)    
     pupilas = models.CharField(max_length=10, null=True, blank=True)    
     hemorragia = models.CharField(max_length=10, null=True, blank=True)    
-    dolor = models.CharField(max_length=10, null=True, blank=True)   
+    dolor = models.CharField(max_length=10, null=True, blank=True)
+
+    #Signos Vitales   
     pulso = models.CharField(max_length=10, null=True, blank=True)   
     respiracion = models.CharField(max_length=10, null=True, blank=True)   
     presion_inicial = models.CharField(max_length=10, null=True, blank=True)   
@@ -120,9 +129,12 @@ class PacientexServicio(models.Model):
     destroxtix = models.CharField(max_length=10, null=True, blank=True)
     oximetria = models.CharField(max_length=10, null=True, blank=True)
     temperatura = models.CharField(max_length=10, null=True, blank=True)
+
+    #Evaluación Glasglow
     apertura_ojos_glasgow = models.CharField(max_length=10, null=True, blank=True)    
     respuesta_verbal_glasgow = models.CharField(max_length=10, null=True, blank=True)    
-    respuesta_motora_glasgow = models.CharField(max_length=10, null=True, blank=True)    
+    respuesta_motora_glasgow = models.CharField(max_length=10, null=True, blank=True)
+
     edad_tipo = models.CharField(max_length=10, null=True, blank=True)
     domicilio_numero = models.CharField(max_length=10, null=True, blank=True)
 

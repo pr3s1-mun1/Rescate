@@ -15,9 +15,9 @@
     <div class="d-flex">
         <div class="container">
             <form method="post" id="servicioForm"
-            action="{% if paciente_clave %}{% url 'guardar_todo' servicio.clave paciente_clave %}{% else %}{% url 'guardar_todo_n' servicio.clave %}{% endif %}"
-            enctype="multipart/form-data" novalidate>
-                      {% csrf_token %}
+                action="{% if paciente_clave %}{% url 'guardar_todo' servicio.clave paciente_clave %}{% else %}{% url 'guardar_todo_n' servicio.clave %}{% endif %}"
+                enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
 
                 <ul class="nav nav-tabs" id="mainTabs" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -46,8 +46,9 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pertenencias-tab" data-bs-toggle="tab" data-bs-target="#pertenencias"
-                            type="button" role="tab" aria-controls="pertenencias" aria-selected="false">
+                        <button class="nav-link" id="pertenencias-tab" data-bs-toggle="tab"
+                            data-bs-target="#pertenencias" type="button" role="tab" aria-controls="pertenencias"
+                            aria-selected="false">
                             <i class="fa-solid fa-user me-2"></i>Pertenencias
                         </button>
                     </li>
@@ -104,7 +105,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="quemaduras-tab" data-bs-toggle="tab" data-bs-target="#quemaduras"
                             type="button" role="tab" aria-controls="quemaduras" aria-selected="false">
-                                <i class="fa-solid fa-fire me-2"></i>Quemaduras
+                            <i class="fa-solid fa-fire me-2"></i>Quemaduras
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -126,7 +127,8 @@
                         </button>
                     </li>
                     <li class="nav-item mx-4" role="presentation">
-                        <button style="background-color: #001069; color: white;" type="submit" class="btn nav-link" id="btnGuardar" onclick="return confirmarGuardar()">
+                        <button style="background-color: #001069; color: white;" type="submit" class="btn nav-link"
+                            id="btnGuardar" onclick="return confirmarGuardar()">
                             <i class="fas fa-save me-2"></i> Guardar Servicio
                         </button>
                     </li>
@@ -321,7 +323,7 @@
                             <button type="button" class="btn btn-primary next-tab" data-next-tab="partes-tab">
                                 Siguiente <i class="fas fa-arrow-right ms-2"></i>
                             </button>
-                        </div>  
+                        </div>
                     </div>
 
                     <div class="tab-pane fade" id="partes" role="tabpanel" aria-labelledby="pestana15-tab">
@@ -340,43 +342,51 @@
 
     <script src="{% static 'js/modificar.js' %}"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        {% if not paciente_nuevo %}
-        // Deshabilitar todos los campos de los formularios excepto botones de navegación
-        document.querySelectorAll("input, select, textarea, button[type='submit']").forEach(el => {
-            el.disabled = true;
-        });
-        {% endif %}
-
-        {% if not formularios_editables %}
-        
-        // Deshabilitar campos del formulario de servicio
-        const contenedor = document.querySelector(".form-container");
-        if (contenedor) {
-            contenedor.querySelectorAll("input, select, textarea, button").forEach(el => {
-            el.disabled = true;
+        document.addEventListener("DOMContentLoaded", function () {
+            {% if not paciente_nuevo %}
+            // Deshabilitar todos los campos de los formularios excepto botones de navegación
+            document.querySelectorAll("input, select, textarea, button[type='submit']").forEach(el => {
+                el.disabled = true;
             });
-        }
 
-        // Deshabilitar doble clic en tablas de paramédicos y unidades
-        const tablas = [
-            "#tabla-paramedicos-disponibles",
-            "#tabla-unidades",
-            "#tabla-paramedicos-asignados",
-            "#tabla-seleccionados"
-        ];
-        tablas.forEach(id => {
-            const tabla = document.querySelector(id);
-            if (tabla) {
-                tabla.addEventListener("dblclick", function(e) {
+            // Deshabilitar doble clic en todas las tablas
+            document.querySelectorAll("table, svg, img").forEach(tabla => {
+                tabla.addEventListener("dblclick", function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                 }, true);
-            }
-        });
+            });
+            {% endif %}
 
-        {% endif %}
-    });
+            {% if not formularios_editables %}
+
+            // Deshabilitar campos del formulario de servicio
+            const contenedor = document.querySelector(".form-container");
+            if (contenedor) {
+                contenedor.querySelectorAll("input, select, textarea, button").forEach(el => {
+                    el.disabled = true;
+                });
+            }
+
+            // Deshabilitar doble clic en tablas de paramédicos y unidades
+            const tablas = [
+                "#tabla-paramedicos-disponibles",
+                "#tabla-unidades",
+                "#tabla-paramedicos-asignados",
+                "#tabla-seleccionados"
+            ];
+            tablas.forEach(id => {
+                const tabla = document.querySelector(id);
+                if (tabla) {
+                    tabla.addEventListener("dblclick", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }, true);
+                }
+            });
+
+            {% endif %}
+        });
     </script>
 
 

@@ -7,340 +7,355 @@
             <div class="form-container bg-light p-4 rounded shadow-sm">
                 <h1 class="text-center mb-4">Pacientes del servicio</h1>
 
-                    {% csrf_token %}
+                {% csrf_token %}
 
-                    <div class="groupbox mb-4">
-                        <h2 class="groupbox-title">Servicio</h2>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.enfermedad.id_for_label }}">Enfermedad</label>
-                                    {{ form_paciente.enfermedad }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.base.id_for_label }}">Base</label>
-                                    {{ form_paciente.base }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.ambulancia.id_for_label }}">Ambulancia</label>
-                                    {{ form_paciente.ambulancia }}
-                                </div>
-                            </div>
-                    
-                            <div class="col-md-4">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.fecha_salida.id_for_label }}">Salida</label>
-                                    {{ form_paciente.fecha_salida }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.fecha_llegada.id_for_label }}">Llegada</label>
-                                    {{ form_paciente.fecha_llegada }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.fecha_retorno.id_for_label }}">Retorno</label>
-                                    {{ form_paciente.fecha_retorno }}
-                                </div>
-                            </div>
-                    
-                            <div class="col-md-4">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.clave.id_for_label }}"># Paciente</label>
-                                    {{ form_paciente.clave }}
-                                    
-                                    <input type="hidden" name="paciente_id" value="{% if form_paciente.instance.id %}{{ form_paciente.instance.id }}{% endif %}">
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>                    
-
-                    <div class="groupbox mb-4">
-                        <h2 class="groupbox-title">Datos Generales</h2>
-                    
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.apellido_paterno.id_for_label }}">Apellido Paterno</label>
-                                    {{ form_paciente.apellido_paterno }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.apellido_materno.id_for_label }}">Apellido Materno</label>
-                                    {{ form_paciente.apellido_materno }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.nombre.id_for_label }}">Nombre</label>
-                                    {{ form_paciente.nombre }}
-                                </div>
-                            </div>
-                    
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.estado_civil.id_for_label }}">Estado Civil</label>
-                                    {{ form_paciente.estado_civil }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.telefono.id_for_label }}">Teléfono</label>
-                                    {{ form_paciente.telefono }}
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.colonia.id_for_label }}">Colonia</label>
-                                    {{ form_paciente.colonia }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.domicilio.id_for_label }}">Domicilio</label>
-                                    {{ form_paciente.domicilio }}
-                                </div>
-                            </div>
-                    
-                            <div class="form-group mb-3">
-                                <label for="{{ form_paciente.domicilio_numero.id_for_label }}">Número</label>
-                                {{ form_paciente.domicilio_numero }} <!-- Cambia el input manual por el campo del formulario -->
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.complexion.id_for_label }}">Complexión</label>
-                                    {{ form_paciente.complexion }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.tez.id_for_label }}">Tez</label>
-                                    {{ form_paciente.tez }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.pelo.id_for_label }}">Pelo</label>
-                                    {{ form_paciente.pelo }}
-                                </div>
-                            </div>
-                    
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.sexo.id_for_label }}">Sexo</label>
-                                    {{ form_paciente.sexo }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.estatura.id_for_label }}">Estatura</label>
-                                    {{ form_paciente.estatura }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.edad.id_for_label }}">Edad</label>
-                                    {{ form_paciente.edad }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.edad_tipo.id_for_label }}">Edad</label>
-                                    {{ form_paciente.edad_tipo }}
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <label for="{{ form_paciente.ropa.id_for_label }}">Ropa que vestía</label>
-                                {{ form_paciente.ropa }}
-                            </div>
-                        </div>
-                    </div>
-                    
-
-                    <div class="groupbox mb-4">
-                        <h2 class="groupbox-title">Antecedente</h2>
-                    
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="{{ form_paciente.antecedente.id_for_label }}">Antecedente</label>
-                                {{ form_paciente.antecedente }}
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="{{ form_paciente.sintoma.id_for_label }}">Síntoma</label>
-                                {{ form_paciente.sintoma }}
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.hospital.id_for_label }}">Hospital</label>
-                                    {{ form_paciente.hospital }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.ultima_comida.id_for_label }}">Última Comida</label>
-                                    {{ form_paciente.fecha_ultima_comida }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.agente.id_for_label }}">Agente</label>
-                                    {{ form_paciente.nombre_agente }}
-                                </div>
-                            </div>
-                    
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.responsable.id_for_label }}">Responsable</label>
-                                    {{ form_paciente.nombre_respon_hospital }}
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="{{ form_paciente.fallecio.id_for_label }}">Falleció</label>
-                                    {{ form_paciente.fallecio }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.numero_agente.id_for_label }}">Número de Agente</label>
-                                    {{ form_paciente.numero_agente }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-
+                <div class="groupbox mb-4">
+                    <h2 class="groupbox-title">Servicio</h2>
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="groupbox mb-4">
-                                <h2 class="groupbox-title">Impresión Diagnostica</h2>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.nivel_concienciaa.id_for_label }}">Nivel de Conciencia</label>
-                                    {{ form_paciente.nivel_concienciaa }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.piel.id_for_label }}">Piel</label>
-                                    {{ form_paciente.piel }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.pulso.id_for_label }}">Pulso</label>
-                                    {{ form_paciente.pulso_diagnostico }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.respiracion.id_for_label }}">Respiración</label>
-                                    {{ form_paciente.respiracion_diagnostico }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.pupilas.id_for_label }}">Pupilas</label>
-                                    {{ form_paciente.pupilas }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.hemorragia.id_for_label }}">Hemorragia</label>
-                                    {{ form_paciente.hemorragia }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{ form_paciente.dolor.id_for_label }}">Dolor</label>
-                                    {{ form_paciente.dolor }}
-                                </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.enfermedad.id_for_label }}">Enfermedad</label>
+                                {{ form_paciente.enfermedad }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.base.id_for_label }}">Base</label>
+                                {{ form_paciente.base }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.ambulancia.id_for_label }}">Ambulancia</label>
+                                {{ form_paciente.ambulancia }}
                             </div>
                         </div>
-                    
-                        <div class="col-md-4">
-                            <div class="groupbox mb-4 tilosinput">
-                                <h2 class="groupbox-title">Signos Vitales</h2>
-                                
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.pulso.id_for_label }}" class="mb-0">Pulso</label>
-                                    {{ form_paciente.pulso }}
-                                </div>
-                                
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.respiracion.id_for_label }}" class="mb-0">Respiración</label>
-                                    {{ form_paciente.respiracion }}
-                                </div>
-                                
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.presion_inicial.id_for_label }}" class="mb-0">T/A Inicial</label>
-                                    {{ form_paciente.presion_inicial }}
-                                </div>
-                                
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.presion_posterior.id_for_label }}" class="mb-0">T/A Posterior</label>
-                                    {{ form_paciente.presion_posterior }}
-                                </div>
-                                
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.destroxtix.id_for_label }}" class="mb-0">Destroxtix</label>
-                                    {{ form_paciente.destroxtix }}
-                                </div>
 
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.oximetria.id_for_label }}" class="mb-0">Oximetría</label>
-                                    {{ form_paciente.oximetria }}
-                                </div>
-
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.temperatura.id_for_label }}" class="mb-0">Temperatura</label>
-                                    {{ form_paciente.temperatura }}
-                                </div>
-                            </div>
-                        </div>                        
                         <div class="col-md-4">
-                            <div class="groupbox mb-4">
-                                <h2 class="groupbox-title">Evaluación Glasglow</h2>
-                                    <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                        <label for="{{ form_paciente.apertura_ojos_glasgow.id_for_label }}" class="mb-0">Apertura ojos</label>
-                                            {{ form_paciente.apertura_ojos_glasgow }}
-                                    </div>
-                                    <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                        <label for="{{ form_paciente.respuesta_verbal_glasgow.id_for_label }}" class="mb-0">Respuesta Verbal</label>
-                                            {{ form_paciente.respuesta_verbal_glasgow }}
-                                    </div>
-                                    <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                        <label for="{{ form_paciente.respuesta_motora_glasgow.id_for_label }}" class="mb-0">Respuesta Motora</label>
-                                            {{ form_paciente.respuesta_motora_glasgow }}
-                                    </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.fecha_salida.id_for_label }}">Salida</label>
+                                {{ form_paciente.fecha_salida }}
                             </div>
-                            <div class="groupbox mb-4">
-                                <h2 class="groupbox-title">Vehiculo</h2>
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.marca_vehiculo.id_for_label }}" class="mb-0">Marca</label>
-                                        {{ form_paciente.marca_vehiculo }}
-                                </div>
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.color_vehiculo.id_for_label }}" class="mb-0">Color</label>
-                                        {{ form_paciente.color_vehiculo }}
-                                </div>
-                                <div class="form-group d-flex align-items-center gap-2 mb-2">
-                                    <label for="{{ form_paciente.placa_vehiculo.id_for_label }}" class="mb-0">Placa</label>
-                                        {{ form_paciente.placa_vehiculo }}
-                                </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.fecha_llegada.id_for_label }}">Llegada</label>
+                                {{ form_paciente.fecha_llegada }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.fecha_retorno.id_for_label }}">Retorno</label>
+                                {{ form_paciente.fecha_retorno }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.clave.id_for_label }}"># Paciente</label>
+                                {{ form_paciente.clave }}
+
+                                <input type="hidden" name="paciente_id"
+                                    value="{% if form_paciente.instance.id %}{{ form_paciente.instance.id }}{% endif %}">
                             </div>
                         </div>
 
                     </div>
+                </div>
 
-                    <div class="groupbox mb-4">
-                        <div class="row">
-                            <h2 class="groupbox-title">Acompañante</h2>
-                            <div class="form-group col-md-3">
-                                <label for="{{ form_paciente.tiene_acompanante.id_for_label }}">Tuvo Acompañante</label>
-                                {{ form_paciente.tiene_acompanante }}
+                <div class="groupbox mb-4">
+                    <h2 class="groupbox-title">Datos Generales</h2>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.apellido_paterno.id_for_label }}">Apellido Paterno</label>
+                                {{ form_paciente.apellido_paterno }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.apellido_materno.id_for_label }}">Apellido Materno</label>
+                                {{ form_paciente.apellido_materno }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.nombre.id_for_label }}">Nombre</label>
+                                {{ form_paciente.nombre }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.estado_civil.id_for_label }}">Estado Civil</label>
+                                {{ form_paciente.estado_civil }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.telefono.id_for_label }}">Teléfono</label>
+                                {{ form_paciente.telefono }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.colonia.id_for_label }}">Colonia</label>
+                                {{ form_paciente.colonia }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.domicilio.id_for_label }}">Domicilio</label>
+                                {{ form_paciente.domicilio }}
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form_paciente.domicilio_numero.id_for_label }}">Número</label>
+                            {{ form_paciente.domicilio_numero }}
+                            <!-- Cambia el input manual por el campo del formulario -->
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.complexion.id_for_label }}">Complexión</label>
+                                {{ form_paciente.complexion }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.tez.id_for_label }}">Tez</label>
+                                {{ form_paciente.tez }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.pelo.id_for_label }}">Pelo</label>
+                                {{ form_paciente.pelo }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.sexo.id_for_label }}">Sexo</label>
+                                {{ form_paciente.sexo }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.estatura.id_for_label }}">Estatura</label>
+                                {{ form_paciente.estatura }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.edad.id_for_label }}">Edad</label>
+                                {{ form_paciente.edad }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.edad_tipo.id_for_label }}">Edad</label>
+                                {{ form_paciente.edad_tipo }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label for="{{ form_paciente.ropa.id_for_label }}">Ropa que vestía</label>
+                            {{ form_paciente.ropa }}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="groupbox mb-4">
+                    <h2 class="groupbox-title">Antecedente</h2>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="{{ form_paciente.antecedente.id_for_label }}">Antecedente</label>
+                            {{ form_paciente.antecedente }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="{{ form_paciente.sintoma.id_for_label }}">Síntoma</label>
+                            {{ form_paciente.sintoma }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.hospital.id_for_label }}">Hospital</label>
+                                {{ form_paciente.hospital }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.ultima_comida.id_for_label }}">Última Comida</label>
+                                {{ form_paciente.fecha_ultima_comida }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.agente.id_for_label }}">Agente</label>
+                                {{ form_paciente.nombre_agente }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.responsable.id_for_label }}">Responsable</label>
+                                {{ form_paciente.nombre_respon_hospital }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form_paciente.fallecio.id_for_label }}">Falleció</label>
+                                {{ form_paciente.fallecio }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.numero_agente.id_for_label }}">Número de Agente</label>
+                                {{ form_paciente.numero_agente }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="groupbox mb-4">
+                            <h2 class="groupbox-title">Impresión Diagnóstica</h2>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.nivel_concienciaa.id_for_label }}">Nivel de
+                                    Conciencia</label>
+                                {{ form_paciente.nivel_concienciaa }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.piel.id_for_label }}">Piel</label>
+                                {{ form_paciente.piel }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.pulso.id_for_label }}">Pulso</label>
+                                {{ form_paciente.pulso_diagnostico }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.respiracion.id_for_label }}">Respiración</label>
+                                {{ form_paciente.respiracion_diagnostico }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.pupilas.id_for_label }}">Pupilas</label>
+                                {{ form_paciente.pupilas }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.hemorragia.id_for_label }}">Hemorragia</label>
+                                {{ form_paciente.hemorragia }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form_paciente.dolor.id_for_label }}">Dolor</label>
+                                {{ form_paciente.dolor }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="groupbox mb-4 tilosinput">
+                            <h2 class="groupbox-title">Signos Vitales</h2>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.pulso.id_for_label }}" class="mb-0">Pulso</label>
+                                {{ form_paciente.pulso }}
+                            </div>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.respiracion.id_for_label }}"
+                                    class="mb-0">Respiración</label>
+                                {{ form_paciente.respiracion }}
+                            </div>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.presion_inicial.id_for_label }}" class="mb-0">T/A
+                                    Inicial</label>
+                                {{ form_paciente.presion_inicial }}
+                            </div>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.presion_posterior.id_for_label }}" class="mb-0">T/A
+                                    Posterior</label>
+                                {{ form_paciente.presion_posterior }}
+                            </div>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.destroxtix.id_for_label }}" class="mb-0">Destroxtix</label>
+                                {{ form_paciente.destroxtix }}
+                            </div>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.oximetria.id_for_label }}" class="mb-0">Oximetría</label>
+                                {{ form_paciente.oximetria }}
+                            </div>
+
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.temperatura.id_for_label }}"
+                                    class="mb-0">Temperatura</label>
+                                {{ form_paciente.temperatura }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="groupbox mb-4">
+                            <h2 class="groupbox-title">Evaluación Glasglow</h2>
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.apertura_ojos_glasgow.id_for_label }}"
+                                    class="mb-0">Apertura ojos</label>
+                                {{ form_paciente.apertura_ojos_glasgow }}
+                            </div>
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.respuesta_verbal_glasgow.id_for_label }}"
+                                    class="mb-0">Respuesta Verbal</label>
+                                {{ form_paciente.respuesta_verbal_glasgow }}
+                            </div>
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.respuesta_motora_glasgow.id_for_label }}"
+                                    class="mb-0">Respuesta Motora</label>
+                                {{ form_paciente.respuesta_motora_glasgow }}
+                            </div>
+                        </div>
+                        <div class="groupbox mb-4">
+                            <h2 class="groupbox-title">Vehículo</h2>
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.marca_vehiculo.id_for_label }}" class="mb-0">Marca</label>
+                                {{ form_paciente.marca_vehiculo }}
+                            </div>
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.color_vehiculo.id_for_label }}" class="mb-0">Color</label>
+                                {{ form_paciente.color_vehiculo }}
+                            </div>
+                            <div class="form-group d-flex align-items-center gap-2 mb-2">
+                                <label for="{{ form_paciente.placa_vehiculo.id_for_label }}" class="mb-0">Placa</label>
+                                {{ form_paciente.placa_vehiculo }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="groupbox mb-4">
+                    <div class="row">
+                        <h2 class="groupbox-title">Acompañante</h2>
+
+                        <div class="form-group col-md-3">
+                            <label for="{{ form_paciente.tiene_acompanante.id_for_label }}">Tuvo Acompañante</label>
+                            {{ form_paciente.tiene_acompanante }}
+                        </div>
+
+                        <div id="campos-acompanante" class="row" style="width:100%">
+                            <div class="form-group col-md-7">
+                                <label for="{{ form_paciente.nombre_acompanante.id_for_label }}">Nombre</label>
+                                {{ form_paciente.nombre_acompanante }}
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="{{ form_paciente.sexo_acompanante.id_for_label }}">Sexo</label>
                                 {{ form_paciente.sexo_acompanante }}
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
                                 <label for="{{ form_paciente.edad_acompanante.id_for_label }}">Edad</label>
                                 {{ form_paciente.edad_acompanante }}
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-8">
+                                <label for="{{ form_paciente.domicilio_acompanante.id_for_label }}">Domicilio</label>
+                                {{ form_paciente.domicilio_acompanante }}
+                            </div>
+                            <div class="form-group col-md-4">
                                 <label for="{{ form_paciente.parentesco_acompanante.id_for_label }}">Parentesco</label>
                                 {{ form_paciente.parentesco_acompanante }}
                             </div>
+
+
                         </div>
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                <label for="{{ form_paciente.edad_acompanante.id_for_label }}">Nombre</label>
-                                {{ form_paciente.nombre_acompanante }}
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="{{ form_paciente.parentesco_acompanante.id_for_label }}">Domicilio</label>
-                                {{ form_paciente.domicilio_acompanante }}
-                            </div>
-                        </div>
-                    </div>               
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script src="{% static 'js/paciente.js' %}"></script>
 </body>

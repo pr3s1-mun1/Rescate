@@ -322,7 +322,7 @@ def carga_modifica(request, pk, ps):
                 print(f"Paciente con clave {ps} no encontrado para el servicio {pk}")
 
         permisos = request.session.get("permisos", 1)  # por defecto 1 si no se encuentra
-        formularios_editables = permisos == 2
+        formularios_editables = permisos != 1
         print(formularios_editables)
 
         es_paciente_nuevo = False
@@ -403,8 +403,9 @@ def carga_modifica(request, pk, ps):
 def carga_modifica_n(request, pk):
     try:
         permisos = request.session.get("permisos", 1)  # por defecto 1
-        formularios_editables = permisos == 2
+        formularios_editables = permisos != 1
         es_paciente_nuevo = True
+        print(es_paciente_nuevo)
         print(formularios_editables)
         servicio = get_object_or_404(Servicio, pk=pk)
         form_servicio = ServicioForm(instance=servicio)
@@ -874,6 +875,11 @@ from django.db import transaction
 def agregar_paciente(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
 
+    permisos = request.session.get("permisos", 1)  # por defecto 1
+    formularios_editables = permisos != 1
+    es_paciente_nuevo = True
+    print(es_paciente_nuevo)
+    print(formularios_editables)
     if request.method == 'POST':
         form_paciente = PacientesForm(request.POST)
         form_embarazo = EmbarazoAsignadoForm(request.POST)
@@ -936,6 +942,8 @@ def agregar_paciente(request, pk):
         'equipos': Equipo.objects.all(),
         'procedimientos': Procedimiento.objects.all(),
         'editar': False,
+        'paciente_nuevo' : es_paciente_nuevo,
+        'formularios_editables': formularios_editables,
     }
 
     return render(request, 'agregar_paciente.html', context)
