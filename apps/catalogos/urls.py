@@ -15,8 +15,4 @@ urlpatterns = [
 
     path('agregar/<str:tipo>/', add_catalogo, name='add_catalogo'),
 
-    #Solo paramédico
-    path('add/<str:tipo>/', add_paramedico, name='add_paramedico'),
-
-    path('updatep/<str:tipo>/<str:clave>/', update_paramedico, name='update_paramedico')
 ]

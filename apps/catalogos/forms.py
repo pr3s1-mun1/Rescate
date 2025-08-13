@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.hashers import make_password
 from .models import *
 
 class BootstrapFormMixin:
@@ -59,7 +60,17 @@ class AlergiaForm(BootstrapFormMixin, forms.ModelForm):
             'descripcion' : 'Descripción'
         }
 
+from django import forms
+from django.contrib.auth.hashers import make_password
+from .models import Paramedicos  # ajusta la ruta según tu proyecto
+
 class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
+    contrasena = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(render_value=True),
+        label='Contraseña'
+    )
+
     class Meta:
         model = Paramedicos
         fields = '__all__'
@@ -77,7 +88,6 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
                 ('I', 'INTERMEDIO'),
                 ('P', 'PARAMÉDICO'),
                 ('E', 'EMPLEADO'),
-
             ]),
             'tipo': forms.Select(choices=[
                 ('U', 'USUARIO'),
@@ -103,7 +113,18 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
             'contrasena' : 'Contraseña',
             'observacion': 'Observación'
         }
-        
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        # Si el campo contraseña fue modificado, lo hasheamos
+        if 'contrasena' in self.cleaned_data and self.cleaned_data['contrasena']:
+            instance.contrasena = make_password(self.cleaned_data['contrasena'])
+
+        if commit:
+            instance.save()
+        return instance
+
 
 class HospitalesForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
