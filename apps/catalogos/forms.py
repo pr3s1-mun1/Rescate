@@ -60,20 +60,16 @@ class AlergiaForm(BootstrapFormMixin, forms.ModelForm):
             'descripcion' : 'Descripción'
         }
 
-from django import forms
-from django.contrib.auth.hashers import make_password
-from .models import Paramedicos  # ajusta la ruta según tu proyecto
-
 class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
     contrasena = forms.CharField(
-        required=True,
-        widget=forms.PasswordInput(render_value=True),
+        required=False,
+        widget=forms.PasswordInput(),
         label='Contraseña'
     )
 
     class Meta:
         model = Paramedicos
-        fields = '__all__'
+        exclude = ['contrasena']  # 🔹 No lo incluyas en automático
         widgets = {
             'mando': forms.Select(choices=[
                 ('C', 'CAPITÁN'),
@@ -92,7 +88,7 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
             'tipo': forms.Select(choices=[
                 ('U', 'USUARIO'),
                 ('P', 'PARAMEDICO'),
-                ('A', 'ADMINISTRATIVO'),               
+                ('A', 'ADMINISTRATIVO'),
             ]),
             'estatus': forms.Select(choices=[
                 ('I', 'INCAPACIDAD'),
@@ -110,16 +106,18 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
             ])
         }
         labels = {
-            'contrasena' : 'Contraseña',
             'observacion': 'Observación'
         }
 
     def save(self, commit=True):
         instance = super().save(commit=False)
 
-        # Si el campo contraseña fue modificado, lo hasheamos
-        if 'contrasena' in self.cleaned_data and self.cleaned_data['contrasena']:
-            instance.contrasena = make_password(self.cleaned_data['contrasena'])
+        nueva_contrasena = self.cleaned_data.get('contrasena')
+        if nueva_contrasena:
+            instance.contrasena = make_password(nueva_contrasena)
+        elif self.instance and self.instance.pk:
+            # Mantener la contraseña existente
+            instance.contrasena = Paramedicos.objects.get(pk=self.instance.pk).contrasena
 
         if commit:
             instance.save()

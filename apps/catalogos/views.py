@@ -151,8 +151,17 @@ def requiere_tipo_paramedico(*niveles_permitidos):
         return _wrapped_view
     return decorator
 
+def requiere_sesion(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.session.get("clave"):
+            messages.warning(request, "Debes iniciar sesión para acceder a esta página.")
+            return redirect("login")  # nombre de tu URL de login
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 #Envío de listas de catalogos a HTML
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def catalogo_general(request, tipo):
     if tipo not in CATALOGOS:
@@ -179,6 +188,7 @@ def catalogo_general(request, tipo):
 
 
 #Actualización de rows de las bases de datos
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def update_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
@@ -213,6 +223,7 @@ def update_catalogo(request, tipo, clave):
 
 
 #Eliminar rows de la base de datos
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def delete_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS:
@@ -232,6 +243,7 @@ def delete_catalogo(request, tipo, clave):
 
     return render(request, 'confirm_delete.html', {'objeto': objeto, 'tipo': tipo})
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def add_catalogo(request, tipo):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
@@ -294,7 +306,7 @@ def add_catalogo(request, tipo):
         'nueva_clave': nueva_clave,
     })
 
-
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def relacionar_calle_colonia(request):
     colonias = Colonia.objects.all().order_by('colonia')

@@ -3,7 +3,7 @@ matplotlib.use('Agg')  # <-- ESTO ES LO IMPORTANTE
 import matplotlib.pyplot as plt
 from django.shortcuts import render
 from apps.procesos.models import Servicio
-from apps.catalogos.views import requiere_tipo_paramedico
+from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion
 from collections import Counter
 from io import BytesIO
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -13,10 +13,12 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator, MultipleLocator
 from matplotlib.patches import Patch
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def cargar_graficas(request):
     return render(request, 'maingraficos.html')
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def traslados(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -71,6 +73,8 @@ def traslados(request):
         "grafica_base64": grafica_base64,
     })
 
+
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def traslados_hospitalarios(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -125,6 +129,7 @@ def traslados_hospitalarios(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def pacientes_sector(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -187,6 +192,7 @@ def pacientes_sector(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def pacientes_sector_m(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -249,6 +255,7 @@ def pacientes_sector_m(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def pacientes_sector_f(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -311,6 +318,7 @@ def pacientes_sector_f(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def intoxicaciones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -367,6 +375,7 @@ def intoxicaciones(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def pacientes_por_colonia(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -418,6 +427,7 @@ def pacientes_por_colonia(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def defunciones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
@@ -474,6 +484,7 @@ def defunciones(request):
         "grafica_base64": grafica_base64,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def lesiones(request):
     fecha_inicio = request.GET.get("fecha_inicio")

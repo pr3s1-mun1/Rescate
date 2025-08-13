@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from apps.catalogos.forms import *
-from apps.catalogos.views import requiere_tipo_paramedico, Logs_Sistema
+from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion, Logs_Sistema
 from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm, CombustibleForm
 from django.http import HttpResponse
 from collections import defaultdict
@@ -473,6 +473,7 @@ def carga_modifica_n(request, pk):
 
 
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def eliminar_servicio(request, pk):
     print("Eliminando servicio con pk:", pk)
@@ -949,6 +950,7 @@ def agregar_paciente(request, pk):
     return render(request, 'agregar_paciente.html', context)
 
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def lista_combustible(request):
     combustibles = Combustible.objects.all().order_by('-fecha')
@@ -977,6 +979,7 @@ def lista_combustible(request):
         'remision': remision,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def crear_combustible(request):
     if request.method == 'POST':
@@ -988,6 +991,7 @@ def crear_combustible(request):
         form = CombustibleForm()
     return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Crear'})
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def editar_combustible(request, clave):
     combustible = get_object_or_404(Combustible, clave=clave)
@@ -1007,6 +1011,7 @@ from django.db.models import Q, OuterRef, Exists
 from django.shortcuts import render, redirect
 from .models import Paramedicos, Reloj, Logs_Sistema
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def ver_reloj(request):
     alerta_fecha_futura = False
@@ -1111,6 +1116,7 @@ def ver_reloj(request):
         'alerta_fecha_futura': alerta_fecha_futura,
     })
 
+@requiere_sesion
 @requiere_tipo_paramedico(2, 3)
 def imprimir_reporte(request):
     from django.template.loader import get_template
