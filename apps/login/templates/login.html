@@ -46,11 +46,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: 
-                linear-gradient(rgba(0, 0, 0, 0.7), 
-                rgba(0, 0, 0, 0.9)),
-                url('{% static "img/bg-rescate1.png" %}') no-repeat center center fixed;
-            background-size: cover;
+            background: url('{% static "img/bg-rescate2.png" %}') no-repeat center center;
+            background-size: cover; /* Ajusta la imagen al tamaño de la ventana */
             color: white;
             min-height: 100vh;
             display: flex;
@@ -61,6 +58,7 @@
             line-height: 1.5;
             position: relative;
         }
+
 
         .background-pattern {
             position: absolute;
@@ -91,8 +89,8 @@
 
         .login-container {
             display: flex;
-            max-width: 900px;
-            min-height: 400px;
+            width: auto;
+            height: auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: var(--radius-lg);
             overflow: hidden;
@@ -103,9 +101,9 @@
         .login-hero {
             flex: 1;
             /*background: linear-gradient(0deg, #5e242400, #440011);*/
-            background-color: white;
+            background-color: rgba(190, 190, 190, 0);
             color: white;
-            padding: 60px;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -167,11 +165,12 @@
 
         .login-form-container {
             flex: 1;
-            padding: 80px 60px;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background: linear-gradient(135deg, #2b1a1f 0%, #6c001f 100%);
+            /*background: linear-gradient(135deg, #2b1a1f 0%, #6c001f 100%);*/
+            background: linear-gradient(90deg, rgba(131,31,70,0.85) 0%, rgba(82,91,104,0.85) 100%);
             color: white;
             position: relative;
             z-index: 2;
@@ -182,21 +181,23 @@
         }
 
         .form-header {
-            margin-bottom: 48px;
+            margin-bottom: 24px;
             text-align: center;
         }
 
         .form-logo {
-            width: 80px;
-            margin-bottom: 16px;
+            width: 200px;
+            height: 230px;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            margin-top: -30px;
+            margin-bottom: -50px;
         }
 
         .form-title {
             font-size: 1.75rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 8px;
+            margin-bottom: 1px;
         }
 
         .form-subtitle {
@@ -225,7 +226,7 @@
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 12px;
         }
 
         .form-label {
@@ -233,7 +234,7 @@
             font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-light);
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .input-group {
@@ -284,7 +285,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 12px;
         }
 
         .remember-me {
@@ -374,6 +375,11 @@
             display: block;
         }
 
+        .text-end{
+            font-weight: bold;
+            margin-right: 3px;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -423,24 +429,21 @@
         
         /* Nuevos estilos para el footer */
         .footer {
-            background:  #5a5a5a33;
-            color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
             width: 100%;
             max-width: 1200px;
-            border-radius: var(--radius-md);
             margin-top: 40px;
             padding: 20px 0;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .footer-container {
             width: 100%;
-            padding: 0 20px;
+            padding: 0 15px;
             margin: 0 auto;
         }
 
         .footer-row {
+            margin-top: 50px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -563,12 +566,17 @@
             }
             
             .footer-logo-container, .developer-container {
+                margin-top: 35px;
                 justify-content: center;
             }
             
             .footer-logo {
                 margin-right: 0;
                 margin-bottom: 10px;
+            }
+
+            .footer-links {
+                flex-direction: column;
             }
         }
     </style>
@@ -587,7 +595,7 @@
             
             <div class="login-form-container">
                 <div class="form-header">
-                    <img src="{% static 'img/escudorescate.gif' %}" alt="Logo" class="form-logo">
+                    <img src="{% static 'img/rescate-logo.png' %}" alt="Logo" class="form-logo">
                     <h2 class="form-title">Iniciar Sesión</h2>
                     <p class="form-subtitle">Ingrese sus credenciales para acceder al sistema</p>
                 </div>
@@ -632,7 +640,7 @@
                     <!-- Logo y Nombre Institucional -->
                     <div class="footer-col">
                         <div class="footer-logo-container">
-                            <img src="{% static 'img/proteccion-logo2.png' %}" alt="Protección Civil" class="footer-logo">
+                            <img src="{% static 'img/proteccion-logo.png' %}" alt="Protección Civil" class="footer-logo">
                         </div>
                     </div>
 

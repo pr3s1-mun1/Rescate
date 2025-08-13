@@ -1,0 +1,22 @@
+{% include 'navbar.html' %}
+
+<body>
+    <div class="container">
+        {% include 'pestanas.html' %}
+    </div>
+
+    <div class="container bg-white p-4 rounded shadow-sm mt-4">
+        <h2 class="text-center mb-4 main-title">Nuevo Paramédico</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="text-end mt-3">
+                <a href="{% url 'catalogo_general' 'paramedicos' %}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success">Crear</button>
+            </div>
+        </form>
+    </div>
+
+</body>
