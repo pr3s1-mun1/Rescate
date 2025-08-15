@@ -1,48 +1,133 @@
 {% include 'navbar.html' %}
 
 <div class="container">
+  <h2>Traslados a Hospital Municipal</h2>
 
-        <h2>Traslados a Hospital Municipal</h2>
-
-        <form method="get" class="row g-3 mb-4">
-            {% csrf_token %}
-            <div class="col-md-5">
-                <label>Desde:</label>
-                <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
-            </div>
-            <div class="col-md-5">
-                <label>Hasta:</label>
-                <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Buscar</button>
-            </div>
-        </form>
-
-
-        <button onclick="imprimirGrafica()" class="btn btn-danger" type="submit">Imprimir</button>
-
-
-    {% if resultados %}
-
-    <div class="d-flex justify-content-center mt-5">
-        <img id="grafica" src="data:image/png;base64,{{ grafica_base64 }}" alt="Gráfica de traslados">
+  <form method="get" class="row g-3 mb-4">
+    {% csrf_token %}
+    <div class="col-md-5">
+      <label>Desde:</label>
+      <input
+        type="date"
+        name="fecha_inicio"
+        class="form-control"
+        value="{{ fecha_inicio }}"
+      />
     </div>
-    {% else %}
-    <p>No hay datos para mostrar.</p>
-    {% endif %}
+    <div class="col-md-5">
+      <label>Hasta:</label>
+      <input
+        type="date"
+        name="fecha_fin"
+        class="form-control"
+        value="{{ fecha_fin }}"
+      />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button
+        type="submit"
+        class="btn w-100"
+        style="background-color: #831f46; color: white"
+      >
+        Buscar
+      </button>
+    </div>
+  </form>
 
+    <form method="post" action="{% url 'generar_pdf_grafica' %}" target="_blank">
+        {% csrf_token %}
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <input type="hidden" name="grafica_base64" value="{{ grafica_base64 }}">
+        <button type="submit" class="btn bg-secondary text-white">Imprimir PDF</button>
+    </form>
+
+
+
+  {% if resultados %}
+
+  <div class="d-flex justify-content-center mt-5">
+    <img
+      id="grafica"
+      src="data:image/png;base64,{{ grafica_base64 }}"
+      alt="Gráfica de traslados"
+    />
+  </div>
+  {% else %}
+  <p>No hay datos para mostrar.</p>
+  {% endif %}
 </div>
 <script>
-    function imprimirGrafica() {
-        var imgSrc = document.getElementById('grafica').src;
-        var ventana = window.open('', '_blank');
-        ventana.document.write(`
+  function imprimirGrafica() {
+    var imgSrc = document.getElementById("grafica").src;
+    var ventana = window.open("", "_blank");
+    ventana.document.write(`
             <html>
-                <head>
-                    <title>Imprimir Gráfica</title>
-                </head>
+            <head>
+    <meta charset="UTF-8">
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .table-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .tdImg {
+            width: 20%;
+        }
+        .tdImg img {
+            width: 75px;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .report-table th, .report-table td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: center;
+            font-size: 11px;
+        }
+        .report-table th {
+            background-color: #dadada;
+            font-weight: bold;
+
+            max-width: 120px;
+            word-wrap: break-word;
+            white-space: normal;
+            overflow-wrap: break-word;
+            vertical-align: middle;
+        
+        }
+        h1, h2, h3 {
+            margin: 5px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
                 <body style="margin:0; text-align:center;">
+                        <table class="table-header">
+                            <tr>
+                                <td class="tdImg" align="left">
+                                    <img src="rescate/static/img/escudorescate.gif" alt="Logo Izquierdo">
+                                </td>
+                                <td align="center">
+                                    <h1>DEPARTAMENTO DE RESCATE</h1>
+                                    <h3>DIRECCIÓN MUNICIPAL DE PROTECCIÓN CIVIL</h3>
+                                    <h3>CD. JUÁREZ - CHIHUAHUA - MÉXICO</h3>
+                                    <h2>LISTADO DE SERVICIOS POR AMBULANCIA</h2>
+                                    <p><strong>Desde:</strong> {{ fecha_inicio }} &nbsp;&nbsp;&nbsp; <strong>Hasta:</strong> {{ fecha_fin }}
+                                    </p>
+                                </td>
+                                <td class="tdImg" align="right">
+                                    <img src="rescate/static/img/rescatelogo.gif" alt="Logo Derecho">
+                                </td>
+                            </tr>
+                        </table>
                     <img src="${imgSrc}" style="max-width:100%; height:auto;" />
                     <script>
                         window.onload = function() {
@@ -54,6 +139,6 @@
                 </body>
             </html>
         `);
-        ventana.document.close();
-    }
-    </script>
+    ventana.document.close();
+  }
+</script>

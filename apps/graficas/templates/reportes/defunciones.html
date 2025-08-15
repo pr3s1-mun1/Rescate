@@ -15,13 +15,18 @@
                 <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                <button type="submit" class="btn w-100" style="background-color: #831f46; color: white;">Buscar</button>
             </div>
         </form>
 
 
-        <button onclick="imprimirGrafica()" class="btn btn-danger" type="submit">Imprimir</button>
-
+    <form method="post" action="{% url 'generar_pdf_grafica' %}" target="_blank">
+        {% csrf_token %}
+        <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+        <input type="hidden" name="grafica_base64" value="{{ grafica_base64 }}">
+        <input type="hidden" name="titulo" value="DEFUNCIONES">
+<button type="submit" class="btn bg-secondary text-white">Imprimir PDF</button>    </form>
 
     {% if grafica_base64 %}
 

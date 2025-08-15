@@ -65,7 +65,7 @@ class PacientesForm(forms.ModelForm):
         exclude = ['servicio']
         widgets = {
             'estado_civil': forms.Select(choices=[('1', 'CASADO (A)'), ('2', 'DESCONOCIDO'), ('3', 'DIVORCIADO (A)'), ('4', 'SOLTERO (A)'), ('5', 'UNION LIBRE'), ('6', 'VIUDO (A)')]),
-            'sexo': forms.Select(choices=[('1', 'NO INGRESADO'), ('2', 'MASCULINO'), ('3', 'FEMENINO')]),
+            'sexo': forms.Select(choices=[('N', 'NO INGRESADO'), ('M', 'MASCULINO'), ('F', 'FEMENINO')]),
             'pelo': forms.Select(choices=[('1', 'NEGRO'), ('2', 'CASTAÑO'), ('3', 'RUBIO'), ('4', 'PELIROJO'), ('5', 'TEÑIDO'), ('6', 'CANOSO'), ('7', 'CALVO')]),
             'nivel_concienciaa': forms.Select(choices=[('1', 'ALERTA'), ('2', 'ESTIMULO VERBAL'), ('3', 'ESTIMULO DOLOROSO'), ('4', 'INCONSCIENTE')]),
             'piel': forms.Select(choices=[('1', 'NORMAL'), ('2', 'HUMEDA'), ('3', 'SECA'), ('4', 'FRIA'), ('5', 'CALIENTE'), ('6', 'DIAFORETICA'), ('7', 'RUBICUNDA'), ('8', 'PALIDA - BLANCA'), ('9', 'CIANOTICA - AZUL')]),

@@ -545,8 +545,6 @@ def imprimir_reporte_sobresalientes_pdf(request):
 
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(2, 3)
 def obtener_resultados_parte_informativo(fecha_inicio, fecha_fin):
     resultados = []
 

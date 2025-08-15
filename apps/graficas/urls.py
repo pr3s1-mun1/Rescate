@@ -14,4 +14,5 @@ urlpatterns = [
     path('defunciones/', defunciones, name='defunciones'),
     path('lesiones/', lesiones, name='lesiones'),
 
+    path('trasladosmunicipalespdf/', generar_pdf_grafica, name='generar_pdf_grafica'),
 ]

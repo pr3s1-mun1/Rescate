@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            text-align: center;
+        }
+        .table-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .tdImg {
+            width: 20%;
+        }
+        .tdImg img {
+            width: 75px;
+        }
+        img#grafica {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+        h1, h2, h3 {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Encabezado -->
+    <table class="table-header">
+        <tr>
+            <td class="tdImg" align="left">
+                <img src="rescate/static/img/escudorescate.gif" alt="Logo Izquierdo">
+            </td>
+            <td align="center">
+                <h1>DEPARTAMENTO DE RESCATE</h1>
+                <h3>DIRECCIÓN MUNICIPAL DE PROTECCIÓN CIVIL</h3>
+                <h3>CD. JUÁREZ - CHIHUAHUA - MÉXICO</h3>
+                <h2>{{ titulo }}</h2>
+                <p><strong>Desde:</strong> {{ fecha_inicio }} &nbsp;&nbsp;&nbsp; <strong>Hasta:</strong> {{ fecha_fin }}</p>
+            </td>
+            <td class="tdImg" align="right">
+                <img src="rescate/static/img/rescatelogo.gif" alt="Logo Derecho">
+            </td>
+        </tr>
+    </table>
+
+    <!-- Imagen de la gráfica -->
+    <img id="grafica" src="data:image/png;base64,{{ grafica_base64 }}" alt="Gráfica de Traslados" />
+
+</body>
+</html>
