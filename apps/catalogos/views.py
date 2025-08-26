@@ -173,10 +173,10 @@ def catalogo_general(request, tipo):
     template = catalogo['template']
 
     campos = [field.name for field in modelo._meta.get_fields()]
-    tiene_descripcion = 'descripcion' in campos
+    tiene_descripcion = 'nombre' in campos
 
     if tiene_descripcion:
-        objetos = modelo.objects.filter(descripcion__icontains=query) if query else modelo.objects.all().order_by('descripcion')
+        objetos = modelo.objects.filter(descripcion__icontains=query) if query else modelo.objects.all().order_by('nombre')
     else:
         objetos = modelo.objects.all()
 

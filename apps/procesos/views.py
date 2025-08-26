@@ -356,7 +356,7 @@ def carga_modifica(request, pk, ps):
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Accedió a modificar servicio con clave {pk} y paciente {ps if ps else 'nuevo'}"
         )
-        print(f"Acceso exitoso a carga_modifica para servicio {pk}")
+        print(f"Se ejecuta esta funcion")
 
         context = {
             'form': form_servicio,
@@ -367,7 +367,7 @@ def carga_modifica(request, pk, ps):
             'servicio': servicio,
             'paciente_clave': ps,
             'pacientes': PacientexServicio.objects.filter(servicio=servicio),
-            'paramedicos_asignados': ParamedicoxPaciente.objects.filter(paciente__servicio=servicio),
+            'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
             'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
             'procedimientos_asignados': ProcedimientoxPaciente.objects.filter(paciente__servicio=servicio),
             'alergias_asignados': AlergiaxPaciente.objects.filter(paciente__servicio=servicio),
@@ -1086,7 +1086,7 @@ def ver_reloj(request):
         paramedicos = Paramedicos.objects.filter(
             Q(estatus='A') & (Q(tipo='P') | Q(tipo='A') | Q(tipo='S')),
             Exists(relojes)
-        ).order_by('nombre')
+        ).exclude(clave=16).order_by('nombre')
 
         for p in paramedicos:
             if fecha_filtrada == hoy:
@@ -1103,6 +1103,7 @@ def ver_reloj(request):
             p.ultimo_estatus = ultimo.estatus if ultimo else ''
             p.ultima_observacion = ultimo.observacion if ultimo else ''
 
+    print(paramedicos)
     status_options = [
         ('A', 'ACTIVO'), ('F', 'BAJA'), ('D', 'DESCANSO'), ('E', 'DESCANSO ADICIONAL'),
         ('N', 'FALTA INJUSTIFICADA'), ('J', 'FALTA JUSTIFICADA'), ('I', 'INCAPACIDAD'),
@@ -1137,7 +1138,7 @@ def imprimir_reporte(request):
 
     paramedicos = Paramedicos.objects.filter(
         Q(estatus='A') & (Q(tipo='P') | Q(tipo='A') | Q(tipo='S'))
-    ).order_by('nombre')
+    ).exclude(clave=16).order_by('nombre')
 
     for p in paramedicos:
         ultimo = Reloj.objects.filter(
@@ -1155,6 +1156,8 @@ def imprimir_reporte(request):
         'fecha': fecha.strftime('%Y-%m-%d'),
         'request': request,  # Para resolver static en el template
     })
+
+    print(paramedicos)
 
     # Crear PDF en memoria
     response = HttpResponse(content_type='application/pdf')

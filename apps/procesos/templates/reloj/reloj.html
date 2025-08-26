@@ -1,74 +1,81 @@
 {% extends 'navbar.html' %}
 
 {% block content %}
-<h2 class="text-center mb-4 main-title">Registro de Asistencia</h2>
+<div class="container py-4">
+    <h2 class="text-center mb-4 main-title">Registro de Asistencia</h2>
 
+  <!-- Filtro de fecha -->
+  <form method="GET" class="row g-2 align-items-end mb-4">
+    <div class="col-md-3">
+      <label for="fecha" class="form-label fw-semibold">Fecha</label>
+      <input type="date" id="fecha" name="fecha" value="{{ fecha_filtrada }}" class="form-control shadow-sm" required>
+    </div>
+    <div class="col-md-3">
+      <button type="submit" class="btn w-100 shadow-sm" style="background-color: #831f46; color: white;">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'imprimir_reporte' %}?fecha={{ fecha_filtrada }}" target="_blank"
+         class="btn btn-secondary w-100 shadow-sm">
+        <i class="bi bi-printer"></i> Imprimir Reporte
+      </a>
+    </div>
+  </form>
 
-<form method="GET" class="mb-3">
-  <label for="fecha">Fecha:</label>
-  <input type="date" id="fecha" name="fecha" value="{{ fecha_filtrada }}" class="form-control mb-2" required>
-  <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
-</form>
-
-<a href="{% url 'imprimir_reporte' %}?fecha={{ fecha_filtrada }}" target="_blank" class="btn btn-secondary btn-sm mb-3">
-   Imprimir Reporte
-</a>
-
-
-<form method="POST" onsubmit="return confirmarEnvio()">
+  <!-- Formulario de asistencia -->
+  <form method="POST" onsubmit="return confirmarEnvio()" class="card shadow-sm border-0 rounded-3">
     {% csrf_token %}
-    <p id="contador-filas" class="fw-bold mt-2"></p>     
-    <button type="submit" class="btn btn-primary mb-2">Guardar Asistencias</button>
-    <table class="table table-striped">
-        <thead>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <p id="contador-filas" class="fw-bold m-0"></p>
+        <button type="submit" class="btn shadow-sm px-4" style="background-color: #1b5e00; color: white;">
+           Guardar Asistencias
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table table-light">
             <tr>
-                <th>Paramédico</th>
-                <th>Estatus</th>
-                <th>Observación</th>
+              <th class="text-center">Paramédico</th>
+              <th class="text-center">Observación</th>
+              <th class="text-center">Estatus</th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             {% for p in paramedicos %}
             <tr>
-                <td>{{ p.nombre }}</td>
-                <td>
-                    <input type="text" name="observacion_{{ p.clave }}" class="form-control" placeholder="Opcional"
-                        value="{{ p.ultima_observacion }}">
-                </td>
-                <td>
-                    <select name="estatus_{{ p.clave }}" class="form-select">
-                        {% for code, label in status_options %}
-                          <option value="{{ code }}" {% if p.ultimo_estatus == code %}selected{% endif %}>{{ label }}</option>
-                          </option>
-                        {% endfor %}
-                    </select>
-                </td>
-
+              <td class="fw-semibold">{{ p.nombre }}</td>
+              <td>
+                <input type="text" name="observacion_{{ p.clave }}" class="form-control shadow-sm"
+                       placeholder="Opcional" value="{{ p.ultima_observacion }}">
+              </td>
+              <td>
+                <select name="estatus_{{ p.clave }}" class="form-select shadow-sm">
+                  {% for code, label in status_options %}
+                  <option value="{{ code }}" {% if p.ultimo_estatus == code %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </td>
             </tr>
             {% endfor %}
-
-
-
-
-        </tbody>
-    </table>
-</form>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+</div>
 
 <script>
-    
-    function confirmarEnvio() {
-        return confirm("¿Estás seguro de que deseas guardar las asistencias?");
-    }
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabla = document.querySelector('table tbody');
-        const numFilas = tabla.querySelectorAll('tr').length;
-
-        const contador = document.getElementById('contador-filas');
-        contador.textContent = `Total de paramédicos: ${numFilas}`;
-
-
-    });
-
-
+function confirmarEnvio() {
+  return confirm("¿Estás seguro de que deseas guardar las asistencias?");
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const tabla = document.querySelector('table tbody');
+  const numFilas = tabla.querySelectorAll('tr').length;
+  const contador = document.getElementById('contador-filas');
+  contador.textContent = `Total de paramédicos: ${numFilas}`;
+});
 </script>
 {% endblock %}

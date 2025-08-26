@@ -2,89 +2,111 @@
 
 {% block content %}
 <div class="container py-4">
-  <div class="">
-    <h2 class="text-center mb-4 main-title">Lista de Combustible</h2>
-  </div>
-    <a href="{% url 'crear_combustible' %}" class="btn btn-success mb-4">
+
+  <!-- Título -->
+  <h2 class="text-center mb-4 main-title">
+    Lista de Combustible
+  </h2>
+
+  <!-- Botón de nuevo registro -->
+  <div class="mb-4">
+    <a href="{% url 'crear_combustible' %}" class="btn shadow-sm px-3" style="background-color:#1b5e00; color:white;">
       <i class="bi bi-plus-lg me-1"></i> Nuevo Registro
     </a>
+  </div>
+
   <!-- Formulario de filtro -->
-  <form method="get" class="row g-3 mb-4">
-    <div class="col-md-3">
-      <label for="fecha" class="form-label">Fecha</label>
-      <input type="date" name="fecha" id="fecha" class="form-control" value="{{ request.GET.fecha }}">
-    </div>
-    <div class="col-md-3">
-      <label for="factura" class="form-label">Factura</label>
-      <input type="text" name="factura" id="factura" class="form-control" placeholder="Número de factura" value="{{ request.GET.factura }}">
-    </div>
-    <div class="col-md-3">
-      <label for="remision" class="form-label">Remisión</label>
-      <input type="text" name="remision" id="remision" class="form-control" placeholder="Número de remisión" value="{{ request.GET.remision }}">
-    </div>
-    <div class="col-md-3 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">
-        <i class="bi bi-search me-1"></i> Buscar
-      </button>
+  <form method="get" class="card shadow-sm border-0 rounded-3 mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label for="fecha" class="form-label fw-semibold">Fecha</label>
+          <input type="date" name="fecha" id="fecha" class="form-control shadow-sm" value="{{ request.GET.fecha }}">
+        </div>
+        <div class="col-md-3">
+          <label for="factura" class="form-label fw-semibold">Factura</label>
+          <input type="text" name="factura" id="factura" class="form-control shadow-sm" placeholder="Número de factura" value="{{ request.GET.factura }}">
+        </div>
+        <div class="col-md-3">
+          <label for="remision" class="form-label fw-semibold">Remisión</label>
+          <input type="text" name="remision" id="remision" class="form-control shadow-sm" placeholder="Número de remisión" value="{{ request.GET.remision }}">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="submit" class="btn w-100 shadow-sm" style="background-color: #831f46; color: white;">
+            <i class="bi bi-search me-1"></i> Buscar
+          </button>
+        </div>
+      </div>
     </div>
   </form>
 
-  <div class="table-responsive">
-    <table class="table table-striped table-hover align-middle">
-      <thead class="table">
-        <tr>
-          <th>Clave</th>
-          <th>Fecha</th>
-          <th>Turno</th>
-          <th>Ambulancia</th>
-          <th>Litros</th>
-          <th>Valor</th>
-          <th>Editar</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in page_obj %}
-        <tr>
-          <td>{{ item.clave }}</td>
-          <td>{{ item.fecha|date:"d/m/Y H:i" }}</td>
-          <td>{{ item.turno }}</td>
-          <td>{{ item.ambulancia }}</td>
-          <td>{{ item.litros }}</td>
-          <td>${{ item.valor }}</td>
-          <td>
-            <a href="{% url 'editar_combustible' item.clave %}" class="btn btn-warning btn-sm">
-              <i class="bi bi-pencil-fill"></i> Editar
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="7" class="text-center">No hay registros de combustible.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Tabla -->
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Clave</th>
+              <th>Fecha</th>
+              <th>Turno</th>
+              <th>Ambulancia</th>
+              <th>Litros</th>
+              <th>Valor</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in page_obj %}
+            <tr>
+              <td class="fw-semibold">{{ item.clave }}</td>
+              <td>{{ item.fecha|date:"d/m/Y H:i" }}</td>
+              <td>{{ item.turno }}</td>
+              <td>{{ item.ambulancia }}</td>
+              <td>{{ item.litros }}</td>
+              <td>${{ item.valor }}</td>
+              <td class="text-center">
+                <a href="{% url 'editar_combustible' item.clave %}" class="btn btn-sm shadow-sm" style="background-color: #a76107ff; color: white;">
+                  <i class="bi bi-pencil-fill"></i> Editar
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">No hay registros de combustible.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- Paginación -->
   {% if page_obj.has_other_pages %}
-  <nav>
+  <nav class="mt-4">
     <ul class="pagination justify-content-center">
       {% if page_obj.has_previous %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&fecha={{ request.GET.fecha }}&factura={{ request.GET.factura }}&remision={{ request.GET.remision }}">Anterior</a>
+        <a class="page-link" style="color:#831f46;" 
+           href="?page={{ page_obj.previous_page_number }}&fecha={{ request.GET.fecha }}&factura={{ request.GET.factura }}&remision={{ request.GET.remision }}">
+          Anterior
+        </a>
       </li>
       {% endif %}
 
       <li class="page-item disabled">
-        <span class="page-link">
+        <span class="page-link bg-light">
           Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
         </span>
       </li>
 
       {% if page_obj.has_next %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}&fecha={{ request.GET.fecha }}&factura={{ request.GET.factura }}&remision={{ request.GET.remision }}">Siguiente</a>
+        <a class="page-link" style="color:#831f46;" 
+           href="?page={{ page_obj.next_page_number }}&fecha={{ request.GET.fecha }}&factura={{ request.GET.factura }}&remision={{ request.GET.remision }}">
+          Siguiente
+        </a>
       </li>
       {% endif %}
     </ul>
