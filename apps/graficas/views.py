@@ -19,11 +19,11 @@ guinda = "#831f46"
 gris = "#55636e"
 blanco = "#bbbbbb"
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def cargar_graficas(request):
     return render(request, 'maingraficos.html')
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def traslados(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -87,7 +87,7 @@ def traslados(request):
     })
 
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def traslados_hospitalarios(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -210,7 +210,7 @@ def pacientes_sector(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def pacientes_sector_m(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -272,7 +272,7 @@ def pacientes_sector_m(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def pacientes_sector_f(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -337,7 +337,7 @@ def pacientes_sector_f(request):
 from matplotlib.ticker import MultipleLocator
 from matplotlib.patches import Patch
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def intoxicaciones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -394,7 +394,7 @@ def intoxicaciones(request):
     })
 
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def pacientes_por_colonia(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -449,7 +449,7 @@ def pacientes_por_colonia(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def defunciones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -505,7 +505,7 @@ def defunciones(request):
         "grafica_base64": grafica_base64,
     })
 
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def lesiones(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")

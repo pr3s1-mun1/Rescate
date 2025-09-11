@@ -13,8 +13,9 @@
                 <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar colonia...">
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn w-100" style="background-color: #831f46;">🔍</button>
-
+                <button type="submit" class="btn w-100 botones-busc">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </form>
         <a href="{% url 'add_catalogo' 'colonias' %}">

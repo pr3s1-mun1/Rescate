@@ -7,13 +7,15 @@ from django.http import HttpResponse
 from collections import defaultdict
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from django.db.models import Max, Q
+from django.db.models import Max, Q, OuterRef, Exists
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
 import json
+from django.utils import timezone
+from django.db import transaction
 
 def formulario_buscar(request):
     if request.method == 'POST':
@@ -55,7 +57,6 @@ def formulario_buscar(request):
 
 def buscar_servicios_sin_pacientes(filtros):
     """Función auxiliar para aplicar los mismos filtros a servicios sin pacientes"""
-    from django.db.models import Q
     
     servicios = Servicio.objects.all()
     
@@ -85,7 +86,6 @@ def buscar_servicios_filtrados(filtros):
     """
     Versión optimizada pero manteniendo la estructura original
     """
-    from django.db.models import Q
 
     # Base query ahora es sobre PacientexServicio (como en tu versión original)
     pacientes_qs = PacientexServicio.objects.all().select_related('servicio')
@@ -474,7 +474,7 @@ def carga_modifica_n(request, pk):
 
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def eliminar_servicio(request, pk):
     print("Eliminando servicio con pk:", pk)
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -582,7 +582,6 @@ def guardar_todo(request, pk, ps):
 
                 # Si es nuevo, asignar secuencia
                 if not embarazo_existente:
-                    from django.db.models import Max
                     ultima_secuencia = EmbarazoxPaciente.objects.aggregate(Max('secuencia'))['secuencia__max'] or 0
                     embarazo_obj.secuencia = ultima_secuencia + 1
 
@@ -871,7 +870,7 @@ def obtener_calles_por_colonia(request):
     data = [{'id': c.calle.clave, 'nombre': c.calle.calle} for c in calles]
     return JsonResponse(data, safe=False)
 
-from django.db import transaction
+
 
 def agregar_paciente(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -951,7 +950,7 @@ def agregar_paciente(request, pk):
 
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(3, 4, 5)
 def lista_combustible(request):
     combustibles = Combustible.objects.all().order_by('-fecha')
 
@@ -980,7 +979,7 @@ def lista_combustible(request):
     })
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(3, 4, 5)
 def crear_combustible(request):
     if request.method == 'POST':
         form = CombustibleForm(request.POST)
@@ -992,7 +991,7 @@ def crear_combustible(request):
     return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Crear'})
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(3, 4, 5)
 def editar_combustible(request, clave):
     combustible = get_object_or_404(Combustible, clave=clave)
     if request.method == 'POST':
@@ -1005,14 +1004,10 @@ def editar_combustible(request, clave):
     return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Editar'})
 
 
-from datetime import datetime
-from django.utils import timezone
-from django.db.models import Q, OuterRef, Exists
-from django.shortcuts import render, redirect
-from .models import Paramedicos, Reloj, Logs_Sistema
+
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(3, 4, 5)
 def ver_reloj(request):
     alerta_fecha_futura = False
     hoy = timezone.now().date()
@@ -1118,7 +1113,7 @@ def ver_reloj(request):
     })
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(3, 4, 5)
 def imprimir_reporte(request):
     from django.template.loader import get_template
     from django.http import HttpResponse

@@ -25,8 +25,10 @@ def login_view(request):
                     usuario=paramedico.nombre,
                     accion=f"Inició sesión"
                 )
-
-                return redirect("catalogo_general", "alergias")
+                if paramedico.permisos in [4, 5]:       
+                    return redirect("catalogo_general", "ambulancias")
+                else:
+                    return redirect("vista_main")
             else:
                 messages.error(request, "Usuario o contraseña incorrectos.")
         except Paramedicos.DoesNotExist:

@@ -151,6 +151,13 @@ def requiere_tipo_paramedico(*niveles_permitidos):
         return _wrapped_view
     return decorator
 
+# Permiso = 1: Paramédico       Solo puede crear hojas de servicio
+# Permiso = 2: Supervisor       Puede crear hojas de servicio y gestionarlas
+# Permiso = 3: Jefe de Área     Puede gestionar hojas de servicios, reportes, reloj checador y gasolinas
+# Permiso = 4: Administrador    Tiene todos los permisos completos
+
+# Permiso = 5: Root             Tiene todos los permisos completos y acceso a la configuración del sistema
+
 def requiere_sesion(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
@@ -162,7 +169,7 @@ def requiere_sesion(view_func):
 
 #Envío de listas de catalogos a HTML
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def catalogo_general(request, tipo):
     if tipo not in CATALOGOS:
         return render(request, '404.html', {'error': 'Catálogo no encontrado'})
@@ -189,7 +196,7 @@ def catalogo_general(request, tipo):
 
 #Actualización de rows de las bases de datos
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def update_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
         return redirect('error')
@@ -224,7 +231,7 @@ def update_catalogo(request, tipo, clave):
 
 #Eliminar rows de la base de datos
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def delete_catalogo(request, tipo, clave):
     if tipo not in CATALOGOS:
         return redirect('error')
@@ -244,7 +251,7 @@ def delete_catalogo(request, tipo, clave):
     return render(request, 'confirm_delete.html', {'objeto': objeto, 'tipo': tipo})
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def add_catalogo(request, tipo):
     if tipo not in CATALOGOS or 'form' not in CATALOGOS[tipo] or not CATALOGOS[tipo]['form']:
         return redirect('error')
@@ -307,7 +314,7 @@ def add_catalogo(request, tipo):
     })
 
 @requiere_sesion
-@requiere_tipo_paramedico(2, 3)
+@requiere_tipo_paramedico(4, 5)
 def relacionar_calle_colonia(request):
     colonias = Colonia.objects.all().order_by('colonia')
     calles = Calle.objects.all().order_by('calle')

@@ -11,6 +11,7 @@
   {% load static %}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="{% static 'css/all.css' %}">
+  <link rel="stylesheet" href="{% static 'css/componentes.css' %}">
   <link rel="icon" type="image/x-icon" href="{% static 'img/Rescate.ico' %}">
 
   <style>
@@ -354,11 +355,13 @@
       </button>
       <div class="collapse navbar-collapse" id="rscNavbar">
         <ul class="navbar-nav me-auto">
+          {% if request.session.permisos == 4 or request.session.permisos == 5 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'catalogo_general' 'ambulancias' %}">
               <i class="bi bi-book"></i> Catálogos
             </a>
           </li>
+          {% endif %}
           <li class="nav-item dropdown">
             <a class="nav-link rsc-nav-link rsc-dropdown-toggle" href="#" id="rscProcesosDropdown" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
@@ -367,28 +370,34 @@
             <ul class="dropdown-menu rsc-dropdown-menu" aria-labelledby="rscProcesosDropdown">
               <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'vista_main' %}"><i
                     class="bi bi-calendar"></i> Servicios</a></li>
-              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'ver_reloj' %}"><i class="bi bi-clock"></i>
-                  Reloj</a></li>
+              {% if request.session.permisos == 3 or request.session.permisos == 4 or request.session.permisos == 5 %}
+              <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'ver_reloj' %}"><i
+                    class="bi bi-clock"></i> Reloj</a></li>
               <li><a class="dropdown-item rsc-dropdown-item" href="{% url 'lista_combustible' %}"><i
                     class="bi bi-fuel-pump"></i> Gasolina</a></li>
+              {% endif %}
             </ul>
           </li>
+          {% if request.session.permisos == 3 or request.session.permisos == 4 or request.session.permisos == 5 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'cargar_reportes' %}">
               <i class="bi bi-file-earmark-text"></i> Reportes
             </a>
           </li>
+          {% endif %}
+          {% if request.session.permisos == 3 or request.session.permisos == 4 or request.session.permisos == 5 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'cargar_graficas' %}">
               <i class="bi bi-bar-chart"></i> Gráficas
             </a>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'manual_home' %}">
               <i class="bi bi-file-earmark-text"></i> Manual de usuario
             </a>
           </li>
-          {% if request.session.permisos == 3 %}
+          {% if request.session.permisos == 5 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'administracion_sistema' %}">
               <i class="bi bi-gear"></i> Panel de control

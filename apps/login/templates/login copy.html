@@ -1,0 +1,721 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso | Protección Civil</title>
+    <meta name="description" content="Sistema Integral de Gestión de Emergencias">
+    
+    <!-- Fuentes y iconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/Rescate.ico' %}">
+
+    <style>
+        :root {
+            --primary: #7a001f;
+            --primary-dark: #5a0018;
+            --primary-light: #ffeaea;
+            --secondary: #303030;
+            --accent: #FFC72C;
+            --text: #1A1A1A;
+            --text-light: #4D4D4D;
+            --light: #F5F7FA;
+            --light-gray: #E5E7EB;
+            --border: #D1D5DB;
+            --success: #10B981;
+            --error: #EF4444;
+            --warning: #F59E0B;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('{% static "img/bg-rescate2.png" %}') no-repeat center center;
+            background-size: cover; /* Ajusta la imagen al tamaño de la ventana */
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "img/pattern.png" %}') repeat;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .login-container {
+            display: flex;
+            width: auto;
+            height: auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .login-hero {
+            flex: 1;
+            /*background: linear-gradient(0deg, #5e242400, #440011);*/
+            background-color: rgba(190, 190, 190, 0);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: url('{% static "img/emergency-icons.png" %}') center/contain repeat;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 500px;
+        }
+
+        .hero-logo {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin: 0 auto 24px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-features {
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .feature-item i {
+            margin-right: 12px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .login-form-container {
+            flex: 1;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /*background: linear-gradient(135deg, #2b1a1f 0%, #6c001f 100%);*/
+            background: linear-gradient(90deg, rgba(131,31,70,0.85) 0%, rgba(82,91,104,0.85) 100%);
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-form-container label {
+            color: white;
+        }
+
+        .form-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-logo {
+            width: 200px;
+            height: 230px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            margin-top: -30px;
+            margin-bottom: -50px;
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1px;
+        }
+
+        .form-subtitle {
+            color: rgb(161, 161, 161);
+            font-size: 1rem;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            font-size: 0.9rem;
+        }
+
+        .alert-error {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9375rem;
+            transition: var(--transition);
+            background-color: var(--light);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(122, 0, 31, 0.1);
+            background-color: white;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            accent-color: var(--primary);
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+        }
+
+        .submit-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .juarez-conectado-logo {
+            height: 50px;
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .text-end{
+            font-weight: bold;
+            margin-right: 3px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .login-container {
+                flex-direction: column;
+                min-height: auto;
+                max-width: 600px;
+            }
+            
+            .login-hero {
+                padding: 40px;
+                text-align: center;
+            }
+            
+            .hero-content {
+                max-width: 100%;
+            }
+            
+            .login-form-container {
+                padding: 60px 40px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-hero {
+                padding: 32px 24px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .login-form-container {
+                padding: 48px 24px;
+            }
+            
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+
+        
+        /* Nuevos estilos para el footer */
+        .footer {
+            color: rgb(0, 0, 0);
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+
+        .footer-container {
+            width: 100%;
+            padding: 0 15px;
+            margin: 0 auto;
+        }
+
+        .footer-row {
+            margin-top: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-row img {
+            height: 60px; /* ajusta según lo que se vea mejor */
+            width: auto;
+
+        }
+
+
+        .footer-col {
+            flex: 1; /* <-- Hace que las 3 columnas se repartan igual */
+            min-width: 250px; /* Opcional: para control en pantallas pequeñas */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer-logo-container {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 992px) {
+            .footer-logo-container {
+                justify-content: flex-start;
+            }
+        }
+
+        .footer-logo {
+            height: 50px;
+            margin-right: 15px;
+            object-fit: contain;
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .footer-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .footer-links {
+            height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .footer-link i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        .developer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 992px) {
+            .developer-container {
+                justify-content: flex-end;
+            }
+        }
+
+        .developer-logo {
+            height: 70px;
+            margin-left: 10px;
+            object-fit: contain;
+        }
+
+        .footer-dev-name {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .footer-copyright {
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-copyright i {
+            margin-right: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-col {
+                flex: 100%;
+                text-align: center;
+            }
+            
+            .footer-logo-container, .developer-container {
+                margin-top: 35px;
+                justify-content: center;
+            }
+            
+            .footer-logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-hero">
+                <div class="hero-content">
+                    <img src="{% static 'img/LogMuni.png' %}" alt="Logo Protección Civil" class="hero-logo">
+                </div>
+            </div>
+            
+            <div class="login-form-container">
+                <div class="form-header">
+                    <img src="{% static 'img/rescate-logo.png' %}" alt="Logo" class="form-logo">
+                    <h2 class="form-title">Iniciar Sesión</h2>
+                    <p class="form-subtitle">Ingrese sus credenciales para acceder al sistema</p>
+                </div>
+
+                {% for message in messages %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>{{ message }}</div>
+                </div>
+                {% endfor %}
+                
+                <form method="POST" id="loginForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="usuario" name="usuario" class="form-input" placeholder="Usuario" required autofocus>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contrasena" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="contrasena" name="contrasena" class="form-input" placeholder="Contraseña" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-sign-in-alt"></i> Acceder al sistema
+                    </button>
+                </form>
+            </div>
+        </div>
+
+<!-- Nuevo Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-row">
+                    <!-- Logo y Nombre Institucional -->
+                    <div class="footer-col">
+                        <div class="footer-logo-container">
+                            <img src="{% static 'img/proteccion-logo.png' %}" alt="Protección Civil" class="footer-logo">
+                        </div>
+                    </div>
+
+                    <!-- Enlaces Rápidos -->
+                    <div class="footer-col">
+                        <div class="footer-links">
+                            <img src="{% static 'img/juarez-conectado.png' %}" alt="Juárez Conectado" class="juarez-conectado-logo">
+                        </div>
+                    </div>
+
+                    <!-- Desarrollador con Logo -->
+                    <div class="footer-col">
+                        <div class="developer-container">
+                            <div class="text-end">
+                                <p class="footer-dev-name">Desarrollado por</p>
+                            </div>
+                            <img src="{% static 'img/LOGO DGIC 24-27 V.png' %}" alt="Logo Desarrollador" class="developer-logo">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Toggle de contraseña
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('contrasena');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        // Efecto de carga al enviar
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        loginForm.addEventListener('submit', function(e) {
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '';
+            submitBtn.disabled = true;
+        });
+        
+        // Año actual
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Validación básica
+        loginForm.addEventListener('submit', function(e) {
+            const usuario = document.getElementById('usuario').value.trim();
+            const contrasena = document.getElementById('contrasena').value.trim();
+            
+            if (!usuario || !contrasena) {
+                e.preventDefault();
+                alert('Por favor complete todos los campos');
+                submitBtn.classList.remove('loading');
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Acceder al sistema';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Efecto de enfoque en campos
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('i').style.color = 'var(--primary)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('i').style.color = 'var(--primary)';
+            });
+        });
+    </script>
+</body>
+</html>

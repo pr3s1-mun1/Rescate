@@ -56,3 +56,9 @@ body {
     color: var(--text-color);
     margin-bottom: 0.5rem;
 }
+
+
+
+.botones-busc {
+    background-color: #831f46;
+}

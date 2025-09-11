@@ -101,8 +101,10 @@ class ParamedicoForm(BootstrapFormMixin, forms.ModelForm):
                 ('C', 'DESCANSO ADICIONAL'),
             ]),
             'permisos': forms.Select(choices=[
-                (1, 'Lectura'),
-                (2, 'Lectura y escritura'),
+                (1, 'ELEMENTOS'),
+                (2, 'TENIENTES Y SARGENTOS'),
+                (3, 'CAPITÁN'),
+                (4, 'ADMINISTRATIVO'),
             ])
         }
         labels = {
