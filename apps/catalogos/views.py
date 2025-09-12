@@ -155,7 +155,6 @@ def requiere_tipo_paramedico(*niveles_permitidos):
 # Permiso = 2: Supervisor       Puede crear hojas de servicio y gestionarlas
 # Permiso = 3: Jefe de Área     Puede gestionar hojas de servicios, reportes, reloj checador y gasolinas
 # Permiso = 4: Administrador    Tiene todos los permisos completos
-
 # Permiso = 5: Root             Tiene todos los permisos completos y acceso a la configuración del sistema
 
 def requiere_sesion(view_func):

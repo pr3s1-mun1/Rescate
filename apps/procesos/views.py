@@ -1,21 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import *
-from apps.catalogos.forms import *
-from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion, Logs_Sistema
-from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm, CombustibleForm
-from django.http import HttpResponse
-from collections import defaultdict
+from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
-from xhtml2pdf import pisa
-from django.db.models import Max, Q, OuterRef, Exists
-from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
-from urllib.parse import urlencode
-from datetime import datetime, timedelta
-import json
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Max, Q, OuterRef, Exists
+
+from urllib.parse import urlencode
+from datetime import datetime, timedelta
+from collections import defaultdict
+import json
+import io
+
+from xhtml2pdf import pisa
+
+from .models import *
+from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm, CombustibleForm
+from apps.catalogos.forms import *
+from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion, Logs_Sistema
+
 
 def formulario_buscar(request):
     if request.method == 'POST':
@@ -144,7 +148,7 @@ def buscar_servicios_filtrados(filtros):
 def formulario_servicio(request):    
     context = {
         'form': ServicioForm(initial={'clave': Servicio.obtener_siguiente_numero()}),
-        'paramedicos': Paramedicos.objects.filter(estatus='A').order_by('nombre'),
+        'paramedicos': Paramedicos.objects.filter(estatus='A').exclude(clave=16).order_by('nombre'),
         'unidades': TipoUnidad.objects.all(),
         }
     
@@ -293,18 +297,17 @@ def crear_servicio(request):
             context = {
                 'servicio_form': servicio_form,
                 'unidades': TipoUnidad.objects.all(),
-                'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
+                'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P').exclude(clave=16),
                 'error_general': 'Ocurrió un error inesperado al crear el servicio.'
             }
             return render(request, 'modificar_servicio.html', context)
 
     else:
         servicio_form = ServicioForm()
-
     context = {
         'servicio_form': servicio_form,
         'unidades': TipoUnidad.objects.all(),
-        'paramedicos': Paramedicos.objects.filter(estatus='A', tipo='P'),
+        'paramedicos': Paramedicos.objects.exclude(clave=16).filter(estatus='A', tipo='P'),
     }
 
     return render(request, 'modificar_servicio.html', context)
@@ -1115,13 +1118,7 @@ def ver_reloj(request):
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)
 def imprimir_reporte(request):
-    from django.template.loader import get_template
-    from django.http import HttpResponse
-    import io
-    from xhtml2pdf import pisa
-    from django.utils import timezone
-    from datetime import datetime
-    from django.db.models import Q
+
 
     fecha_str = request.GET.get('fecha')
     fecha = timezone.now().date()

@@ -356,15 +356,18 @@
                     <span class="tile-badge bg-success text-white">Nuevo</span>
                 </div>
             </a>
-            
-            <a href="{% url 'formulario_buscar' %}" class="tile-link">
-                <div class="card-tile">
-                    <i class="fas fa-tasks"></i>
-                    <h4>Gestionar Servicios</h4>
-                    <p>Consulta y administra los servicios existentes</p>
-                    <span class="tile-badge bg-primary text-white">Total: {{ total_servicios }}</span>
-                </div>
-            </a>
+
+            {% if request.session.permisos != 1 %}
+                <a href="{% url 'formulario_buscar' %}" class="tile-link">
+                    <div class="card-tile">
+                        <i class="fas fa-tasks"></i>
+                        <h4>Gestionar Servicios</h4>
+                        <p>Consulta y administra los servicios existentes</p>
+                        <span class="tile-badge bg-primary text-white">Total: {{ total_servicios }}</span>
+                    </div>
+                </a>
+
+            {% endif %}
             
         </div>
 
@@ -475,9 +478,11 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="{% url 'carga_modifica' pxservicio.servicio.clave pxservicio.clavepaciente %}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-eye"></i> Ver
-                                                </a>
+                                                {% if request.session.permisos != 1 %}
+                                                    <a href="{% url 'carga_modifica' pxservicio.servicio.clave pxservicio.clavepaciente %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> Ver
+                                                    </a>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -495,11 +500,13 @@
                             </div>
                         {% endif %}
                         
-                        <div class="text-center mt-4">
-                            <a href="{% url 'formulario_buscar' %}" class="btn btn-outline-primary">
-                                <i class="fas fa-list me-2"></i> Ver todos los servicios
-                            </a>
-                        </div>
+                        {% if request.session.permisos != 1 %}
+                            <div class="text-center mt-4">
+                                <a href="{% url 'formulario_buscar' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-list me-2"></i> Ver todos los servicios
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -573,9 +580,11 @@
                             <a href="{% url 'formulario_servicio' %}" class="btn btn-primary">
                                 <i class="fas fa-plus-circle me-2"></i> Nuevo Servicio
                             </a>
-                            <a href="{% url 'formulario_buscar' %}" class="btn btn-outline-primary">
-                                <i class="fas fa-search me-2"></i> Buscar Servicio
-                            </a>
+                            {% if request.session.permisos != 5 %}
+                                <a href="{% url 'formulario_buscar' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-search me-2"></i> Buscar Servicio
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
