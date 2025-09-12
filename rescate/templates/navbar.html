@@ -378,14 +378,14 @@
               {% endif %}
             </ul>
           </li>
-          {% if request.session.permisos == 3 or request.session.permisos == 4 or request.session.permisos == 5 %}
+          {% if request.session.permisos == 4 or request.session.permisos == 5 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'cargar_reportes' %}">
               <i class="bi bi-file-earmark-text"></i> Reportes
             </a>
           </li>
           {% endif %}
-          {% if request.session.permisos == 3 or request.session.permisos == 4 or request.session.permisos == 5 %}
+          {% if request.session.permisos == 4 or request.session.permisos == 5 %}
           <li class="nav-item">
             <a class="nav-link rsc-nav-link" href="{% url 'cargar_graficas' %}">
               <i class="bi bi-bar-chart"></i> Gráficas
