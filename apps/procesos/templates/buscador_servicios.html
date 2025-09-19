@@ -687,9 +687,11 @@
                                         </a>
                                         <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank" style="display: inline;">
                                             {% csrf_token %}
-                                            <button class="btn-sm btn-secondary" type="submit">
-                                                <i class="fas fa-file-alt"></i> Reporte
-                                            </button>
+                                            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                                <button class="btn-sm btn-secondary" type="submit">
+                                                    <i class="fas fa-file-alt"></i> Reporte
+                                                </button>
+                                            {% endif %}
                                         </form>
                                     </div>
                                 </div>
@@ -772,9 +774,11 @@
                                         </a>
                                         <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank" style="display: inline;">
                                             {% csrf_token %}
-                                            <button class="btn-sm btn-secondary" type="submit">
-                                                <i class="fas fa-file-alt"></i> Reporte
-                                            </button>
+                                            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                                <button class="btn-sm btn-secondary" type="submit">
+                                                    <i class="fas fa-file-alt"></i> Reporte
+                                                </button>
+                                            {% endif %}
                                         </form>
                                     </div>
                                 </div>

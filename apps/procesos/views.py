@@ -21,6 +21,7 @@ from apps.catalogos.forms import *
 from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion, Logs_Sistema
 
 
+@requiere_tipo_paramedico(2, 3, 4, 5)
 def formulario_buscar(request):
     if request.method == 'POST':
         filtros = request.POST.dict()
@@ -59,6 +60,7 @@ def formulario_buscar(request):
         'filtros': filtros if request.method == 'POST' else {},
     })
 
+@requiere_tipo_paramedico(2, 3, 4, 5)
 def buscar_servicios_sin_pacientes(filtros):
     """Función auxiliar para aplicar los mismos filtros a servicios sin pacientes"""
     
@@ -86,6 +88,7 @@ def buscar_servicios_sin_pacientes(filtros):
     
     return servicios
 
+@requiere_tipo_paramedico(2, 3, 4, 5)
 def buscar_servicios_filtrados(filtros):
     """
     Versión optimizada pero manteniendo la estructura original
