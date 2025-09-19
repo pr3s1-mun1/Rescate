@@ -836,6 +836,7 @@ def guardar_testigos(request, paciente):
             telefono=telefono
         )
 
+@requiere_tipo_paramedico(3, 4, 5)
 def reporte_servicio(request, clave):
     servicio = get_object_or_404(Servicio, clave=clave)
     paciente = PacientexServicio.objects.filter(servicio=servicio).first()
