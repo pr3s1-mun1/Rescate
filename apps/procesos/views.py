@@ -5,7 +5,8 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from django.db import transaction
-from django.db.models import Max, Q, OuterRef, Exists
+from django.db.models import Max, Q, OuterRef, Exists, Value
+from django.db.models.functions import Concat
 
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
@@ -21,131 +22,114 @@ from apps.catalogos.forms import *
 from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion, Logs_Sistema
 
 
-@requiere_tipo_paramedico(2, 3, 4, 5)
-def formulario_buscar(request):
-    if request.method == 'POST':
-        filtros = request.POST.dict()
-        # Obtener la consulta base de pacientexservicio filtrada
-        pacientes_servicios_query = buscar_servicios_filtrados(filtros)
-    else:
-        # Caso sin filtros
-        pacientes_servicios_query = PacientexServicio.objects.all().order_by('-servicio__clave').select_related('servicio')
+def paginar_queryset(qs, request, param='page', per_page=9):
+    """Función auxiliar para paginar cualquier queryset."""
+    paginator = Paginator(qs, per_page)
+    page_number = request.GET.get(param)
+    return paginator.get_page(page_number)
 
-    # Paginación para servicios CON pacientes (manteniendo nombre original)
-    paginator_con = Paginator(pacientes_servicios_query, 9)
-    page_number_con = request.GET.get('page_con')
-    pacientes_servicios = paginator_con.get_page(page_number_con)
-
-    # Obtener servicios SIN pacientes (optimizado)
-    servicios_con_paciente_claves = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
-    
-    # Aplicar los mismos filtros a servicios sin pacientes si hay filtros activos
-    if request.method == 'POST':
-        servicios_sin_paciente = buscar_servicios_sin_pacientes(filtros).exclude(
-            clave__in=servicios_con_paciente_claves
-        )
-    else:
-        servicios_sin_paciente = Servicio.objects.exclude(
-            clave__in=servicios_con_paciente_claves
-        ).order_by('-clave')
-
-    # Paginación para servicios SIN pacientes (manteniendo nombre original)
-    paginator_sin = Paginator(servicios_sin_paciente, 9)
-    page_number_sin = request.GET.get('page_sin')
-    servicios_sin_paciente_page = paginator_sin.get_page(page_number_sin)
-
-    return render(request, 'buscador_servicios.html', {
-        'pacientes_servicios': pacientes_servicios,
-        'servicios_sin_paciente': servicios_sin_paciente_page,
-        'filtros': filtros if request.method == 'POST' else {},
-    })
-
-@requiere_tipo_paramedico(2, 3, 4, 5)
-def buscar_servicios_sin_pacientes(filtros):
-    """Función auxiliar para aplicar los mismos filtros a servicios sin pacientes"""
-    
-    servicios = Servicio.objects.all()
-    
-    # Aplicar los mismos filtros que en buscar_servicios_filtrados
-    clave = filtros.get('clave')
-    if clave:
-        servicios = servicios.filter(clave__icontains=clave)
-
-    fecha_inicio = filtros.get('fecha_inicio')
-    fecha_fin = filtros.get('fecha_fin')
-    if fecha_inicio:
-        servicios = servicios.filter(fecha__gte=fecha_inicio)
-    if fecha_fin:
-        servicios = servicios.filter(fecha__lte=fecha_fin)
-
-    base = filtros.get('base')
-    if base:
-        servicios = servicios.filter(base__icontains=base)
-
-    direccion = filtros.get('direccion')
-    if direccion:
-        servicios = servicios.filter(direccion_emergencia__calle__icontains=direccion)
-    
-    return servicios
-
-@requiere_tipo_paramedico(2, 3, 4, 5)
 def buscar_servicios_filtrados(filtros):
     """
-    Versión optimizada pero manteniendo la estructura original
+    Filtra PacientexServicio considerando campos simples y ForeignKeys
+    a través de la relación Servicio.
     """
+    qs = PacientexServicio.objects.all().select_related('servicio')
 
-    # Base query ahora es sobre PacientexServicio (como en tu versión original)
-    pacientes_qs = PacientexServicio.objects.all().select_related('servicio')
+    # Filtros sobre Servicio
+    if filtros.get('clave'):
+        qs = qs.filter(servicio__clave__icontains=filtros['clave'])
+    if filtros.get('fecha_inicio'):
+        qs = qs.filter(servicio__fecha__gte=filtros['fecha_inicio'])
+    if filtros.get('fecha_fin'):
+        qs = qs.filter(servicio__fecha__lte=filtros['fecha_fin'])
+    if filtros.get('base'):
+        qs = qs.filter(servicio__base__icontains=filtros['base'])
+    if filtros.get('direccion'):
+        qs = qs.filter(servicio__direccion_emergencia__calle__icontains=filtros['direccion'])
 
-    # Filtros en campos del servicio (a través de la relación)
-    clave = filtros.get('clave')
-    if clave:
-        pacientes_qs = pacientes_qs.filter(servicio__clave__icontains=clave)
-
-    fecha_inicio = filtros.get('fecha_inicio')
-    fecha_fin = filtros.get('fecha_fin')
-    if fecha_inicio:
-        pacientes_qs = pacientes_qs.filter(servicio__fecha__gte=fecha_inicio)
-    if fecha_fin:
-        pacientes_qs = pacientes_qs.filter(servicio__fecha__lte=fecha_fin)
-
-    base = filtros.get('base')
-    if base:
-        pacientes_qs = pacientes_qs.filter(servicio__base__icontains=base)
-
-    direccion = filtros.get('direccion')
-    if direccion:
-        pacientes_qs = pacientes_qs.filter(servicio__direccion_emergencia__calle__icontains=direccion)
-
-    # Filtros en campos del paciente (manteniendo tu lógica original)
+    # Filtro por paciente
     paciente = filtros.get('paciente')
     if paciente:
         paciente = paciente.strip()
         if paciente.isdigit():
-            pacientes_qs = pacientes_qs.filter(clave=int(paciente))
+            qs = qs.filter(clave=int(paciente))
         else:
-            palabras = paciente.split()
-            filtros_q = Q()
-            for palabra in palabras:
-                filtros_q |= (
-                    Q(nombre__icontains=palabra) |
-                    Q(apellido_paterno__icontains=palabra) |
-                    Q(apellido_materno__icontains=palabra)
+            qs = qs.annotate(
+                nombre_completo=Concat(
+                    'nombre', Value(' '),
+                    'apellido_paterno', Value(' '),
+                    'apellido_materno'
                 )
-            pacientes_qs = pacientes_qs.filter(filtros_q)
+            ).filter(nombre_completo__icontains=paciente)
 
-    # Resto de filtros (manteniendo tus nombres originales)
-    campos_filtro = [
-        'ropa', 'sintoma', 'antecedente', 'placas', 'sexo',
-        'servicio_realizado', 'enfermedad', 'hospital', 'ambulancia'
-    ]
-    
-    for campo in campos_filtro:
+    # Campos simples
+    campos_simples = ['ropa', 'sintoma', 'antecedente', 'placas', 'sexo']
+    for campo in campos_simples:
         valor = filtros.get(campo)
         if valor:
-            pacientes_qs = pacientes_qs.filter(**{f"{campo}__icontains": valor})
+            qs = qs.filter(**{f"{campo}__icontains": valor})
 
-    return pacientes_qs.order_by('-servicio__clave')
+    # ForeignKey en Servicio
+    if filtros.get('servicio_realizado'):
+        qs = qs.filter(
+            servicio__tipo_servicio_realizado__descripcion__icontains=filtros['servicio_realizado']
+        )
+
+
+    # ForeignKeys en PacientexServicio
+    if filtros.get('enfermedad'):
+        qs = qs.filter(enfermedad__nombre__icontains=filtros['enfermedad'])
+    if filtros.get('hospital'):
+        qs = qs.filter(hospital__nombre__icontains=filtros['hospital'])
+    if filtros.get('ambulancia'):
+        qs = qs.filter(ambulancia__descripcion__icontains=filtros['ambulancia'])
+
+    return qs.order_by('-servicio__clave')
+
+
+
+def buscar_servicios_sin_pacientes(filtros):
+    """Aplica filtros sobre Servicios sin pacientes."""
+    qs = Servicio.objects.all()
+    if filtros.get('clave'):
+        qs = qs.filter(clave__icontains=filtros['clave'])
+    if filtros.get('fecha_inicio'):
+        qs = qs.filter(fecha__gte=filtros['fecha_inicio'])
+    if filtros.get('fecha_fin'):
+        qs = qs.filter(fecha__lte=filtros['fecha_fin'])
+    if filtros.get('base'):
+        qs = qs.filter(base__icontains=filtros['base'])
+    if filtros.get('direccion'):
+        qs = qs.filter(direccion_emergencia__calle__icontains=filtros['direccion'])
+    return qs
+
+
+@requiere_tipo_paramedico(2, 3, 4, 5)
+def formulario_buscar(request):
+    filtros = request.POST.dict() if request.method == 'POST' else {}
+
+    # Pacientes con servicios filtrados
+    if filtros:
+        pacientes_servicios_query = buscar_servicios_filtrados(filtros)
+    else:
+        pacientes_servicios_query = PacientexServicio.objects.all().order_by('-servicio__clave').select_related('servicio')
+
+    pacientes_servicios = paginar_queryset(pacientes_servicios_query, request, 'page_con')
+
+    # Servicios sin pacientes
+    claves_con_paciente = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
+    if filtros:
+        servicios_sin_paciente = buscar_servicios_sin_pacientes(filtros).exclude(clave__in=claves_con_paciente)
+    else:
+        servicios_sin_paciente = Servicio.objects.exclude(clave__in=claves_con_paciente).order_by('-clave')
+
+    servicios_sin_paciente_page = paginar_queryset(servicios_sin_paciente, request, 'page_sin')
+
+    return render(request, 'buscador_servicios.html', {
+        'pacientes_servicios': pacientes_servicios,
+        'servicios_sin_paciente': servicios_sin_paciente_page,
+        'filtros': filtros,
+    })
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
 def formulario_servicio(request):    

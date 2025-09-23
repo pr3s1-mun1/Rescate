@@ -121,9 +121,9 @@
                                         <td>{{ p.nombre }} {{ p.apellido_paterno }} {{ p.apellido_materno }}</td>
                                         <td>{{ p.edad }}</td>
                                         <td>
-                                            {% if p.sexo == '2' %}
+                                            {% if p.sexo == 'M' %}
                                                 MASCULINO
-                                            {% elif p.sexo == '3' %}
+                                            {% elif p.sexo == 'F' %}
                                                 FEMENINO
                                             {% else %}
                                                 NO INGRESADO

@@ -489,91 +489,91 @@
             <h1 class="main-title">Buscador de Servicios Médicos</h1>
         </header>
 
-        <section class="search-section">
-            <div class="search-card">
-                <form method="post">
-                    {% csrf_token %}
+        <section class="search-section py-3">
+            <div class="container">
+                <div class="card p-3">
+                    <form method="post">
+                        {% csrf_token %}
 
-                    <!-- Input principal visible -->
-                    <div class="input-group mb-2">
-                        <span class="input-group-text">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" name="clave" class="form-control"
-                            placeholder="Buscar por nombre, clave o ubicación..." value="{{ filtros.clave|default:'' }}">
-                    </div>
-
-                    <!-- Botón para desplegar filtros -->
-                    <div class="mb-2 text-end">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleFiltros()">Mostrar más filtros</button>
-                    </div>
-
-                    <!-- Filtros ocultos inicialmente -->
-                    <div id="filtros-adicionales" style="display: none;">
-                        <div class="input-group mb-2">
-                            <label class="input-group-text" for="fecha_inicio">Fecha inicio:</label>
-                            <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ filtros.fecha_inicio|default:'' }}">
-                            <label class="input-group-text" for="fecha_fin">Fecha fin:</label>
-                            <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ filtros.fecha_fin|default:'' }}">
+                        <!-- Fila principal: número de servicio -->
+                        <div class="position-relative mb-2">
+                            <i class="fas fa-search position-absolute" style="top: 50%; left: 6px; transform: translateY(-50%); color: #6c757d;"></i>
+                            <input type="text" name="clave" class="form-control ps-4" placeholder="Buscar número de servicio" value="{{ filtros.clave|default:'' }}">
                         </div>
 
-                        <div class="input-group mb-2">
-                            <input type="text" name="base" class="form-control" placeholder="Base" value="{{ filtros.base|default:'' }}">
-                            <input type="text" name="direccion" class="form-control" placeholder="Dirección" value="{{ filtros.direccion|default:'' }}">
+
+                        <!-- Filtros secundarios -->
+                        <div class="row mb-2 g-2">
+                            <div class="col-6 col-md-6">
+                                <label for="fecha_inicio" class="form-label">Fecha inicio</label>
+                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ filtros.fecha_inicio|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <label for="fecha_fin" class="form-label">Fecha fin</label>
+                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ filtros.fecha_fin|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="paciente" class="form-control" placeholder="Nombre o clave del paciente" value="{{ filtros.paciente|default:'' }}">
+                            </div>
+
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="direccion" class="form-control" placeholder="Dirección" value="{{ filtros.direccion|default:'' }}">
+                            </div>
                         </div>
 
-                        <div class="input-group mb-2">
-                            <input type="text" name="paciente" class="form-control" placeholder="Paciente" value="{{ filtros.paciente|default:'' }}">
-                            <input type="text" name="ropa" class="form-control" placeholder="Ropa" value="{{ filtros.ropa|default:'' }}">
+                        <div class="row mb-2 g-2">
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="base" class="form-control" placeholder="Base" value="{{ filtros.base|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="ropa" class="form-control" placeholder="Ropa" value="{{ filtros.ropa|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="sintoma" class="form-control" placeholder="Síntoma" value="{{ filtros.sintoma|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="antecedente" class="form-control" placeholder="Antecedente" value="{{ filtros.antecedente|default:'' }}">
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="placas" class="form-control" placeholder="Placas" value="{{ filtros.placas|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select name="sexo" class="form-select">
+                                    <option value="">Sexo</option>
+                                    <option value="M" {% if filtros.sexo == 'M' %}selected{% endif %}>Masculino</option>
+                                    <option value="F" {% if filtros.sexo == 'F' %}selected{% endif %}>Femenino</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="servicio_realizado" class="form-control" placeholder="Servicio Realizado" value="{{ filtros.servicio_realizado|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="enfermedad" class="form-control" placeholder="Enfermedad" value="{{ filtros.enfermedad|default:'' }}">
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="hospital" class="form-control" placeholder="Hospital" value="{{ filtros.hospital|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="ambulancia" class="form-control" placeholder="Ambulancia" value="{{ filtros.ambulancia|default:'' }}">
+                            </div>
                         </div>
 
-                        <div class="input-group mb-2">
-                            <input type="text" name="sintoma" class="form-control" placeholder="Síntoma" value="{{ filtros.sintoma|default:'' }}">
-                            <input type="text" name="antecedente" class="form-control" placeholder="Antecedente" value="{{ filtros.antecedente|default:'' }}">
+                        <!-- Botón de búsqueda -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn w-100 botones-busc">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="input-group mb-2">
-                            <input type="text" name="placas" class="form-control" placeholder="Placas" value="{{ filtros.placas|default:'' }}">
-                            <select name="sexo" class="form-select">
-                                <option value="">Sexo</option>
-                                <option value="M" {% if filtros.sexo == 'M' %}selected{% endif %}>Masculino</option>
-                                <option value="F" {% if filtros.sexo == 'F' %}selected{% endif %}>Femenino</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <input type="text" name="servicio_realizado" class="form-control" placeholder="Servicio Realizado" value="{{ filtros.servicio_realizado|default:'' }}">
-                            <input type="text" name="enfermedad" class="form-control" placeholder="Enfermedad" value="{{ filtros.enfermedad|default:'' }}">
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <input type="text" name="hospital" class="form-control" placeholder="Hospital" value="{{ filtros.hospital|default:'' }}">
-                            <input type="text" name="ambulancia" class="form-control" placeholder="Ambulancia" value="{{ filtros.ambulancia|default:'' }}">
-                        </div>
-                    </div>
-
-                    <!-- Botón de búsqueda -->
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search mr-2"></i> Buscar
-                    </button>
-                </form>
+                    </form>
+                </div>
             </div>
         </section>
 
-        <script>
-            function toggleFiltros() {
-                const filtros = document.getElementById('filtros-adicionales');
-                const btn = event.currentTarget;
-
-                if (filtros.style.display === 'none') {
-                    filtros.style.display = 'block';
-                    btn.textContent = 'Ocultar filtros';
-                } else {
-                    filtros.style.display = 'none';
-                    btn.textContent = 'Mostrar más filtros';
-                }
-            }
-        </script>
 
         <section class="results-section">
             {% if pacientes_servicios or servicios_sin_paciente %}
@@ -652,7 +652,15 @@
                                                     </div>
                                                     <div class="info-block">
                                                         <span class="info-label">Sexo</span>
-                                                        <span class="info-value">{{ ps.sexo|yesno:"Masculino,Femenino" }}</span>
+                                                        <span class="info-value">
+                                                            {% if ps.sexo == "M" %}
+                                                                Masculino
+                                                            {% elif ps.sexo == "F" %}
+                                                                Femenino
+                                                            {% else %}
+                                                                No especificado
+                                                            {% endif %}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
