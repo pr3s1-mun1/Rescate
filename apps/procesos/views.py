@@ -42,8 +42,6 @@ def buscar_servicios_filtrados(filtros):
         qs = qs.filter(servicio__fecha__gte=filtros['fecha_inicio'])
     if filtros.get('fecha_fin'):
         qs = qs.filter(servicio__fecha__lte=filtros['fecha_fin'])
-    if filtros.get('base'):
-        qs = qs.filter(servicio__base__icontains=filtros['base'])
     if filtros.get('direccion'):
         qs = qs.filter(servicio__direccion_emergencia__calle__icontains=filtros['direccion'])
 
@@ -83,6 +81,8 @@ def buscar_servicios_filtrados(filtros):
         qs = qs.filter(hospital__nombre__icontains=filtros['hospital'])
     if filtros.get('ambulancia'):
         qs = qs.filter(ambulancia__descripcion__icontains=filtros['ambulancia'])
+    if filtros.get('base'):
+        qs = qs.filter(base__clave__icontains=filtros['base'])
 
     return qs.order_by('-servicio__clave')
 
@@ -97,8 +97,6 @@ def buscar_servicios_sin_pacientes(filtros):
         qs = qs.filter(fecha__gte=filtros['fecha_inicio'])
     if filtros.get('fecha_fin'):
         qs = qs.filter(fecha__lte=filtros['fecha_fin'])
-    if filtros.get('base'):
-        qs = qs.filter(base__icontains=filtros['base'])
     if filtros.get('direccion'):
         qs = qs.filter(direccion_emergencia__calle__icontains=filtros['direccion'])
     return qs
