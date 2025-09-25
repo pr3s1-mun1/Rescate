@@ -4,37 +4,92 @@ function actualizarContador(idTabla, idContador) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const coloniaSelect = document.getElementById("id_colonia_emergencia");
-    const direccionSelect = document.getElementById("id_direccion_emergencia");
-    const cruceSelect = document.getElementById("id_calle_entre");
+    // ==== Campos de emergencia ====
+    const coloniaEmergenciaSelect = document.getElementById("id_colonia_emergencia");
+    const direccionEmergenciaSelect = document.getElementById("id_direccion_emergencia");
+    const cruceEmergenciaSelect = document.getElementById("id_calle_entre");
 
-    if (coloniaSelect) {
-        coloniaSelect.addEventListener("change", function () {
-            const coloniaId = this.value;
+    if (direccionEmergenciaSelect) {
+        direccionEmergenciaSelect.addEventListener("change", function () {
+            const calleId = this.value;
 
-            fetch('/servicios/ajax/calles_por_colonia/?colonia_id=' + coloniaId)
-                .then(response => response.json())
+            // Limpiar selects si no hay calle
+            if (!calleId) {
+                if (coloniaEmergenciaSelect) coloniaEmergenciaSelect.innerHTML = '<option value="">---------</option>';
+                if (cruceEmergenciaSelect) cruceEmergenciaSelect.innerHTML = '<option value="">---------</option>';
+                return;
+            }
+
+            // Cargar colonias de emergencia
+            fetch('/servicios/ajax/calles_por_colonia/?calle_id=' + calleId)
+                .then(res => res.json())
                 .then(data => {
-                    // Limpiar opciones anteriores
-                    direccionSelect.innerHTML = '<option value="">---------</option>';
-                    cruceSelect.innerHTML = '<option value="">---------</option>';
+                    if (coloniaEmergenciaSelect) {
+                        coloniaEmergenciaSelect.innerHTML = '<option value="">---------</option>';
+                        data.forEach(col => {
+                            const option = document.createElement("option");
+                            option.value = col.id;
+                            option.textContent = col.nombre;
+                            coloniaEmergenciaSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(err => console.error('Error al cargar colonias de emergencia:', err));
 
-                    // Agregar nuevas calles en ambos selects
-                    data.forEach(calle => {
-                        const option1 = document.createElement("option");
-                        option1.value = calle.id;
-                        option1.textContent = calle.nombre;
-                        direccionSelect.appendChild(option1);
+            // Cargar cruces de emergencia
+            if (cruceEmergenciaSelect) {
+                cruceEmergenciaSelect.innerHTML = '<option value="">---------</option>';
+                fetch('/servicios/ajax/calles_por_calle/?calle_id=' + calleId)
+                    .then(res => res.json())
+                    .then(data => {
+                        data.forEach(calle => {
+                            const option = document.createElement("option");
+                            option.value = calle.id;
+                            option.textContent = calle.nombre;
+                            cruceEmergenciaSelect.appendChild(option);
+                        });
+                    })
+                    .catch(err => console.error('Error al cargar cruces de emergencia:', err));
+            }
+        });
+    }
 
-                        const option2 = document.createElement("option");
-                        option2.value = calle.id;
-                        option2.textContent = calle.nombre;
-                        cruceSelect.appendChild(option2);
+    // ==== Campos normales ====
+    const coloniaSelect = document.getElementById("id_colonia");
+    const domicilioSelect = document.getElementById("id_domicilio");
+
+    if (domicilioSelect) {
+        domicilioSelect.addEventListener("change", function () {
+            const calleId = this.value;
+
+            // Limpiar selects si no hay calle
+            if (!calleId) {
+                if (coloniaSelect) coloniaSelect.innerHTML = '<option value="">---------</option>';
+                return;
+            }
+
+            // Cargar colonias y domicilios normales
+            fetch('/servicios/ajax/calles_por_colonia/?calle_id=' + calleId)
+                .then(res => res.json())
+                .then(data => {
+                    if (coloniaSelect) coloniaSelect.innerHTML = '<option value="">---------</option>';
+
+                    data.forEach(item => {
+                        if (coloniaSelect) {
+                            const optionCol = document.createElement("option");
+                            optionCol.value = item.id;
+                            optionCol.textContent = item.nombre;
+                            coloniaSelect.appendChild(optionCol);
+                        }
+                        if (domicilioSelect) {
+                            const optionDom = document.createElement("option");
+                            optionDom.value = item.id;
+                            optionDom.textContent = item.nombre;
+                            domicilioSelect.appendChild(optionDom);
+                        }
                     });
                 })
-                .catch(error => {
-                    console.error('Error al cargar calles:', error);
-                });
+                .catch(err => console.error('Error al cargar colonias/domicilios:', err));
         });
     }
 });

@@ -18,9 +18,19 @@ document.querySelectorAll('.prev-tab').forEach(button => {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes'];
+    const form = document.getElementById('servicioForm');
+    const selectTipo = document.getElementById('id_tipo_servicio_realizado');
 
-    document.getElementById('servicioForm').addEventListener('submit', function (e) {
+    const comisiones = ['245','197','213','138','247','248','38','198','227','223','224','172','222','196','211','204','180','210','186','241','218', '34', '35']
+
+    form.addEventListener('submit', function (e) {
+        // Saltar validaciones si se selecciona un valor específico
+        if (comisiones.includes(selectTipo.value)) { 
+            return true; // permite enviar el formulario sin validar las pestañas
+        }
+
+        // Validación normal de pestañas
+        const pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes'];
         let todoValido = true;
 
         for (const tabId of pestañasAValidar) {
@@ -45,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
-        // Deshabilitar botón
+        // Deshabilitar botón de submit mientras se guarda
         const submitBtn = document.getElementById('btnGuardar');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
@@ -53,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     });
 });
+
 
 
 function validarPestana(tabId) {

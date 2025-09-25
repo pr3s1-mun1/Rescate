@@ -342,52 +342,65 @@
 
     <script src="{% static 'js/modificar.js' %}"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            {% if not paciente_nuevo %}
-            // Deshabilitar todos los campos de los formularios excepto botones de navegación
-            document.querySelectorAll("input, select, textarea, button[type='submit']").forEach(el => {
-                el.disabled = true;
+    document.addEventListener("DOMContentLoaded", function () {
+        {% if not paciente_nuevo %}
+        // Hacer todos los campos de solo lectura (menos botones)
+        document.querySelectorAll("input, textarea").forEach(el => {
+            el.readOnly = true;
+        });
+        document.querySelectorAll("select").forEach(el => {
+            el.addEventListener("mousedown", e => e.preventDefault()); // bloquea abrir el select
+        });
+
+        // Deshabilitar doble clic en todas las tablas
+        document.querySelectorAll("table, svg, img").forEach(tabla => {
+            tabla.addEventListener("dblclick", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }, true);
+        });
+        {% endif %}
+
+        {% if not formularios_editables %}
+
+        // Hacer campos de servicio de solo lectura
+        const contenedor = document.querySelector(".form-container");
+        if (contenedor) {
+            // Inputs y textareas
+            contenedor.querySelectorAll("input, textarea").forEach(el => {
+                el.readOnly = true;
+                el.classList.add("bg-light"); // gris y solo lectura
             });
 
-            // Deshabilitar doble clic en todas las tablas
-            document.querySelectorAll("table, svg, img").forEach(tabla => {
+            // Selects
+            contenedor.querySelectorAll("select").forEach(el => {
+                el.addEventListener("mousedown", e => e.preventDefault());
+                el.classList.add("bg-light"); // gris visual
+            });
+        }
+
+
+        // Deshabilitar doble clic en tablas de paramédicos y unidades
+        const tablas = [
+            "#tabla-paramedicos-disponibles",
+            "#tabla-unidades",
+            "#tabla-paramedicos-asignados",
+            "#tabla-seleccionados"
+        ];
+        tablas.forEach(id => {
+            const tabla = document.querySelector(id);
+            if (tabla) {
                 tabla.addEventListener("dblclick", function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                 }, true);
-            });
-            {% endif %}
-
-            {% if not formularios_editables %}
-
-            // Deshabilitar campos del formulario de servicio
-            const contenedor = document.querySelector(".form-container");
-            if (contenedor) {
-                contenedor.querySelectorAll("input, select, textarea, button").forEach(el => {
-                    el.disabled = true;
-                });
             }
-
-            // Deshabilitar doble clic en tablas de paramédicos y unidades
-            const tablas = [
-                "#tabla-paramedicos-disponibles",
-                "#tabla-unidades",
-                "#tabla-paramedicos-asignados",
-                "#tabla-seleccionados"
-            ];
-            tablas.forEach(id => {
-                const tabla = document.querySelector(id);
-                if (tabla) {
-                    tabla.addEventListener("dblclick", function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }, true);
-                }
-            });
-
-            {% endif %}
         });
+
+        {% endif %}
+    });
     </script>
+
 
 
 
