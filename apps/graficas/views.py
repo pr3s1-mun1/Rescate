@@ -585,3 +585,65 @@ def generar_pdf_grafica(request, template_name="plantillas/traslados_grafica_pdf
         return HttpResponse("Ocurrió un error al generar el PDF")
 
     return response
+
+@requiere_tipo_paramedico(4, 5)
+def pacientes_menores(request):
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    resultados = []
+    grafica_base64 = None
+
+    if fecha_inicio and fecha_fin:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT base_id, h.estacion, COUNT(*) as total
+                FROM procesos_pacientexservicio as p
+                JOIN catalogos_bases as h ON h.clave = p.base_id
+                JOIN procesos_servicio as s ON p.servicio_id = s.clave
+                WHERE p.edad < 18 and s.fecha BETWEEN %s AND %s
+                GROUP BY base_id, h.estacion
+                ORDER BY total DESC;
+            """, [fecha_inicio, fecha_fin])
+            resultados = cursor.fetchall()
+
+        nombres = [f"{r[0]} - {r[1]}" for r in resultados]
+        totales = [r[2] for r in resultados]
+
+        # Colores para las barras
+        colores = [guinda, gris, blanco]
+
+        bar_colors = [colores[i % len(colores)] for i in range(len(resultados))]
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        barras = ax.bar(nombres, totales, color=bar_colors)
+
+        ax.set_title(f'Traslados por Base del {fecha_inicio} al {fecha_fin}')
+        ax.set_xlabel('Base - Estación')
+        ax.set_ylabel('Total Pacientes')
+
+        # Mostrar solo enteros en eje Y
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+        # Rotar etiquetas eje X para mejor lectura
+        plt.xticks(rotation=45, ha='right')
+
+        plt.tight_layout()
+
+        # Leyenda con nombre de estación sin repetir colores
+        estaciones = list(dict.fromkeys([r[1] for r in resultados]))  # Unicos manteniendo orden
+        estaciones_colores = {est: colores[i % len(colores)] for i, est in enumerate(estaciones)}
+        handles = [plt.Rectangle((0,0),1,1, color=estaciones_colores[est]) for est in estaciones]
+        ax.legend(handles, estaciones, title='Estación', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        plt.close(fig)
+        buffer.seek(0)
+        grafica_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    return render(request, "reportes/pacientes_menores.html", {
+        "resultados": resultados,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin,
+        "grafica_base64": grafica_base64,
+    })

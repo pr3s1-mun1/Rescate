@@ -17,7 +17,10 @@
                     <strong>Colonias</strong>
                 </div>
                 <div class="card-body p-2" style="overflow-x: auto;">
-                    <table class="table table-bordered table-striped mb-0">
+                    <!-- Buscador Colonias -->
+                    <input type="text" class="form-control mb-2" id="search-colonias" placeholder="Buscar colonia...">
+
+                    <table class="table table-bordered table-striped mb-0" id="tabla-colonias">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -51,8 +54,10 @@
                     <strong>Calles disponibles</strong>
                 </div>
                 <div class="card-body p-2" style="overflow-x: auto;">
+                    <!-- Buscador Calles disponibles -->
                     {% if colonia_seleccionada %}
-                    <table class="table table-bordered table-hover mb-0">
+                    <input type="text" class="form-control mb-2" id="search-calles-no-relacionadas" placeholder="Buscar calle disponible...">
+                    <table class="table table-bordered table-hover mb-0" id="tabla-calles-no-relacionadas">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -93,8 +98,10 @@
                     <strong>Calles relacionadas</strong>
                 </div>
                 <div class="card-body p-2" style="overflow-x: auto;">
+                    <!-- Buscador Calles relacionadas -->
                     {% if colonia_seleccionada %}
-                    <table class="table table-bordered table-hover mb-0">
+                    <input type="text" class="form-control mb-2" id="search-calles-relacionadas" placeholder="Buscar calle relacionada...">
+                    <table class="table table-bordered table-hover mb-0" id="tabla-calles-relacionadas">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -127,7 +134,33 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
+
+<!-- Script buscadores -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function filtrarTabla(inputId, tableId) {
+        const input = document.getElementById(inputId);
+        const table = document.getElementById(tableId);
+
+        input.addEventListener('keyup', function() {
+            const filter = input.value.toLowerCase();
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    }
+
+    filtrarTabla('search-colonias', 'tabla-colonias');
+    filtrarTabla('search-calles-no-relacionadas', 'tabla-calles-no-relacionadas');
+    filtrarTabla('search-calles-relacionadas', 'tabla-calles-relacionadas');
+});
+</script>
+
 {% include 'footer.html' %}
 {% endblock %}
