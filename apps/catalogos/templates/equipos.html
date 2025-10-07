@@ -21,7 +21,9 @@
         <a href="{% url 'add_catalogo' 'equipos' %}">
             <button class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</button>
         </a>
-        <table class="table table-bordered table-hover">
+        <div class="table-container">
+
+        <table class="custom-table">
             <thead class="table-light">
                 <tr>
                     <th>Clave</th>
@@ -38,13 +40,13 @@
                     <td class="text-center">{{ equipo.unidad }}</td>
                     <td class="d-flex justify-content-center">
                         <a href="{% url 'update_catalogo' 'equipos' equipo.clave%}"
-                            class="btn btn-warning btn-sm me-2"><i class="bi bi-pencil-fill"></i> Editar
+                            class="btn-action me-2"><i class="bi bi-pencil-fill"></i> 
                         </a>
                         <form action="{% url 'delete_catalogo' 'equipos' equipo.clave %}" method="POST"
                             onsubmit="return confirm('¿Estás seguro de eliminar este equipo?');">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
-                                Eliminar
+                            <button type="submit" class="btn-action"><i class="bi bi-trash-fill"></i>
+                                
                             </button>
 
                         </form>
@@ -57,6 +59,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
     {% include 'footer.html' %}
 </body>

@@ -22,8 +22,8 @@
 
         <a href="{% url 'add_catalogo' 'bases' %}" class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</a>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+        <div class="table-container">
+            <table class="custom-table">
                 <thead class="table-light">
                     <tr>
                         <th>Lista de Bases</th>
@@ -39,14 +39,14 @@
                             <span class="ms-2">{{ base.clave }}</span>
                         </td>
                         <td class="text-center">
-                            <a href="{% url 'update_catalogo' 'bases' base.clave %}" class="btn btn-warning btn-sm"><i
-                                    class="bi bi-pencil-fill"></i> Editar
+                            <a href="{% url 'update_catalogo' 'bases' base.clave %}" class="btn-action"><i
+                                    class="bi bi-pencil-fill"></i>
                             </a>
                             <form method="POST" action="{% url 'delete_catalogo' 'bases' base.clave %}" class="d-inline"
                                 onsubmit="return confirm('¿Estás seguro de eliminar esta base?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
-                                    Eliminar
+                                <button type="submit" class="btn-action"><i class="bi bi-trash-fill"></i>
+                                    
                                 </button>
 
                             </form>

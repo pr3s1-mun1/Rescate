@@ -59,13 +59,13 @@ class PacientexServicio(models.Model):
     apellido_paterno = models.CharField(max_length=50, null=True, blank=True)
     apellido_materno = models.CharField(max_length=50, null=True, blank=True)
     nombre = models.CharField(max_length=50)
-    edad = models.IntegerField()
+    edad = models.IntegerField(null=True, blank=True)
     sexo = models.CharField(max_length=10)
     estado_civil = models.CharField(max_length=10)
     domicilio = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True)
-    telefono = models.CharField(max_length=20)
+    telefono = models.CharField(max_length=20, null=True, blank=True)
     colonia = models.ForeignKey(Colonia, on_delete=models.SET_NULL, null=True)
-    estatura = models.DecimalField(max_digits=5, decimal_places=2)
+    estatura = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     complexion = models.CharField(max_length=10)
     tez = models.CharField(max_length=10)
     pelo = models.CharField(max_length=10)
@@ -77,12 +77,12 @@ class PacientexServicio(models.Model):
     #Vehículo
     marca_vehiculo = models.ForeignKey(MarcaVehiculo, on_delete=models.SET_NULL, null=True, blank=True)
     placa_vehiculo = models.CharField(max_length=10, null=True, blank=True)
-    color_vehiculo = models.CharField(max_length=10, null=True)
+    color_vehiculo = models.CharField(max_length=10, null=True, blank=True)
 
 
-    fecha_ultima_comida = models.DateTimeField(null=True, blank=True) #Null True
+    fecha_ultima_comida = models.DateTimeField() #Null True
     fallecio = models.BooleanField(default=False)
-    hospital = models.ForeignKey(Hospitales, on_delete=models.SET_NULL, null=True, blank=True)
+    hospital = models.ForeignKey(Hospitales, on_delete=models.SET_NULL, null=True)
 
     #Acompañante
     tiene_acompanante = models.BooleanField(default=False)
@@ -113,7 +113,7 @@ class PacientexServicio(models.Model):
     #Impresión Diagnóstica
     nivel_concienciaa = models.CharField(max_length=10, null=True, blank=True)
     piel = models.CharField(max_length=10, null=True, blank=True)
-    antecedente = models.CharField(max_length=255, null=True, blank=True)
+    antecedente = models.CharField(null=True, blank=True)
     sintoma = models.TextField(null=True, blank=True)
     pulso_diagnostico = models.CharField(max_length=10, null=True, blank=True)    
     respiracion_diagnostico = models.CharField(max_length=10, null=True, blank=True)    
@@ -136,7 +136,7 @@ class PacientexServicio(models.Model):
     respuesta_motora_glasgow = models.CharField(max_length=10, null=True, blank=True)
 
     edad_tipo = models.CharField(max_length=10, null=True, blank=True)
-    domicilio_numero = models.CharField(max_length=10, null=True, blank=True)
+    domicilio_numero = models.CharField(max_length=10)
 
     def __str__(self):
         return f"{self.clave}"  
@@ -212,22 +212,23 @@ class TestigoxPaciente(models.Model):
     edad = models.IntegerField()
     domicilio = models.CharField(max_length=100, null=True)
     telefono = models.CharField(max_length=20, null=True)
+    parentesco = models.CharField(max_length=50, null=True, blank=True)
 
 
 class EmbarazoxPaciente(models.Model):
     secuencia = models.IntegerField(primary_key=True)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
-    numero_gestaciones = models.IntegerField()
-    numero_partos = models.IntegerField()
-    numero_cesareas = models.IntegerField()
-    numero_abortos = models.IntegerField()
-    utlima_menstruacion = models.DateTimeField()
-    edad_gestacional = models.IntegerField()
+    numero_gestaciones = models.IntegerField(blank=True)
+    numero_partos = models.IntegerField(blank=True)
+    numero_cesareas = models.IntegerField(blank=True)
+    numero_abortos = models.IntegerField(blank=True)
+    utlima_menstruacion = models.DateTimeField(blank=True)
+    edad_gestacional = models.IntegerField(blank=True)
     presenta_sangrado = models.BooleanField(default=False)
-    inicio_contracciones = models.DateTimeField()
+    inicio_contracciones = models.DateTimeField(blank=True)
     bolsa_rota = models.BooleanField(default=False)
     atencion_medica_embarazo = models.BooleanField(default=False)
-    nota = models.TextField()
+    nota = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.secuencia}"  

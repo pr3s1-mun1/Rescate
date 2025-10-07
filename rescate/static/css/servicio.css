@@ -1,3 +1,26 @@
+:root {
+    --primary: #7a001f;
+    --primary-dark: #5a0018;
+    --primary-light: #ffeaea;
+    --secondary: #303030;
+    --accent: #FFC72C;
+    --text: #1A1A1A;
+    --text-light: #4D4D4D;
+    --light: #F5F7FA;
+    --light-gray: #E5E7EB;
+    --border: #D1D5DB;
+    --success: #10B981;
+    --error: #EF4444;
+    --warning: #F59E0B;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .groupbox {
   background-color: #f8f9fa;
   padding: 20px;
@@ -221,4 +244,24 @@ h2 {
     text-align: center;
     padding: 40px;
     color: #6c757d;
+}
+
+.alert {
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.9rem;
+}
+
+.alert-error {
+    background-color: var(--primary-light);
+    border-left: 4px solid var(--error);
+    color: var(--error);
+}
+
+.alert i {
+    margin-right: 12px;
+    font-size: 1.2rem;
 }

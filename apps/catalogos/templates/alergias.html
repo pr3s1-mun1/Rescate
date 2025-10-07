@@ -36,10 +36,10 @@
                         <td>{{ alergia.clave }}</td>
                         <td>{{ alergia.descripcion }}</td>
                         <td class="text-center">
-                            <a href="{% url 'update_catalogo' 'alergias' alergia.clave %}" class="btn-action"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'update_catalogo' 'alergias' alergia.clave %}" class="btn-action"><i class="bi bi-pencil-fill"></i></a>
                             <form method="POST" action="{% url 'delete_catalogo' 'alergias' alergia.clave %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta alergia?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-action"><i class="bi bi-trash"></i></button>
+                                <button type="submit" class="btn-action"><i class="bi bi-trash-fill"></i></button>
 
                             </form>
                         </td>

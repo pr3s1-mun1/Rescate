@@ -30,14 +30,15 @@ class ServicioForm(forms.ModelForm):
         # Agrega la clase 'form-control' a todos los widgets
         for field in self.fields:
             self.fields[field].widget.attrs.update({
-                'class': 'form-control'
+                'class': 'form-control',
+                'required' : 'True',
             })
         # Para el campo 'clave', lo pones como readonly y con otras clases
         if 'clave' in self.fields:
             self.fields['clave'].widget.attrs.update({
                 'class': 'form-control bg-light highlight-field',
-                'readonly': True
             })
+
 
 
 class ParamedicosForm(forms.ModelForm):
@@ -52,12 +53,18 @@ class PacientesForm(forms.ModelForm):
         'fallecio', 'entregan_pertenencias', 'tiene_acompanante',
         'libera_responsabilidad', 'firmo_liberacion', 'niega_firmar'
     ]
+
+    EXCLUDE_REQUIRED = [
+        'telefono', 'descripcion_pertenencias', 'nombre_acompanante',
+        'sexo_acompanante', 'edad_acompanante', 'domicilio_acompanante',
+        'parentesco_acompanante', 'nombre_recibe', 'cargo_recibe', 'empleado_recibe',
+        'fecha_liberacion_respon', 'estatura', 'edad', 'placa_vehiculo', 'marca_vehiculo',
+        'nombre_agente', 'numero_agente'
+    ]
+
     DATE_FIELDS = [
-        'fecha_salida',
-        'fecha_llegada',
-        'fecha_retorno',
-        'fecha_ultima_comida',
-        'fecha_liberacion_respon'
+        'fecha_salida', 'fecha_llegada', 'fecha_retorno',
+        'fecha_ultima_comida', 'fecha_liberacion_respon'
     ]
 
     class Meta:
@@ -81,48 +88,70 @@ class PacientesForm(forms.ModelForm):
             'respuesta_motora_glasgow': forms.Select(choices=[('1', 'NO EVALUADO'), ('2', 'OBEDECE ORDENES'), ('3', 'LOCALIZA DOLOR'), ('4', 'RECHAZO AL DOLOR'), ('5', 'FLEXION ANORMAL AL DOLOR'), ('6', 'EXTENSION ANORMAL AL DOLOR'), ('7', 'NO RESPUESTA')]),
             'edad_tipo': forms.Select(choices=[('1', 'DIAS'), ('2', 'SEMANAS'), ('3', 'MESES'), ('4', 'AÑOS')]),
             'color_vehiculo': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'BLANCO'), ('3', 'NEGRO'), ('4', 'ROJO'), ('5', 'AMARILLO'), ('6', 'VERDE'), ('7', 'CAFE'), ('8', 'GRIS')]),
-            'parentesco_acompanante': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'PADRE'), ('3', 'MADRE'), ('4', 'HERMANO(A)'), ('5', 'TIO(A)'), ('6', 'ABUELO(A)'), ('7', 'CUÑADO(A)'), ('8', 'HIJO(A)')]),
+            'parentesco_acompanante': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'PADRE'), ('3', 'MADRE'), ('4', 'HERMANO(A)'), ('5', 'TIO(A)'), ('6', 'ABUELO(A)'), ('7', 'CUÑADO(A)'), ('8', 'HIJO(A)'), ('9', 'ESPOSO(A)'), ('10', 'COMPAÑERO(A)')]),
             'sexo_acompanante' : forms.Select(choices=[('N', 'NO ESPECIFICA'), ('M', 'MASCULINO'), ('F', 'FEMENINO')]),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['enfermedad'].queryset = Enfermedad.objects.all().order_by('nombre')
-        self.fields['base'].queryset = Bases.objects.all().order_by('clave')
+
+        #Deshabilitar opción vacía
+        """self.fields['enfermedad'].empty_label = None
+        self.fields['base'].empty_label = None
+        self.fields['ambulancia'].empty_label = None
+        self.fields['hospital'].empty_label = None
+        self.fields['empleado_recibe'].empty_label = None
+        self.fields['marca_vehiculo'].empty_label = None"""
+
+
+
+        # Querysets dinámicos
+        self.fields['enfermedad'].queryset = Enfermedad.objects.order_by('nombre')
+        self.fields['base'].queryset = Bases.objects.order_by('clave')
         self.fields['ambulancia'].queryset = Ambulancias.objects.filter(estado='A').order_by('descripcion')
         self.fields['hospital'].queryset = Hospitales.objects.order_by('nombre')
         self.fields['empleado_recibe'].queryset = Paramedicos.objects.filter(estatus='A', tipo='P').order_by('nombre')
 
         for field_name, field in self.fields.items():
-            if field_name in self.__class__.DATE_FIELDS:
+            # Campos tipo fecha
+            if field_name in self.DATE_FIELDS:
                 field.widget = forms.DateTimeInput(
-                    attrs={
-                        'type': 'datetime-local',
-                        'class': 'form-control mb-3'
-                    },
+                    attrs={'type': 'datetime-local', 'class': 'form-control mb-3'},
                     format='%Y-%m-%dT%H:%M'
                 )
-                if self.instance and hasattr(self.instance, field_name):
-                    date_value = getattr(self.instance, field_name)
-                    if date_value:
-                        field.initial = date_value.strftime('%Y-%m-%dT%H:%M')
+                if self.instance and getattr(self.instance, field_name, None):
+                    field.initial = getattr(self.instance, field_name).strftime('%Y-%m-%dT%H:%M')
 
-            elif field_name in self.__class__.CHOICES:
-                field.widget = forms.Select(
+            # Campos booleanos con "Sí / No"
+            elif field_name in self.CHOICES:
+                self.fields[field_name] = forms.TypedChoiceField(
                     choices=[(True, 'Sí'), (False, 'No')],
-                    attrs={'class': 'form-control mb-3'}
+                    coerce=lambda x: x == 'True',
+                    widget=forms.Select(attrs={'class': 'form-control mb-3'})
                 )
 
-            elif field_name in self.__class__.EXCLUDED_FIELDS:
+            # Campos bloqueados
+            elif field_name in self.EXCLUDED_FIELDS:
                 field.widget.attrs.update({
                     'class': 'form-control bg-light mb-3',
                     'readonly': True
                 })
+                continue  # salta lo demás
 
-            else:
-                field.widget.attrs.update({
-                    'class': 'form-control mb-3'
-                })
+            # Por defecto todos requeridos
+            field.required = True
+            field.widget.attrs['required'] = 'required'
+
+            # Excepto los listados como no requeridos
+            if field_name in self.EXCLUDE_REQUIRED:
+                field.required = False
+                field.widget.attrs.pop('required', None)
+
+            # Agrega la clase base sin sobreescribir
+            classes = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = f'{classes} form-control mb-3'.strip()
+
+
 
 class UnidadAsignadoForm(forms.ModelForm):
     class Meta:

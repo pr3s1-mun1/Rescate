@@ -5,8 +5,9 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from django.db import transaction
-from django.db.models import Max, Q, OuterRef, Exists, Value
+from django.db.models import Max, Q, OuterRef, Exists, Value, Subquery
 from django.db.models.functions import Concat
+from django.contrib import messages
 
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
@@ -39,9 +40,9 @@ def buscar_servicios_filtrados(filtros):
     if filtros.get('clave'):
         qs = qs.filter(servicio__clave__icontains=filtros['clave'])
     if filtros.get('fecha_inicio'):
-        qs = qs.filter(servicio__fecha__gte=filtros['fecha_inicio'])
+        qs = qs.filter(servicio__fecha__date__gte=filtros['fecha_inicio'])
     if filtros.get('fecha_fin'):
-        qs = qs.filter(servicio__fecha__lte=filtros['fecha_fin'])
+        qs = qs.filter(servicio__fecha__date__lte=filtros['fecha_fin'])
     if filtros.get('direccion'):
         qs = qs.filter(servicio__direccion_emergencia__calle__icontains=filtros['direccion'])
 
@@ -205,6 +206,8 @@ def vista_principal(request):
 
     return render(request, 'serv_principal.html', context)
 
+
+
 def crear_servicio(request):
     if request.method == 'POST':
         servicio_form = ServicioForm(request.POST)
@@ -297,6 +300,8 @@ def crear_servicio(request):
 
     return render(request, 'modificar_servicio.html', context)
 
+
+
 def carga_modifica(request, pk, ps):
     try:
         servicio = get_object_or_404(Servicio, pk=pk)
@@ -311,7 +316,6 @@ def carga_modifica(request, pk, ps):
 
         permisos = request.session.get("permisos", 1)  # por defecto 1 si no se encuentra
         formularios_editables = permisos != 1
-        print(formularios_editables)
 
         es_paciente_nuevo = False
 
@@ -344,7 +348,6 @@ def carga_modifica(request, pk, ps):
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Accedió a modificar servicio con clave {pk} y paciente {ps if ps else 'nuevo'}"
         )
-        print(f"Se ejecuta esta funcion")
 
         context = {
             'form': form_servicio,
@@ -393,8 +396,7 @@ def carga_modifica_n(request, pk):
         permisos = request.session.get("permisos", 1)  # por defecto 1
         formularios_editables = permisos != 1
         es_paciente_nuevo = True
-        print(es_paciente_nuevo)
-        print(formularios_editables)
+
         servicio = get_object_or_404(Servicio, pk=pk)
         form_servicio = ServicioForm(instance=servicio)
 
@@ -415,7 +417,6 @@ def carga_modifica_n(request, pk):
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Accedió a carga_modifica_n para crear paciente nuevo en servicio {pk}"
         )
-        print(f"Acceso a carga_modifica_n para servicio {pk} con paciente nuevo")
 
         context = {
             'form': form_servicio,
@@ -459,6 +460,23 @@ def eliminar_servicio(request, pk):
     servicio.delete()
     return redirect('formulario_buscar')
 
+
+
+
+
+def guardar_auxiliares(request, servicio, paciente):
+        guardar_unidades(request, servicio)
+        guardar_paramedicos(request, servicio, paciente)
+        guardar_procedimientos(request, paciente)
+        guardar_alergias(request, paciente)
+        guardar_materiales(request, paciente)
+        guardar_ingeridos(request, paciente)
+        guardar_administrados(request, paciente)
+        guardar_equipos(request, paciente)
+        guardar_lesiones(request, paciente)
+        guardar_quemaduras(request, paciente)
+        guardar_impactos(request, paciente)
+        guardar_testigos(request, paciente)
 
 
 def guardar_todo(request, pk, ps):
@@ -526,20 +544,8 @@ def guardar_todo(request, pk, ps):
         parte.save()
 
 
-
         # Guardado auxiliar
-        guardar_unidades(request, servicio)
-        guardar_paramedicos(request, servicio, paciente)
-        guardar_procedimientos(request, paciente)
-        guardar_alergias(request, paciente)
-        guardar_materiales(request, paciente)
-        guardar_ingeridos(request, paciente)
-        guardar_administrados(request, paciente)
-        guardar_equipos(request, paciente)
-        guardar_lesiones(request, paciente)
-        guardar_quemaduras(request, paciente)
-        guardar_impactos(request, paciente)
-        guardar_testigos(request, paciente)
+        guardar_auxiliares(request, servicio, paciente)
 
         # Guardado de embarazo (si aplica)
         embarazo = request.POST.get('embarazo') == 'true'
@@ -587,53 +593,78 @@ def guardar_todo(request, pk, ps):
         url = f"{base_url}?{query_string}"
         return redirect(url)
 
-
-
 def guardar_todo_n(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
     paciente = None  # Siempre será nuevo
     salida_falso = False
 
     if request.method != 'POST':
+        # GET: inicializar formularios
         siguiente_clave = PacientexServicio.obtener_siguiente_numero()
         pacientes_form = PacientesForm(initial={'clave': siguiente_clave})
+        form_servicio = ServicioForm(instance=servicio)
         return render(request, 'modificar_servicio.html', {
-            'form_servicio': ServicioForm(instance=servicio),
+            'form_servicio': form_servicio,
             'pacientes_form': pacientes_form,
             'servicio': servicio,
             'paciente': paciente,
             'editar': True
         })
 
+    # POST
     form_servicio = ServicioForm(request.POST, instance=servicio)
     pacientes_form = PacientesForm(request.POST)
+    parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
+    partes_form = PartesAsignadoForm(request.POST, instance=parte_instancia)
+
+    # Validación antes de guardar
+    errores = False
+    if not form_servicio.is_valid():
+        errores = True
+
+    if not pacientes_form.is_valid():
+        errores = True
+
+    if not partes_form.is_valid():
+        errores = True
+
+
+    if errores:
+        print("==================================")
+        print(pacientes_form.errors)
+        print("==================================")
+        print(form_servicio.errors)
+        print("==================================")
+        print(partes_form.errors)
+
+    # Detectar salida en falso
+    tipo_servicio = form_servicio.cleaned_data.get("tipo_servicio_realizado")
+
+    # Lista de servicios que no requieren paciente (comisiones, falsas alarmas, etc.)
+    SERVICIOS_SIN_PACIENTE = [
+        245, 197, 213, 138, 247, 248, 38, 198, 227, 223, 224,
+        172, 222, 196, 211, 204, 180, 210, 186, 241, 218, 34, 35
+    ]
+
+    if tipo_servicio and tipo_servicio.clave in SERVICIOS_SIN_PACIENTE:
+        salida_falso = True
+
 
     try:
-        # Validación de servicio
-        if not form_servicio.is_valid():
-            print("Formulario de servicio inválido")
-            print(form_servicio.errors)
+        with transaction.atomic():
+            # Guardar Servicio
+            servicio = form_servicio.save(commit=False)
+            servicio.clave = pk
+            servicio.save()
 
-        # Detectar salida en falso
-        if form_servicio.cleaned_data.get("tipo_servicio_realizado") and \
-           form_servicio.cleaned_data["tipo_servicio_realizado"].clave == 34:  
-            salida_falso = True
-            print("Servicio marcado como SALIDA EN FALSO -> no se guardará paciente")
-
-        # Guardar Servicio siempre
-        servicio = form_servicio.save(commit=False)
-        servicio.clave = pk
-        servicio.save()
-
-        # Guardar Paciente y relaciones solo si no es salida en falso
-        if not salida_falso:
-            if pacientes_form.is_valid():
+            # Guardar paciente solo si no es salida en falso
+            if not salida_falso:
                 paciente = pacientes_form.save(commit=False)
                 paciente.clave = PacientexServicio.obtener_siguiente_numero()
                 paciente.servicio = servicio
                 paciente.save()
 
-                # Guardar relaciones
+                # Guardar auxiliares
                 guardar_unidades(request, servicio)
                 guardar_paramedicos(request, servicio, paciente)
                 guardar_procedimientos(request, paciente)
@@ -646,55 +677,35 @@ def guardar_todo_n(request, pk):
                 guardar_impactos(request, paciente)
                 guardar_testigos(request, paciente)
 
-                # Guardar embarazo si existe
+                # Guardar embarazo si aplica
                 if request.POST.get('embarazo') == 'true':
                     form_embarazo = EmbarazoAsignadoForm(request.POST)
                     if form_embarazo.is_valid():
                         embarazo_obj = form_embarazo.save(commit=False)
                         embarazo_obj.paciente = paciente
                         embarazo_obj.save()
-                    else:
-                        print('Error en formulario de embarazo:', form_embarazo.errors)
-                        Logs_Sistema.objects.create(
-                            usuario=request.session.get("user", "Desconocido"),
-                            accion=f"Error en formulario de embarazo para paciente {paciente.clave}: {form_embarazo.errors}"
-                        )
+                        #messages.success(request, "Datos de embarazo guardados correctamente.")
 
-                Logs_Sistema.objects.create(
-                    usuario=request.session.get("user", "Desconocido"),
-                    accion=f"Guardó nuevo paciente con clave {paciente.clave} en servicio {servicio.clave}"
-                )
-            else:
-                print("Formulario de paciente inválido")
-                Logs_Sistema.objects.create(
-                    usuario=request.session.get("user", "Desconocido"),
-                    accion=f"Error al guardar el paciente, se presentaron los siguientes errores: {pacientes_form.errors}"
-                )
 
-        # Guardar partes siempre, usando paciente si existe
-        parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
-        partes_form = PartesAsignadoForm(request.POST or None, instance=parte_instancia)
-        if partes_form.is_valid():
+            # Guardar partes
             parte_obj = partes_form.save(commit=False)
+            parte_obj.servicio = servicio
             if paciente:
                 parte_obj.paciente = paciente
-            parte_obj.servicio = servicio
             parte_obj.save()
-        else:
-            print("Errores en formulario de partes:", partes_form.errors)
 
+
+        # Redirección según salida en falso
         if salida_falso:
-            return redirect('exito_guardado_2', pk=servicio.clave )
+            return redirect('exito_guardado_2', pk=servicio.clave)
         else:
             return redirect('exito_guardado', pk=servicio.clave, ps=(paciente.clave if paciente else None))
 
     except Exception as e:
-        print(f"Error general en guardar_todo_n: {e}")
-        Logs_Sistema.objects.create(
-            usuario=request.session.get("user", "Desconocido"),
-            accion=f"Error general en guardar_todo_n para servicio {pk}: {e}"
-        )
+        #messages.error(request, f"Ocurrió un error inesperado: {e}")
         return redirect('fallo_guardado', error=str(e))
+
+
 
 
 def exito_guardado(request, pk, ps):
@@ -819,16 +830,16 @@ def guardar_testigos(request, paciente):
         edad = testigo_data.get('edad')
         direccion = testigo_data.get('direccion')
         telefono = testigo_data.get('telefono')
+        parentesco = testigo_data.get('parentesco')
         
-
-        print(f"Guardando testigo: {nombre}, Edad: {edad}, Dirección: {direccion}, Teléfono: {telefono}")
         # Crear y guardar cada testigo
         TestigoxPaciente.objects.create(
             paciente=paciente,
             nombre=nombre,
             edad=edad,
             domicilio=direccion,
-            telefono=telefono
+            telefono=telefono,
+            parentesco=parentesco
         )
 
 @requiere_tipo_paramedico(3, 4, 5)
@@ -1024,100 +1035,71 @@ def editar_combustible(request, clave):
 
 
 
-
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)
 def ver_reloj(request):
-    alerta_fecha_futura = False
     hoy = timezone.now().date()
-
-    if request.method == 'POST':
-        for key, value in request.POST.items():
-            if key.startswith('estatus_'):
-                try:
-                    paramedico_id = int(key.replace('estatus_', ''))
-                    estatus = value
-                    observacion = request.POST.get(f'observacion_{paramedico_id}', '').strip()
-                    fecha_actual = timezone.now()
-
-                    ya_existe = Reloj.objects.filter(
-                        paramedico_id=paramedico_id,
-                        fecha__date=fecha_actual.date()
-                    ).exists()
-
-                    if not ya_existe:
-                        Reloj.objects.create(
-                            paramedico_id=paramedico_id,
-                            fecha=fecha_actual,
-                            estatus=estatus,
-                            observacion=observacion
-                        )
-
-                        Logs_Sistema.objects.create(
-                            usuario=request.session.get("user", "Desconocido"),
-                            accion=f"Registró asistencia de paramédico ID {paramedico_id} con estatus {estatus} el {fecha_actual}"
-                        )
-
-                        print(f"✅ Registrado paramédico {paramedico_id} con estatus {estatus}")
-                    else:
-                        print(f"⚠️ Ya existe asistencia para el paramédico {paramedico_id} hoy")
-
-                except Exception as e:
-                    print(f"❌ Error registrando asistencia de paramédico {paramedico_id}: {e}")
-                    Logs_Sistema.objects.create(
-                        usuario=request.session.get("user", "Desconocido"),
-                        accion=f"Error registrando asistencia de paramédico {paramedico_id}: {e}"
-                    )
-
-        return redirect('ver_reloj')
-
-    # Procesar filtro de fecha
+    alerta_fecha_futura = False
     fecha_str = request.GET.get('fecha')
-    if fecha_str:
-        try:
-            fecha_filtrada = datetime.strptime(fecha_str, '%Y-%m-%d').date()
-        except ValueError:
-            fecha_filtrada = hoy
-    else:
+
+    # Procesar fecha filtrada
+    try:
+        fecha_filtrada = datetime.strptime(fecha_str, '%Y-%m-%d').date() if fecha_str else hoy
+    except ValueError:
         fecha_filtrada = hoy
 
     if fecha_filtrada > hoy:
         alerta_fecha_futura = True
-        paramedicos = []
-    else:
-        # Solo paramédicos con registros ese día (exacto o hasta hoy si es hoy)
-        if fecha_filtrada == hoy:
-            relojes = Reloj.objects.filter(
-                paramedico=OuterRef('pk'),
-                fecha__date__lte=fecha_filtrada
-            )
-        else:
-            relojes = Reloj.objects.filter(
-                paramedico=OuterRef('pk'),
-                fecha__date=fecha_filtrada
-            )
+
+    # POST: registrar o actualizar estatus
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            if key.startswith('estatus_'):
+                try:
+                    # key = estatus_{paramedico_id}
+                    paramedico_id = int(key.replace('estatus_', ''))
+                    observacion = request.POST.get(f'observacion_{paramedico_id}', '').strip()
+
+                    # Tomar fecha enviada en el formulario, si existe
+                    fecha_input_str = request.POST.get(f'fecha_{paramedico_id}', fecha_filtrada.strftime('%Y-%m-%d'))
+                    try:
+                        fecha_input = datetime.strptime(fecha_input_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        fecha_input = hoy
+
+                    # Buscar o crear registro para esa fecha
+                    obj, created = Reloj.objects.get_or_create(
+                        paramedico_id=paramedico_id,
+                        fecha__date=fecha_input,
+                        defaults={'estatus': value, 'observacion': observacion, 'fecha': datetime.combine(fecha_input, datetime.min.time())}
+                    )
+
+                    if not created:
+                        obj.estatus = value
+                        obj.observacion = observacion
+                        obj.save()
+
+                except Exception as e:
+                    print(f"❌ Error registrando asistencia: {e}")
+
+        return redirect(f'{request.path}?fecha={fecha_filtrada.strftime("%Y-%m-%d")}')
+
+    # Obtener paramédicos con último estatus de la fecha filtrada
+    if not alerta_fecha_futura:
+        relojes = Reloj.objects.filter(
+            paramedico=OuterRef('pk'),
+            fecha__date__lte=fecha_filtrada
+        ).order_by('-fecha')
 
         paramedicos = Paramedicos.objects.filter(
-            Q(estatus='A') & (Q(tipo='P') | Q(tipo='A') | Q(tipo='S')),
-            Exists(relojes)
-        ).exclude(clave=16).order_by('nombre')
+            Q(estatus='A') & Q(tipo__in=['P', 'A', 'S'])
+        ).exclude(clave=16).annotate(
+            ultimo_estatus=Subquery(relojes.values('estatus')[:1]),
+            ultima_observacion=Subquery(relojes.values('observacion')[:1])
+        ).order_by('nombre')
+    else:
+        paramedicos = []
 
-        for p in paramedicos:
-            if fecha_filtrada == hoy:
-                ultimo = Reloj.objects.filter(
-                    paramedico=p,
-                    fecha__date__lte=fecha_filtrada
-                ).order_by('-fecha').first()
-            else:
-                ultimo = Reloj.objects.filter(
-                    paramedico=p,
-                    fecha__date=fecha_filtrada
-                ).order_by('-fecha').first()
-
-            p.ultimo_estatus = ultimo.estatus if ultimo else ''
-            p.ultima_observacion = ultimo.observacion if ultimo else ''
-
-    print(paramedicos)
     status_options = [
         ('A', 'ACTIVO'), ('F', 'BAJA'), ('D', 'DESCANSO'), ('E', 'DESCANSO ADICIONAL'),
         ('N', 'FALTA INJUSTIFICADA'), ('J', 'FALTA JUSTIFICADA'), ('I', 'INCAPACIDAD'),
@@ -1130,6 +1112,7 @@ def ver_reloj(request):
         'fecha_filtrada': fecha_filtrada.strftime('%Y-%m-%d'),
         'alerta_fecha_futura': alerta_fecha_futura,
     })
+
 
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)

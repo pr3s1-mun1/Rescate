@@ -21,16 +21,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('servicioForm');
     const selectTipo = document.getElementById('id_tipo_servicio_realizado');
 
-    const comisiones = ['245','197','213','138','247','248','38','198','227','223','224','172','222','196','211','204','180','210','186','241','218', '34', '35']
+    // IDs de servicio que deben ignorar la pestaña paciente
+    const comisiones = ['245','197','213','138','247','248','38','198','227','223','224','172','222','196','211','204','180','210','186','241','218','34','35'];
+
+    // Detectar cambios en el tipo de servicio
+    selectTipo.addEventListener('change', function () {
+        const esComision = comisiones.includes(selectTipo.value);
+        const camposPaciente = document.querySelectorAll('#paciente [required]');
+
+        if (esComision) {
+            // 🔹 Quitar required de los campos del formulario paciente
+            camposPaciente.forEach(el => {
+                el.dataset.wasRequired = 'true';
+                el.removeAttribute('required');
+            });
+            console.log('Campos de paciente deshabilitados (comisión detectada)');
+        } else {
+            // 🔹 Restaurar required si era necesario
+            camposPaciente.forEach(el => {
+                if (el.dataset.wasRequired === 'true') {
+                    el.setAttribute('required', '');
+                }
+            });
+            console.log('Campos de paciente reactivados');
+        }
+    });
 
     form.addEventListener('submit', function (e) {
-        // Saltar validaciones si se selecciona un valor específico
-        if (comisiones.includes(selectTipo.value)) { 
-            return true; // permite enviar el formulario sin validar las pestañas
+        const esComision = comisiones.includes(selectTipo.value);
+
+        // Validar pestañas (JS)
+        let pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'paciente', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes'];
+        let pestanasIgnorar = ['procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes', 'paciente']
+        if (esComision) {
+            pestañasAValidar = pestañasAValidar.filter(tab => !pestanasIgnorar.includes(tab));
         }
 
-        // Validación normal de pestañas
-        const pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes'];
         let todoValido = true;
 
         for (const tabId of pestañasAValidar) {
@@ -38,13 +64,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!resultado) {
                 todoValido = false;
 
-                // Cambiar a la pestaña con error y salir del loop
                 const tabButton = document.querySelector(`button[data-bs-target="#${tabId}"]`);
                 if (tabButton) {
                     const tab = new bootstrap.Tab(tabButton);
                     tab.show();
                 }
-
                 break;
             }
         }
@@ -55,14 +79,17 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
-        // Deshabilitar botón de submit mientras se guarda
+        // Deshabilitar el botón de submit mientras se guarda
         const submitBtn = document.getElementById('btnGuardar');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
+        }
 
         return true;
     });
 });
+
 
 
 

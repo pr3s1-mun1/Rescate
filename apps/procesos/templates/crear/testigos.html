@@ -53,7 +53,7 @@
 
                         <div class="mb-3">
                             <label for="telefono" class="form-label">Edad del testigo</label>
-                            <input type="number" class="form-control" id="telefono">
+                            <input type="number" class="form-control" id="edad">
                         </div>
 
                         <div class="mb-3">
@@ -63,8 +63,25 @@
 
                         <div class="mb-3">
                             <label for="numero" class="form-label">Teléfono del testigo</label>
-                            <input type="number" class="form-control" id="numero">
+                            <input type="number" class="form-control" id="telefono">
                         </div>
+
+                        <div class="mb-3">
+                            <label for="parentesco" class="form-label">Parentesco</label>
+                            <select name="parentesco" id="parentesco" class="form-select">
+                                <option value="NINGUNO">NINGUNO</option>
+                                <option value="PADRE">PADRE</option>
+                                <option value="MADRE">MADRE</option>
+                                <option value="HERMANO(A)">HERMANO(A)</option>
+                                <option value="TIO(A)">TIO(A)</option>
+                                <option value="ABUELO(A)">ABUELO(A)</option>
+                                <option value="CUÑADO(A)">CUÑADO(A)</option>
+                                <option value="HIJO(A)">HIJO(A)</option>
+                                <option value="ESPOSO(A)">ESPOSO(A)</option>
+                                <option value="COMPAÑERO(A)">COMPAÑERO(A)</option>
+                            </select>
+                        </div>
+
 
                         <a href="#" class="btn btn-primary" onclick="agregarTestigo()">Agregar</a>
                     </div>
@@ -74,13 +91,15 @@
                 <div class="col-md-6 ">
                     <div class="bg-light p-4 rounded shadow-sm">
                         <h5 class="mb-3">Lista de Testigos</h5>
-                        <table class="table table-bordered">
+                        <div class="table-container">
+                        <table class="custom-table">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Edad</th>
                                     <th>Dirección</th>
                                     <th>Teléfono</th>
+                                    <th>Parentesco</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -91,11 +110,17 @@
                                     <td>{{ testigo.edad }}</td>
                                     <td>{{ testigo.domicilio }}</td>
                                     <td>{{ testigo.telefono }}</td>
-                                    <td><button class="btn btn-danger btn-sm eliminar-fila">Eliminar</button></td>
+                                    <td>{{ testigo.parentesco |default:""}}</td>
+                                    <td>
+                                        <button type="button" class="btn-action eliminar-fila">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </div>

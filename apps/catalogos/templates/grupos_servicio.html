@@ -22,8 +22,8 @@
 
         <a href="{% url 'add_catalogo' 'grupos_servicio' %}" class="btn btn-success mb-3">Nuevo {{ catalogo|title }}</a>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+        <div class="table-container">
+            <table class="custom-table">
                 <thead class="table-light">
                     <tr>
                         <th>Clave</th>
@@ -38,14 +38,14 @@
                         <td>{{ gservicio.descripcion }}</td>
                         <td class="text-center">
                             <a href="{% url 'update_catalogo' 'grupos_servicio' gservicio.clave %}"
-                                class="btn btn-warning btn-sm"><i class="bi bi-pencil-fill"></i> Editar
+                                class="btn-action"><i class="bi bi-pencil-fill"></i> 
                             </a>
                             <form method="POST" action="{% url 'delete_catalogo' 'grupos_servicio' gservicio.clave %}"
                                 class="d-inline"
                                 onsubmit="return confirm('¿Estás seguro de eliminar este grupo de servicio?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i>
-                                    Eliminar
+                                <button type="submit" class="btn-action"><i class="bi bi-trash-fill"></i>
+                                    
                                 </button>
 
                             </form>
