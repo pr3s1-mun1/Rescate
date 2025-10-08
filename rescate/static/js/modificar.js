@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectTipo = document.getElementById('id_tipo_servicio_realizado');
 
     // IDs de servicio que deben ignorar la pestaña paciente
-    const comisiones = ['245','197','213','138','247','248','38','198','227','223','224','172','222','196','211','204','180','210','186','241','218','34','35'];
+    const comisiones = ['213','34','35'];
 
     // Detectar cambios en el tipo de servicio
     selectTipo.addEventListener('change', function () {

@@ -642,8 +642,7 @@ def guardar_todo_n(request, pk):
 
     # Lista de servicios que no requieren paciente (comisiones, falsas alarmas, etc.)
     SERVICIOS_SIN_PACIENTE = [
-        245, 197, 213, 138, 247, 248, 38, 198, 227, 223, 224,
-        172, 222, 196, 211, 204, 180, 210, 186, 241, 218, 34, 35
+        213, 34, 35
     ]
 
     if tipo_servicio and tipo_servicio.clave in SERVICIOS_SIN_PACIENTE:

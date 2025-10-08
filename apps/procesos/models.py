@@ -1,6 +1,7 @@
 from django.db import models
 from apps.catalogos.models import *
 from datetime import datetime
+from django.db import transaction
 
 class Servicio(models.Model):
     clave = models.IntegerField(primary_key=True)
@@ -28,8 +29,10 @@ class Servicio(models.Model):
 
     @classmethod
     def obtener_siguiente_numero(cls):
-        ultimo = cls.objects.order_by('-clave').first()
-        return ultimo.clave + 1 if ultimo else 1
+        with transaction.atomic():
+            # Bloquea la fila más reciente para evitar colisiones
+            ultimo = cls.objects.select_for_update().order_by('-clave').first()
+            return (ultimo.clave + 1) if ultimo else 1
 
 
 class ParamedicoxPaciente(models.Model):
