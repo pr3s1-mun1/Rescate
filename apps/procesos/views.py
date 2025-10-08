@@ -702,7 +702,10 @@ def guardar_todo_n(request, pk):
             return redirect('exito_guardado', pk=servicio.clave, ps=(paciente.clave if paciente else None))
 
     except Exception as e:
-        #messages.error(request, f"Ocurrió un error inesperado: {e}")
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Error general en guardar_todo para servicio {pk}: {e}"
+        )
         return redirect('fallo_guardado', error=str(e))
 
 
