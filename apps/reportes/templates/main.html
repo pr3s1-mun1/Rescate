@@ -41,6 +41,7 @@
                 </a>
             </div>
 
+            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
             <div class="mb-4">
                 <a href="{% url 'reporte_servicios_x_ambulancia' %}" class="text-decoration-none">
                     <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
@@ -85,6 +86,8 @@
                 </a>
             </div>
 
+            {% endif %}
+
             <div class="mb-4">
                 <a href="{% url 'reporte_sobresalientes' %}" class="text-decoration-none">
                     <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
@@ -95,6 +98,8 @@
                     </div>
                 </a>
             </div>
+
+            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
 
             <div class="mb-4">
                 <a href="{% url 'reporte_parte_informativo' %}" class="text-decoration-none">
@@ -129,6 +134,8 @@
                 </a>
             </div>
 
+            {% endif %}
+
             <div class="mb-4">
                 <a href="{% url 'reporte_materiales' %}" class="text-decoration-none">
                     <div class="option-card bg-white text-center p-6 rounded-lg shadow-md h-full">
@@ -139,6 +146,8 @@
                     </div>
                 </a>
             </div>
+
+            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
 
             <div class="mb-4">
                 <a href="{% url 'resumen_tipo_servicio' %}" class="text-decoration-none">
@@ -194,6 +203,8 @@
                     </div>
                 </a>
             </div>
+
+            {% endif %}
         </div>
     </div>
 

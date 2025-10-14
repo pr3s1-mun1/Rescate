@@ -12,6 +12,7 @@ from collections import defaultdict
 from django.db import connection
 from datetime import date, timedelta
 from django.core.paginator import Paginator
+import io 
 
 @requiere_sesion
 @requiere_tipo_paramedico(5)
@@ -24,12 +25,11 @@ def cargar_logs(request):
     return render(request, 'admin/logs.html', {'logs':logs_page})
 
 @requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+@requiere_tipo_paramedico(3, 4, 5)
 def cargar_reportes(request):
     return render(request, 'main.html')
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_servicios(request: HttpRequest):
     """
     Vista unificada para reporte de servicios que maneja:
@@ -75,8 +75,6 @@ def reporte_servicios(request: HttpRequest):
         return generar_pdf_response(context)
     return render(request, 'reportes/reporte_servicio_base_fecha.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
 def generar_pdf_response(context: dict) -> HttpResponse:
     """Genera la respuesta PDF a partir del contexto"""
     template = get_template('plantillas/reporte_servicio.html')
@@ -92,8 +90,7 @@ def generar_pdf_response(context: dict) -> HttpResponse:
         return response
     return HttpResponse('Error al generar PDF', status=500)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -150,8 +147,7 @@ def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
     return resultados
 
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_servicios_x_ambulancia(request):
     fecha_inicio = request.POST.get('fecha_inicio') or request.GET.get('fecha_inicio')
     fecha_fin = request.POST.get('fecha_fin') or request.GET.get('fecha_fin')
@@ -172,8 +168,7 @@ def reporte_servicios_x_ambulancia(request):
 
     return render(request, 'reportes/reporte_ambulancia.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def imprimir_reporte_ambulancia_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -208,8 +203,7 @@ def imprimir_reporte_ambulancia_pdf(request):
         return HttpResponse('Error al generar PDF', status=500)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def obtener_servicios_por_tipo(fecha_inicio, fecha_fin):
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -238,8 +232,6 @@ def obtener_servicios_por_tipo(fecha_inicio, fecha_fin):
     
     return resultados
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
 def reporte_servicios_x_tipo(request):
     from collections import defaultdict
 
@@ -272,8 +264,7 @@ def reporte_servicios_x_tipo(request):
 
     return render(request, 'reportes/reporte_resumen_servicios.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def imprimir_reporte_tipo_servicio_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -313,8 +304,7 @@ def imprimir_reporte_tipo_servicio_pdf(request):
         return HttpResponse('Error al generar PDF', status=500)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def obtener_totales_por_tipo_servicio(fecha_inicio, fecha_fin):
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -337,8 +327,7 @@ def obtener_totales_por_tipo_servicio(fecha_inicio, fecha_fin):
         resultados = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]
     return resultados
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def resumen_tipo_servicio(request):
     fecha_inicio = request.GET.get('fecha_inicio') or request.POST.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin') or request.POST.get('fecha_fin')
@@ -355,8 +344,7 @@ def resumen_tipo_servicio(request):
 
     return render(request, 'reportes/resumen_conteo_servicio.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def imprimir_resumen_tipo_servicio_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -382,8 +370,7 @@ def imprimir_resumen_tipo_servicio_pdf(request):
 
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def obtener_sobresalientes_por_fecha(fecha_inicio, fecha_fin):
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -440,8 +427,7 @@ palabras = {"sexo": {"1": "DESCONOCIDO", "2": "MASCULINO", "3": "FEMENINO"},
            "pelo": {"1": "NEGRO", "2": "CASTAÑO", "3": "RUBIO", "4": "PELIROJO", "5": "TEÑIDO", "6": "CANOSO", "7": "CALVO"},
            }
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_sobresalientes(request):
     fecha_inicio = request.GET.get('fecha_inicio') or request.POST.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin') or request.POST.get('fecha_fin')
@@ -487,8 +473,7 @@ def reporte_sobresalientes(request):
 
     return render(request, 'reportes/reporte_sobresalientes.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def imprimir_reporte_sobresalientes_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio') or request.POST.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin') or request.POST.get('fecha_fin')
@@ -577,8 +562,7 @@ def obtener_resultados_parte_informativo(fecha_inicio, fecha_fin):
     
     return resultados
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_parte_informativo(request):
     fecha_inicio = request.GET.get('fecha_inicio') or request.POST.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin') or request.POST.get('fecha_fin')
@@ -591,8 +575,7 @@ def reporte_parte_informativo(request):
         'fecha_fin': fecha_fin,
     })
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_parte_informativo_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -617,8 +600,7 @@ def reporte_parte_informativo_pdf(request):
         return HttpResponse('Error al generar PDF', status=500)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_paramedico_base(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -675,8 +657,7 @@ def reporte_paramedico_base(request):
         'total_por_base': dict(total_por_base),  # convertimos a dict para facilitar uso en template
     })
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_paramedico_base_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -731,8 +712,7 @@ def reporte_paramedico_base_pdf(request):
         return HttpResponse("Error al generar el PDF", status=500)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_materiales(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -775,8 +755,7 @@ def reporte_materiales(request):
 
     return render(request, 'reportes/reporte_materiales.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_materiales_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -817,8 +796,7 @@ def reporte_materiales_pdf(request):
     pisa.CreatePDF(html, dest=response)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_equipos(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -861,8 +839,7 @@ def reporte_equipos(request):
 
     return render(request, 'reportes/reporte_equipos.html', context)
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_equipos_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
@@ -903,8 +880,7 @@ def reporte_equipos_pdf(request):
     pisa.CreatePDF(html, dest=response)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_pacientes_por_sexo(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -961,8 +937,7 @@ def reporte_pacientes_por_sexo(request):
         "total_general": total_general,
     })
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_pacientes_por_sexo_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1031,8 +1006,7 @@ def reporte_pacientes_por_sexo_pdf(request):
         return HttpResponse("Error al generar el PDF", status=500)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_enfermedades_por_grupo(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1079,8 +1053,7 @@ def reporte_enfermedades_por_grupo(request):
 
 
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_asistencia_paramedicos(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1132,10 +1105,7 @@ def reporte_asistencia_paramedicos(request):
         "fecha_fin": fecha_fin.isoformat() if fecha_fin else ""
     })
 
-import io
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
 def reporte_asistencia_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1199,8 +1169,7 @@ def reporte_asistencia_pdf(request):
     response['Content-Disposition'] = 'inline; filename="plantillas/reporte_pdf_asistencia.html.pdf"'
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_enfermedades_por_grupo_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1254,8 +1223,7 @@ def reporte_enfermedades_por_grupo_pdf(request):
         return HttpResponse("Error al generar el PDF", status=500)
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_materiales_pacientes(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1286,8 +1254,7 @@ def reporte_materiales_pacientes(request):
         "fecha_fin": fecha_fin
     })
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_materiales_pacientes_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1330,8 +1297,7 @@ def reporte_materiales_pacientes_pdf(request):
 
     return response
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_medicamentos_pacientes(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
@@ -1362,8 +1328,7 @@ def reporte_medicamentos_pacientes(request):
         "fecha_fin": fecha_fin
     })
 
-@requiere_sesion
-@requiere_tipo_paramedico(4, 5)
+
 def reporte_medicamentos_pacientes_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")

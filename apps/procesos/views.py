@@ -434,7 +434,7 @@ def obtener_calles_por_calle(request):
 
 
 
-salidas_enfalso = ['34', '35', '1']
+salidas_enfalso = ['34', '35', '213']
 
 def agregar_paciente(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -508,7 +508,7 @@ def carga_modifica_v2(request, pk, ps=None):
     paciente = None
     formularios_editables = True
     usuario = request.session.get("permisos", 1)
-    formularios_editables = usuario in [4, 5]
+    formularios_editables = usuario in [2, 3, 4, 5]
 
     if ps:
         paciente = get_object_or_404(PacientexServicio, clave=ps, servicio=servicio)
