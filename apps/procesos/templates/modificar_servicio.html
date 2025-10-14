@@ -258,7 +258,46 @@
             {% endif %}
     </script>
 
+    <script>
+        {% if formularios_editables %}
 
+        {% else %}
+
+
+        // Deshabilitar todos los campos de todos los formularios
+        document.querySelectorAll("form").forEach(form => {
+            form.querySelectorAll("input, select, textarea").forEach(element => {
+            element.disabled = true;
+            });
+        });
+
+        const btnGuardar = document.getElementById("btnGuardar");
+        if (btnGuardar) {
+            btnGuardar.disabled = true;
+            btnGuardar.classList.add("disabled");
+        }
+
+
+        // Deshabilitar doble clic en tablas de paramédicos y unidades
+        const tablas = [
+            "#tabla-paramedicos-disponibles",
+            "#tabla-unidades",
+            "#tabla-paramedicos-asignados",
+            "#tabla-seleccionados"
+        ];
+        tablas.forEach(id => {
+            const tabla = document.querySelector(id);
+            if (tabla) {
+                tabla.addEventListener("dblclick", function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, true);
+            }
+        });
+
+
+        {% endif %}
+    </script>
 </body>
 
 </html>

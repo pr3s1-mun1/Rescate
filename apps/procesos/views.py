@@ -502,7 +502,7 @@ def agregar_paciente(request, pk):
     context.update(carga_relacionados(servicio))
     return render(request, 'agregar_paciente.html', context)
 
-
+@requiere_sesion
 def carga_modifica_v2(request, pk, ps=None):
     servicio = get_object_or_404(Servicio, pk=pk)
     paciente = None
