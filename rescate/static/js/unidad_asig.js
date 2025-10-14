@@ -1,4 +1,4 @@
-function moverUnidadASeleccionados(fila, clave, descripcion) {
+function moverUnidadASeleccionados(fila, clave, descripcion) { 
     const yaSeleccionado = document.querySelector(`#tabla-seleccionados tbody tr[data-clave="${clave}"]`);
     if (yaSeleccionado) return;
 
@@ -27,6 +27,7 @@ function moverUnidadASeleccionados(fila, clave, descripcion) {
 
     inputIdUnidad.addEventListener("input", llenarInputs);
     inputAgente.addEventListener("input", llenarInputs);
+    mayusculasInput();
 
     nuevaFila.ondblclick = function () {
         tablaSeleccionados.deleteRow(nuevaFila.rowIndex - 1);
@@ -64,6 +65,17 @@ function llenarInputs() {
         inputHidden.value = JSON.stringify(unidades);
     }
 }
+
+function mayusculasInput(event) {
+    const inputs = document.querySelectorAll('input[type="text"], textarea');
+
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    });
+};
+
 
 document.addEventListener("DOMContentLoaded", function () {
 

@@ -40,8 +40,8 @@
                             <i class="fas fa-user-md me-2"></i>Paramédicos
                         </button>
                     </li>
-                    <li>
-                        <button style="background-color: #001069; color: white;" type="submit" class="nav-link" id="btnGuardar" onclick="return confirmarGuardar()">
+                    <li class="nav-item nav-item-guardar" role="presentation">
+                        <button type="submit" class="nav-link btn-guardar" id="btnGuardar" onclick="return confirmarGuardar()">
                             <i class="fas fa-save me-2"></i> Guardar Servicio
                         </button>
                     </li>
@@ -51,35 +51,19 @@
                     <!-- Pestaña Servicio -->
                     <div class="tab-pane fade show active" id="servicio" role="tabpanel" aria-labelledby="servicio-tab">
                         {% include 'crear/servicio.html' %}
-                        <div class="d-flex justify-content-end mt-3">
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="unidad-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-end mt-3"></div>
                     </div>
                     
                     <!-- Pestaña Unidad -->
                     <div class="tab-pane fade" id="unidad" role="tabpanel" aria-labelledby="unidad-tab">
                         {% include 'crear/unidad_asignado.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="servicio-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="paramedicos-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
                     
                     <!-- Pestaña Paramédicos -->
                     <div class="tab-pane fade" id="paramedicos" role="tabpanel" aria-labelledby="paramedicos-tab">
                         {% include 'crear/paramedico_asignado.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="unidad-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"> </div>
                     </div>
                 </div>
             </form>

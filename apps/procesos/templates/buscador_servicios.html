@@ -12,8 +12,8 @@
     
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
+            --primary-color: #831f46;
+            --primary-hover: #81495f;
             --secondary-color: #6b7280;
             --light-bg: #f8fafc;
             --card-bg: #ffffff;
@@ -492,7 +492,7 @@
         <section class="search-section py-3">
             <div class="container">
                 <div class="card p-3">
-                    <form method="post">
+                    <form method="get">
                         {% csrf_token %}
 
                         <!-- Fila principal: número de servicio -->
@@ -694,7 +694,7 @@
 
                                     <!-- Actions -->
                                     <div class="acciones">
-                                        <a href="{% url 'carga_modifica' ps.servicio.clave ps.clave %}" class="btn-sm btn-primary">
+                                        <a href="{% url 'carga_modifica_v2_ps' ps.servicio.clave ps.clave %}" class="btn-sm btn-primary">
                                             <i class="fas fa-edit"></i> Modificar
                                         </a>
                                         <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank" style="display: inline;">
@@ -711,24 +711,25 @@
                         </div>
                         <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
                             {% if pacientes_servicios.has_other_pages %}
-                                <div style="display: inline-flex; gap: 0.5rem;">
-                                    {% if pacientes_servicios.has_previous %}
-                                        <a href="?page_con={{ pacientes_servicios.previous_page_number }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
-                                    {% endif %}
+                            <div style="text-align:center; margin-bottom:2rem; display:inline-flex; gap:0.5rem;">
+                                {% if pacientes_servicios.has_previous %}
+                                    <a href="?page_con={{ pacientes_servicios.previous_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
+                                {% endif %}
 
-                                    {% for num in pacientes_servicios.paginator.page_range %}
-                                        {% if pacientes_servicios.number == num %}
-                                            <span class="btn-sm btn-primary">{{ num }}</span>
-                                        {% elif num > pacientes_servicios.number|add:'-3' and num < pacientes_servicios.number|add:'3' %}
-                                            <a href="?page_con={{ num }}" class="btn-sm btn-secondary">{{ num }}</a>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if pacientes_servicios.has_next %}
-                                        <a href="?page_con={{ pacientes_servicios.next_page_number }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                                {% for num in pacientes_servicios.paginator.page_range %}
+                                    {% if pacientes_servicios.number == num %}
+                                        <span class="btn-sm btn-primary">{{ num }}</span>
+                                    {% elif num > pacientes_servicios.number|add:'-3' and num < pacientes_servicios.number|add:'3' %}
+                                        <a href="?page_con={{ num }}&{{ query_string }}" class="btn-sm btn-secondary">{{ num }}</a>
                                     {% endif %}
-                                </div>
+                                {% endfor %}
+
+                                {% if pacientes_servicios.has_next %}
+                                    <a href="?page_con={{ pacientes_servicios.next_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                                {% endif %}
+                            </div>
                             {% endif %}
+
                         </div>
                     {% else %}
                         <div class="empty-state">
@@ -781,7 +782,7 @@
                                         </div>
                                     </div>
                                     <div class="acciones">
-                                        <a href="{% url 'carga_modifica_n' servicio.clave %}" class="btn-sm btn-primary">
+                                        <a href="{% url 'carga_modifica_v2' servicio.clave %}" class="btn-sm btn-primary">
                                             <i class="fas fa-edit"></i> Modificar
                                         </a>
                                         <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank" style="display: inline;">
@@ -798,24 +799,25 @@
                         </div>
                         <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
                             {% if servicios_sin_paciente.has_other_pages %}
-                                <div style="display: inline-flex; gap: 0.5rem;">
-                                    {% if servicios_sin_paciente.has_previous %}
-                                        <a href="?page_sin={{ servicios_sin_paciente.previous_page_number }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
-                                    {% endif %}
+                            <div style="text-align:center; margin-bottom:2rem; display:inline-flex; gap:0.5rem;">
+                                {% if servicios_sin_paciente.has_previous %}
+                                    <a href="?page_sin={{ servicios_sin_paciente.previous_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
+                                {% endif %}
 
-                                    {% for num in servicios_sin_paciente.paginator.page_range %}
-                                        {% if servicios_sin_paciente.number == num %}
-                                            <span class="btn-sm btn-primary">{{ num }}</span>
-                                        {% elif num > servicios_sin_paciente.number|add:'-3' and num < servicios_sin_paciente.number|add:'3' %}
-                                            <a href="?page_sin={{ num }}" class="btn-sm btn-secondary">{{ num }}</a>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if servicios_sin_paciente.has_next %}
-                                        <a href="?page_sin={{ servicios_sin_paciente.next_page_number }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                                {% for num in servicios_sin_paciente.paginator.page_range %}
+                                    {% if servicios_sin_paciente.number == num %}
+                                        <span class="btn-sm btn-primary">{{ num }}</span>
+                                    {% elif num > servicios_sin_paciente.number|add:'-3' and num < servicios_sin_paciente.number|add:'3' %}
+                                        <a href="?page_sin={{ num }}&{{ query_string }}" class="btn-sm btn-secondary">{{ num }}</a>
                                     {% endif %}
-                                </div>
+                                {% endfor %}
+
+                                {% if servicios_sin_paciente.has_next %}
+                                    <a href="?page_sin={{ servicios_sin_paciente.next_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                                {% endif %}
+                            </div>
                             {% endif %}
+
                         </div>
                     {% else %}
                         <div class="empty-state">

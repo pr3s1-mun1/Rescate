@@ -4,7 +4,7 @@ from datetime import datetime
 from django.db import transaction
 
 class Servicio(models.Model):
-    clave = models.IntegerField(primary_key=True)
+    clave = models.AutoField(primary_key=True)
     fecha = models.DateTimeField(default=datetime.now)
     direccion_emergencia = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True)
     colonia_emergencia = models.ForeignKey(Colonia, on_delete=models.SET_NULL, null=True)
@@ -50,7 +50,7 @@ class UnidadxServicio(models.Model):
 
 class PacientexServicio(models.Model):
     #Servicio
-    clave = models.IntegerField(primary_key=True)
+    clave = models.AutoField(primary_key=True)
     servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True, related_name='pacientes')
     ambulancia = models.ForeignKey(Ambulancias, on_delete=models.SET_NULL, null=True)
     base = models.ForeignKey(Bases, on_delete=models.SET_NULL, null=True)
@@ -206,7 +206,7 @@ class ImpactoxVehiculo(models.Model):
 
 class PartexServico(models.Model):
     servicio = models.ForeignKey(Servicio, on_delete=models.SET_NULL, null=True)
-    parte = models.TextField()
+    parte = models.TextField(blank=True, null=True)
 
 class TestigoxPaciente(models.Model):
     clave = models.AutoField(primary_key=True)

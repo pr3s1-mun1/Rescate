@@ -12,10 +12,10 @@
 <body>
     {% include 'navbar.html' %}
 
-    <h1 class="text-center my-4 main-title">Agregar paciente nuevo</h1>
+    <h1 id="titulo-cambia" class="text-center my-4 main-title">Agregar paciente nuevo</h1>
     <div class="d-flex">
         <div class="container">
-            <form method="post" id="servicioForm" action="{% url 'guardar_todo' servicio.clave siguiente_clave %}" enctype="multipart/form-data" novalidate>
+            <form method="post" id="servicioForm" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
                 <ul class="nav nav-tabs" id="mainTabs" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -100,6 +100,12 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="quemadura-tab" data-bs-toggle="tab" data-bs-target="#quemadura"
+                            type="button" role="tab" aria-controls="quemadura" aria-selected="false">
+                            <i class="fa-solid fa-fire me-2"></i>Quemaduras
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="impacto-tab" data-bs-toggle="tab" data-bs-target="#impacto"
                             type="button" role="tab" aria-controls="impacto" aria-selected="false">
                             <i class="fa-solid fa-car me-2"></i>Impacto
@@ -117,200 +123,105 @@
                             <i class="fa-solid fa-comment me-2"></i>Partes
                         </button>
                     </li>
-                    <li class="nav-item mx-4" role="presentation">
-                        <button type="submit" class="btn nav-link" id="btnGuardar" onclick="return confirmarGuardar()">
-                            <i class="fas fa-save me-2"></i> Guardar Servicio
-                        </button>
-                    </li>
+                    <div class="nav-item-guardar">
+                        <li class="nav-item d-flex" role="presentation">
+                            <a href="#" id="btnGuardarSinPaciente" data-url="{% url 'guardar_sin_paciente' servicio.clave %}" class="btn-guardar btn nav-link">
+                                <i class="fas fa-save me-2"></i> Guardar sin paciente
+                            </a>
+                        </li>
+                        <li class="nav-item d-flex" role="presentation">
+                            <button type="submit" class="btn-guardar btn nav-link" id="btnGuardar" onclick="return confirmarGuardar()">
+                                <i class="fas fa-save me-2"></i> Guardar Servicio
+                            </button>
+                        </li>
+                    </div>
                 </ul>
 
                 <div class="tab-content p-3 border border-top-0 rounded-bottom" id="mainTabsContent">
                     <div class="tab-pane fade show active" id="servicio" role="tabpanel" aria-labelledby="servicio-tab">
                         {% include 'crear/servicio.html' %}
-                        <div class="d-flex justify-content-end mt-3">
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="unidad-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-end mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="unidad" role="tabpanel" aria-labelledby="unidad-tab">
                         {% include 'crear/unidad_asignado.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="servicio-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="paramedicos-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="paramedicos" role="tabpanel" aria-labelledby="paramedicos-tab">
                         {% include 'crear/paramedico_asignado.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="unidad-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="paciente-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="paciente" role="tabpanel" aria-labelledby="pestana4-tab">
                         {% include 'crear/paciente.html' %}
-
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paramedicos-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="pertenencias-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="pertenencias" role="tabpanel" aria-labelledby="pestana4-tab">
                         {% include 'crear/pertenencias.html' %}
 
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paciente-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="embarazo-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="embarazo" role="tabpanel" aria-labelledby="pestana5-tab">
                         {% include 'crear/embarazo.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="paciente-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="procedimiento-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="procedimiento" role="tabpanel" aria-labelledby="pestana6-tab">
                         {% include 'crear/procedimiento.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="embarazo-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="alergia-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="alergia" role="tabpanel" aria-labelledby="pestana7-tab">
                         {% include 'crear/alergia.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="procedimiento-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="material-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="material" role="tabpanel" aria-labelledby="pestana8-tab">
                         {% include 'crear/material.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="alergia-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="ingerido-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="ingerido" role="tabpanel" aria-labelledby="pestana9-tab">
                         {% include 'crear/ingerido.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="material-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="administrado-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="administrado" role="tabpanel" aria-labelledby="pestana10-tab">
                         {% include 'crear/administrado.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="ingerido-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="equipo-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="equipo" role="tabpanel" aria-labelledby="pestana11-tab">
                         {% include 'crear/equipo.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="administrado-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="lesion-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="lesion" role="tabpanel" aria-labelledby="pestana12-tab">
                         {% include 'crear/lesion.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="equipo-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="impacto-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="quemaduras" role="tabpanel" aria-labelledby="pestana16-tab">
+                        {% include 'crear/quemaduras.html' %}
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="impacto" role="tabpanel" aria-labelledby="pestana13-tab">
                         {% include 'crear/impacto.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="lesion-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="testigo-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                     <div class="tab-pane fade" id="testigo" role="tabpanel" aria-labelledby="pestana14-tab">
                         {% include 'crear/testigos.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="impacto-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                            <button type="button" class="btn btn-primary next-tab" data-next-tab="partes-tab">
-                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>  
+                        <div class="d-flex justify-content-between mt-3"></div>  
                     </div>
 
                     <div class="tab-pane fade" id="partes" role="tabpanel" aria-labelledby="pestana15-tab">
                         {% include 'crear/partes.html' %}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-secondary prev-tab" data-prev-tab="testigo-tab">
-                                <i class="fas fa-arrow-left me-2"></i> Anterior
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-between mt-3"></div>
                     </div>
 
                 </div>
@@ -318,46 +229,36 @@
         </div>
     </div>
 
-    <script src="{% static 'js/modificar.js' %}"></script>
         <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        {% if not paciente_nuevo %}
-        // Deshabilitar todos los campos de los formularios excepto botones de navegación
-        document.querySelectorAll("input, select, textarea, button[type='submit']").forEach(el => {
-            el.disabled = true;
-        });
-        {% endif %}
-
-        {% if not formularios_editables %}
-        
-        // Deshabilitar campos del formulario de servicio
-        const contenedor = document.querySelector(".form-container");
-        if (contenedor) {
-            contenedor.querySelectorAll("input, select, textarea, button").forEach(el => {
-            el.disabled = true;
+            {% if messages %}
+                {% for message in messages %}
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '{{ message }}',
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true,
+                background: '#4CAF50',   // color de fondo
+                color: 'white',          // color del texto
+                iconColor: 'white',      // color del icono
+                width: 350,              // ancho del toast (más grande)
+                padding: '1.5rem',       // padding mayor
+                customClass: {
+                    popup: 'rounded-4 shadow-lg',  // bordes más redondeados
+                    title: 'fw-bold fs-5 text-white'          // título más grande
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
             });
-        }
-
-        // Deshabilitar doble clic en tablas de paramédicos y unidades
-        const tablas = [
-            "#tabla-paramedicos-disponibles",
-            "#tabla-unidades",
-            "#tabla-paramedicos-asignados",
-            "#tabla-seleccionados"
-        ];
-        tablas.forEach(id => {
-            const tabla = document.querySelector(id);
-            if (tabla) {
-                tabla.addEventListener("dblclick", function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }, true);
-            }
-        });
-
-        {% endif %}
-    });
+                {% endfor %}
+            {% endif %}
     </script>
+
+    <script src="{% static 'js/agregar_paciente.js' %}"></script>
 </body>
 
 </html>

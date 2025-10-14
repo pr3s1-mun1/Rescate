@@ -1,61 +1,11 @@
-// Navegación entre pestañas
-document.querySelectorAll('.next-tab').forEach(button => {
-    button.addEventListener('click', function () {
-        const nextTabId = this.getAttribute('data-next-tab');
-        const nextTab = document.getElementById(nextTabId);
-        const tabInstance = new bootstrap.Tab(nextTab);
-        tabInstance.show();
-    });
-});
-
-document.querySelectorAll('.prev-tab').forEach(button => {
-    button.addEventListener('click', function () {
-        const prevTabId = this.getAttribute('data-prev-tab');
-        const prevTab = document.getElementById(prevTabId);
-        const tabInstance = new bootstrap.Tab(prevTab);
-        tabInstance.show();
-    });
-});
-
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('servicioForm');
-    const selectTipo = document.getElementById('id_tipo_servicio_realizado');
-
-    // IDs de servicio que deben ignorar la pestaña paciente
-    const comisiones = ['213','34','35'];
-
-    // Detectar cambios en el tipo de servicio
-    selectTipo.addEventListener('change', function () {
-        const esComision = comisiones.includes(selectTipo.value);
-        const camposPaciente = document.querySelectorAll('#paciente [required]');
-
-        if (esComision) {
-            // 🔹 Quitar required de los campos del formulario paciente
-            camposPaciente.forEach(el => {
-                el.dataset.wasRequired = 'true';
-                el.removeAttribute('required');
-            });
-            console.log('Campos de paciente deshabilitados (comisión detectada)');
-        } else {
-            // 🔹 Restaurar required si era necesario
-            camposPaciente.forEach(el => {
-                if (el.dataset.wasRequired === 'true') {
-                    el.setAttribute('required', '');
-                }
-            });
-            console.log('Campos de paciente reactivados');
-        }
-    });
 
     form.addEventListener('submit', function (e) {
-        const esComision = comisiones.includes(selectTipo.value);
-
         // Validar pestañas (JS)
         let pestañasAValidar = ['servicio', 'unidad', 'paramedicos', 'paciente', 'procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes'];
         let pestanasIgnorar = ['procedimiento', 'alergia', 'material', 'ingerido', 'administrado', 'equipo', 'lesion', 'impacto', 'partes', 'paciente']
-        if (esComision) {
-            pestañasAValidar = pestañasAValidar.filter(tab => !pestanasIgnorar.includes(tab));
-        }
+
 
         let todoValido = true;
 
@@ -227,4 +177,8 @@ function habilitarEliminacionPorDobleClick(idTabla) {
 
 function confirmarGuardar() {
     return confirm("¿Estás seguro de que deseas guardar los cambios?");
+}
+
+function confirmarCancelar() {
+    return confirm("¿Estás seguro de que desea cancelar el agregado del paciente?");
 }

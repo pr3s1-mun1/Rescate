@@ -226,13 +226,13 @@ class PartesAsignadoForm(forms.ModelForm):
     class Meta:
         model = PartexServico
         exclude = ['servicio']
-        fields = '__all__'
         widgets = {
             'parte': forms.Textarea(attrs={
                 'rows': 20,
                 'class': 'form-control mb-3'
             }),
         }
+
 
 class CombustibleForm(forms.ModelForm):
     class Meta:

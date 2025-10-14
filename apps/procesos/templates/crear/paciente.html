@@ -5,6 +5,7 @@
 
         <div class="container">
             <div class="form-container bg-light p-4 rounded shadow-sm">
+
                 <h1 class="text-center mb-4">Pacientes del servicio</h1>
 
                 {% csrf_token %}
@@ -45,7 +46,7 @@
                         <div class="col-md-4">
                             <div class="form-group mb-3">
                                 <label for="{{ form_paciente.clave.id_for_label }}"># Paciente</label>
-                                {{ form_paciente.clave }}
+                                <input type="text" class="form-control" value="{{ paciente_clave }}" disabled>
 
                                 <input type="hidden" name="paciente_id"
                                     value="{% if form_paciente.instance.id %}{{ form_paciente.instance.id }}{% endif %}">

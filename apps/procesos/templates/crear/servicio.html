@@ -41,10 +41,11 @@
 
                             <div class="col-md-4 mb-3">
                                 <div class="form-group highlight-field">
-                                    <label for="{{ form.numero_servicio.id_for_label }}" class="form-label"># Servicio</label>
-                                    {{ form.clave }}
+                                    <label class="form-label"># Servicio</label>
+                                    <input type="text" class="form-control" value="{{ servicio.clave }}" disabled>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="form-group">
@@ -99,13 +100,15 @@
                         </div>
                     </div>
 
-                    {% if pacientes %}
+                    {% if no_mostrar_pacientes %}
+
+                    {% else %}
                     <div class="groupbox mb-4">
                         <h2 class="groupbox-title mb-0">Pacientes Asociados</h2>
                         <a href="{% url 'agregar_paciente' servicio.pk %}" class="btn btn-primary btn-sm my-3">Agregar Paciente</a>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
+                        <div class="table-container">
+                            <table class="custom-table">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Paciente</th>
@@ -120,7 +123,13 @@
                                     <tr>
                                         <td>{{ p.clave }}</td>
                                         <td>{{ p.nombre }} {{ p.apellido_paterno }} {{ p.apellido_materno }}</td>
-                                        <td>{{ p.edad }}</td>
+                                        <td>
+                                            {% if p.edad is not None %}
+                                                {{ p.edad }} años
+                                            {% else %}
+                                                NO INGRESADO
+                                            {% endif %}
+                                        </td>
                                         <td>
                                             {% if p.sexo == 'M' %}
                                                 MASCULINO
@@ -131,16 +140,15 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="{% url 'carga_modifica' servicio.clave p.clave %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                            <a href="{% url 'carga_modifica_v2_ps' servicio.clave p.clave %}" class="btn btn-sm btn-outline-primary">Editar</a>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                    {% endif %}
-
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

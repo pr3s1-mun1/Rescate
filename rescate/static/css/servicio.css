@@ -1,5 +1,6 @@
 :root {
     --primary: #7a001f;
+    --guinda: #831f46;
     --primary-dark: #5a0018;
     --primary-light: #ffeaea;
     --secondary: #303030;
@@ -265,3 +266,37 @@ h2 {
     margin-right: 12px;
     font-size: 1.2rem;
 }
+
+.nav-link{
+  color: var(--guinda) !important;
+}
+
+.btn-guardar{
+  background-color: var(--guinda) !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.btn-guardar:hover{
+  background-color: var(--primary-dark) !important;
+  color: white !important;
+}
+
+.nav-item-guardar{
+  display: flex !important ;
+  margin-left: auto !important;
+  padding: 2px;
+}
+
+.btn-cancelar{
+  background-color: rgb(214, 214, 214) !important;
+  color: rgb(0, 0, 0) !important;
+  font-weight: bold !important;
+  margin-right: 10px !important;
+}
+
+.btn-cancelar:hover{
+  background-color: rgb(161, 161, 161) !important;
+  color: white !important;
+}
+
