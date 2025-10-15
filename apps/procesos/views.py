@@ -104,20 +104,45 @@ def buscar_servicios_sin_pacientes(filtros):
     return qs
 
 
+from urllib.parse import urlencode
+
+@requiere_sesion
+@requiere_tipo_paramedico(3, 4, 5)
 def formulario_buscar(request):
-    # Obtener filtros desde GET
     filtros = request.GET.dict()
 
-    # Query de pacientes con servicios
-    pacientes_servicios_query = buscar_servicios_filtrados(filtros) if filtros else PacientexServicio.objects.all().select_related('servicio').order_by('-servicio__clave')
+    # Pacientes con servicios existentes
+    if filtros:
+        pacientes_servicios_query = buscar_servicios_filtrados(filtros).filter(servicio__isnull=False)
+    else:
+        pacientes_servicios_query = (
+            PacientexServicio.objects
+            .filter(servicio__isnull=False)
+            .select_related('servicio')
+            .order_by('-servicio__clave')
+        )
+
     pacientes_servicios = paginar_queryset(pacientes_servicios_query, request, 'page_con')
 
-    # Query de servicios sin pacientes
+    # Claves de servicios con paciente
     claves_con_paciente = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
-    servicios_sin_paciente_query = buscar_servicios_sin_pacientes(filtros).exclude(clave__in=claves_con_paciente) if filtros else Servicio.objects.exclude(clave__in=claves_con_paciente).order_by('-clave')
+
+    # Servicios sin pacientes asociados
+    if filtros:
+        servicios_sin_paciente_query = (
+            buscar_servicios_sin_pacientes(filtros)
+            .exclude(clave__in=claves_con_paciente)
+        )
+    else:
+        servicios_sin_paciente_query = (
+            Servicio.objects
+            .exclude(clave__in=claves_con_paciente)
+            .order_by('-clave')
+        )
+
     servicios_sin_paciente = paginar_queryset(servicios_sin_paciente_query, request, 'page_sin')
 
-    # Reconstruir query string solo con filtros, sin page_con ni page_sin
+    # Reconstruir query string sin parámetros de paginación
     filtros_sin_paginacion = {k: v for k, v in filtros.items() if k not in ['page_con', 'page_sin']}
     query_string = urlencode(filtros_sin_paginacion)
 
@@ -127,8 +152,8 @@ def formulario_buscar(request):
         'filtros': filtros,
         'query_string': query_string,
     }
-
     return render(request, 'buscador_servicios.html', context)
+
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
 def formulario_servicio(request):    
@@ -142,6 +167,7 @@ def formulario_servicio(request):
     return render(request, 'create.html', context)
 
 #Función para mostrar conteos de hojas de servicio además de los botones de selección
+@requiere_sesion
 def vista_principal(request):
     hoy = timezone.now().date()
 
@@ -227,8 +253,13 @@ def eliminar_servicio(request, pk):
     print("Eliminando servicio con pk:", pk)
     servicio = get_object_or_404(Servicio, pk=pk)
     servicio.delete()
+    Logs_Sistema.objects.create(
+        usuario=request.session.get('user', 'desconocido'),
+        accion=f"Eliminó servicio {pk}"
+    ) 
     return redirect('formulario_buscar')
 
+#279362
 
 def guardar_auxiliares(request, servicio, paciente):
         guardar_unidades(request, servicio)
@@ -665,6 +696,11 @@ def guardar_paciente(servicio, request, paciente_existente=None):
         guardar_impactos(request, paciente)
         guardar_testigos(request, paciente)
 
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Paciente guardado con clave {paciente.clave} en servicio {servicio.clave}"
+        )
+
         embarazo = request.POST.get('embarazo')
         
 
@@ -672,6 +708,10 @@ def guardar_paciente(servicio, request, paciente_existente=None):
 
     else:
         print("❌ Errores en formulario de paciente:", form_paciente.errors)
+        Logs_Sistema.objects.create(
+            usuario=request.session.get("user", "Desconocido"),
+            accion=f"Error al guardar paciente en servicio {servicio.clave}: {form_paciente.errors}"
+        )
         return paciente_existente
 
 

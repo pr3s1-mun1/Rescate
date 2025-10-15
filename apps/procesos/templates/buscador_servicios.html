@@ -9,476 +9,8 @@
     <title>Buscador de Servicios Médicos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary-color: #831f46;
-            --primary-hover: #81495f;
-            --secondary-color: #6b7280;
-            --light-bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --text-light: #64748b;
-            --border-radius: 12px;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #dc2626;
-        }
+    <link rel="stylesheet" href="{% static 'css/buscador.css' %}">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .main-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-top: 1rem;
-        }
-
-        .main-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 0.5rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .main-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .subtitle {
-            color: var(--text-light);
-            font-weight: 400;
-            font-size: 1.1rem;
-        }
-
-        .search-section {
-            margin-bottom: 2.5rem;
-        }
-
-        .search-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-            transition: box-shadow 0.3s ease;
-        }
-
-        .search-card:hover {
-            box-shadow: var(--shadow-lg);
-        }
-
-        .input-group {
-            display: flex;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .input-group-text {
-            background-color: var(--light-bg);
-            border: none;
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .input-group-text i {
-            color: var(--secondary-color);
-            font-size: 1rem;
-        }
-
-        .form-control {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: none;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .results-section {
-            margin-bottom: 3rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--light-bg);
-        }
-
-        .servicios-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .servicio-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .servicio-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .servicio-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .servicio-title {
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 1.10rem;
-            margin: 0;
-        }
-
-        .servicio-badge {
-            font-size: 0.85rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-weight: 500;
-        }
-
-        .badge-primary {
-            background-color: rgba(37, 99, 235, 0.1);
-            color: var(--primary-color);
-        }
-
-        .badge-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
-        }
-
-        .badge-warning {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: var(--warning-color);
-        }
-
-        .badge-danger {
-            background-color: rgba(220, 38, 38, 0.1);
-            color: var(--danger-color);
-        }
-
-        .servicio-body {
-            flex: 1;
-            margin-bottom: 1rem;
-        }
-
-        .info-section {
-            margin-bottom: 1.25rem;
-        }
-
-        .info-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .info-title i {
-            margin-right: 0.5rem;
-            color: var(--secondary-color);
-            font-size: 0.9rem;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
-
-        .info-block {
-            font-size: 0.9rem;
-        }
-
-        .info-label {
-            color: var(--text-color);
-            font-weight: 500;
-            display: block;
-            margin-bottom: 0.25rem;
-        }
-
-        .info-value {
-            color: var(--text-light);
-            padding: 0.25rem 0.5rem;
-            background-color: rgba(248, 250, 252, 0.7);
-            border-radius: 4px;
-            display: inline-block;
-            word-break: break-word;
-        }
-
-        .acciones {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            margin-top: auto;
-        }
-
-        .btn-sm {
-            font-size: 0.85rem;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            flex: 1;
-            min-width: 100px;
-            text-align: center;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-sm i {
-            margin-right: 0.4rem;
-            font-size: 0.8rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #b91c1c;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #4b5563;
-            transform: translateY(-2px);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            grid-column: 1 / -1;
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            color: var(--text-light);
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-empty {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-
-        .btn-empty:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-        }
-
-        .status-pending {
-            background-color: var(--warning-color);
-        }
-
-        .status-completed {
-            background-color: var(--success-color);
-        }
-
-        .status-cancelled {
-            background-color: var(--danger-color);
-        }
-
-        /* Pestañas */
-        .tabs {
-            display: flex;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--secondary-color);
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab:hover:not(.active) {
-            color: var(--primary-hover);
-            border-bottom-color: rgba(37, 99, 235, 0.2);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .main-title {
-                font-size: 1.75rem;
-            }
-
-            .servicios-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .input-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                border-radius: 0 0 var(--border-radius) var(--border-radius);
-                width: 100%;
-            }
-
-            .input-group-text {
-                border-radius: var(--border-radius) var(--border-radius) 0 0;
-            }
-
-            .form-control {
-                border-radius: 0;
-            }
-
-            .tabs {
-                overflow-x: auto;
-                white-space: nowrap;
-                padding-bottom: 0.5rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .acciones {
-                flex-direction: column;
-            }
-
-            .btn-sm {
-                width: 100%;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -698,17 +230,44 @@
                                             <i class="fas fa-edit"></i> Modificar
                                         </a>
                                         <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank" style="display: inline;">
-                                            {% csrf_token %}
-                                            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                        {% csrf_token %}
+                                        {% if request.session.permisos == 4 or request.session.permisos == 5 %}
                                                 <button class="btn-sm btn-secondary" type="submit">
                                                     <i class="fas fa-file-alt"></i> Reporte
                                                 </button>
-                                            {% endif %}
+                                            
                                         </form>
+                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ ps.servicio.clave }}">
+                                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                        </button>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
+                        <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalLabelEliminar" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-danger">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="modalLabelEliminar">
+                                ⚠️ Confirmar eliminación
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p class="mb-3">Esta acción eliminará el registro <b>de forma permanente</b>.</p>
+                                <p class="fw-bold text-danger">Para continuar, escriba <code style="color: rgb(0, 0, 78);">ELIMINAR</code> en el campo:</p>
+                                <input type="text" id="confirmarTexto" class="form-control text-center mt-2" placeholder="Escriba ELIMINAR">
+                                <input type="hidden" id="registroId">
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar definitivamente</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
                         <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
                             {% if pacientes_servicios.has_other_pages %}
                             <div style="text-align:center; margin-bottom:2rem; display:inline-flex; gap:0.5rem;">
@@ -840,33 +399,44 @@
 
     {% include 'footer.html' %}
     
+    <script src="{% static 'js/buscador.js' %}"></script>
     <script>
-        // Efecto de carga suave para las tarjetas
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.servicio-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
+        // Inicializar variables
+        const modalEliminar = document.getElementById('modalConfirmarEliminar');
+        const inputTexto = document.getElementById('confirmarTexto');
+        const btnEliminar = document.getElementById('btnConfirmarEliminar');
+        const inputId = document.getElementById('registroId');
+
+        // Cada vez que se abre el modal
+        modalEliminar.addEventListener('show.bs.modal', function (event) {
+            const boton = event.relatedTarget; // Botón que abrió el modal
+            const idRegistro = boton.getAttribute('data-id');
+            inputId.value = idRegistro;
+
+            // Reiniciar modal
+            inputTexto.value = '';
+            btnEliminar.disabled = true;
         });
 
-        // Función para cambiar entre pestañas
-        function changeTab(tabId) {
-            // Ocultar todos los contenidos de pestañas
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Mostrar el contenido de la pestaña seleccionada
-            document.getElementById(tabId).classList.add('active');
-            
-            // Actualizar las pestañas activas
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Marcar la pestaña seleccionada como activa
-            event.currentTarget.classList.add('active');
-        }
+        // Escucha lo que escribe el usuario
+        inputTexto.addEventListener('input', function () {
+            btnEliminar.disabled = (this.value.trim() !== 'ELIMINAR');
+        });
+
+        // Acción de eliminación
+        btnEliminar.addEventListener('click', function () {
+            const id = inputId.value;
+
+            fetch(`/servicios/eliminar/${id}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                .then(resp => {
+                    if (resp.ok) {
+                        alert('✅ Registro eliminado correctamente.');
+                        location.reload();
+                    } else {
+                        alert('❌ Error al eliminar el registro.');
+                    }
+                });
+        });
     </script>
 </body>
 </html>
