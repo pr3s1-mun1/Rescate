@@ -107,7 +107,7 @@ def buscar_servicios_sin_pacientes(filtros):
 from urllib.parse import urlencode
 
 @requiere_sesion
-@requiere_tipo_paramedico(3, 4, 5)
+@requiere_tipo_paramedico(2, 3, 4, 5)
 def formulario_buscar(request):
     filtros = request.GET.dict()
 
