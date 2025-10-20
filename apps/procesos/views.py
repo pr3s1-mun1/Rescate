@@ -242,9 +242,11 @@ def crear_servicio(request):
             messages.success(request, "Servicio guardado exitosamente")
             return redirect('agregar_paciente', pk=servicio_guardado.pk)
         else:
-            # si falla guardar_servicio, recarga la misma página
-            messages.error(request, "Error al guardar el servicio. Por favor, inténtelo de nuevo.")
-            return redirect('crear_servicio', )  
+            messages.error(request, "Error al guardar el servicio. Por favor, revise los datos e intente nuevamente.")
+            # 👇 renderiza el formulario con los datos que el usuario ya ingresó
+            form = ServicioForm(request.POST)
+            no_paciente = True
+            return render(request, 'create.html', {'form': form, 'no_mostrar_pacientes': no_paciente})
 
 
 @requiere_sesion
@@ -378,31 +380,48 @@ def guardar_impactos(request, paciente):
         descripcion = i.get('descripcion')
         ImpactoxVehiculo.objects.create(paciente=paciente, impacto=descripcion)
 
+
 def guardar_testigos(request, paciente):
-    # Borra los testigos previos asociados al paciente
+    """
+    Guarda los testigos asociados a un paciente.
+    Borra los anteriores y crea nuevos.
+    Devuelve un diccionario con estado y errores.
+    """
+    # Inicializamos la lista de errores
+    errores = []
+
+    # Borra los testigos previos
     TestigoxPaciente.objects.filter(paciente=paciente).delete()
-    
+
+    # Cargar testigos desde POST
+    testigos_json = request.POST.get('testigos', '[]')
     try:
-        testigos = json.loads(request.POST.get('testigos', '[]'))
-    except json.JSONDecodeError:
+        testigos = json.loads(testigos_json)
+    except json.JSONDecodeError as e:
+        errores.append(f"Error al decodificar JSON: {str(e)}")
+        print.error(f"JSONDecodeError al guardar testigos: {str(e)}")
         testigos = []
+
+    # Guardar cada testigo
+    for idx, testigo_data in enumerate(testigos, start=1):
+        try:
+            TestigoxPaciente.objects.create(
+                paciente=paciente,
+                nombre=testigo_data.get('nombre', ''),
+                edad=testigo_data.get('edad', None),
+                domicilio=testigo_data.get('direccion', ''),
+                telefono=testigo_data.get('telefono', ''),
+                parentesco=testigo_data.get('parentesco', '')
+            )
+        except Exception as e:
+            error_msg = f"Error al guardar testigo #{idx}: {str(e)}"
+            errores.append(error_msg)
+            print.error(error_msg)
+
+
+
     
-    for testigo_data in testigos:
-        nombre = testigo_data.get('nombre')
-        edad = testigo_data.get('edad')
-        direccion = testigo_data.get('direccion')
-        telefono = testigo_data.get('telefono')
-        parentesco = testigo_data.get('parentesco')
-        
-        # Crear y guardar cada testigo
-        TestigoxPaciente.objects.create(
-            paciente=paciente,
-            nombre=nombre,
-            edad=edad,
-            domicilio=direccion,
-            telefono=telefono,
-            parentesco=parentesco
-        )
+
 
 @requiere_tipo_paramedico(3, 4, 5)
 def reporte_servicio(request, clave):
@@ -642,7 +661,7 @@ def guardar_servicio(request, servicio=None, paciente=None):
     if not form_servicio.is_valid():
         print("❌ Errores en formulario de servicioooo:", form_servicio.errors)
         messages.error(request, "Error al guardar el servicio. Por favor, revise los datos e intente nuevamente.")
-        return None, form_servicio.errors
+        return None
 
     servicio = form_servicio.save()
 

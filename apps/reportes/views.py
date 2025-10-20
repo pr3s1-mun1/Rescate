@@ -31,40 +31,47 @@ def cargar_reportes(request):
 
 
 def reporte_servicios(request: HttpRequest):
-    """
-    Vista unificada para reporte de servicios que maneja:
-    - GET sin parámetros: Muestra el formulario HTML
-    - POST con fechas: Muestra el reporte en HTML
-    - GET con parámetros fecha_inicio/fecha_fin: Genera PDF
-    """
     fecha_inicio = request.POST.get('fecha_inicio') or request.GET.get('fecha_inicio')
     fecha_fin = request.POST.get('fecha_fin') or request.GET.get('fecha_fin')
-    
+
     conteos = defaultdict(lambda: defaultdict(int))
     tipos_servicio = set()
     basees = set()
 
     if fecha_inicio and fecha_fin:
-        servicios = Servicio.objects.filter(
-            fecha__range=[fecha_inicio, fecha_fin]
-        ).select_related()  
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    TS.descripcion AS tipo_servicio,
+                    1 AS num,
+                    COALESCE(B.clave, 'SALIDA EN FALSO') AS base
+                FROM 
+                    public.procesos_pacientexservicio AS PX
+                    RIGHT JOIN public.procesos_servicio AS S 
+                        ON PX.servicio_id = S.clave
+                    INNER JOIN public.catalogos_tiposservicio AS TS 
+                        ON S.tipo_servicio_realizado_id = TS.clave
+                    LEFT JOIN public.catalogos_bases AS B 
+                        ON PX.base_id = B.clave
+                WHERE 
+                    S.fecha::date BETWEEN %s AND %s
+                    AND S.estatus = 'T';
+            """, [fecha_inicio, fecha_fin])
 
-        for servicio in servicios:
-            tipo = servicio.tipo_servicio_realizado
+            columnas = [col[0] for col in cursor.description]
+            resultados = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]
+
+        # Procesar datos en el mismo formato que antes
+        for r in resultados:
+            tipo = r['tipo_servicio']
+            base = r['base']
+            conteos[tipo][base] += 1
             tipos_servicio.add(tipo)
-            
-            pacientes = PacientexServicio.objects.filter(
-                servicio=servicio
-            ).select_related('base')
-            
-            for paciente in pacientes:
-                base = str(paciente.base)
-                basees.add(base)
-                conteos[tipo][base] += 1
+            basees.add(base)
 
     context = {
         'conteos': {k: dict(v) for k, v in conteos.items()},
-        'tipos_servicio': sorted(tipos_servicio, key=lambda x: x.clave),
+        'tipos_servicio': sorted(tipos_servicio),
         'basees': sorted(basees),
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
@@ -74,6 +81,8 @@ def reporte_servicios(request: HttpRequest):
     if request.method == 'GET' and fecha_inicio and fecha_fin:
         return generar_pdf_response(context)
     return render(request, 'reportes/reporte_servicio_base_fecha.html', context)
+
+
 
 def generar_pdf_response(context: dict) -> HttpResponse:
     """Genera la respuesta PDF a partir del contexto"""
