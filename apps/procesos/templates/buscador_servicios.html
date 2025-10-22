@@ -217,6 +217,26 @@
                                                     </div>                                                    
                                                 </div>
                                             </div>
+
+                                            <div class="info-section">
+                                                <h4 class="info-title">
+                                                    <i class="fas fa-clock"></i> Información del Horario
+                                                </h4>
+                                                <div class="info-grid">
+                                                    <div class="info-block">
+                                                        <span class="info-label">Fecha Salida</span>
+                                                        <span class="info-value">{{ ps.fecha_salida|default:"-" }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Fecha Llegada</span>
+                                                        <span class="info-value">{{ ps.fecha_llegada|default:"-" }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Fecha Retorno</span>
+                                                        <span class="info-value">{{ ps.fecha_retorno|default:"-" }}</span>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
                                         {% else %}
                                             <div class="info-section">
                                                 <p class="info-value"><em>Sin datos de paciente</em></p>
