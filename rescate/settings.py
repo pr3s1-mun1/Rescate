@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-jwq=u@wby$5@yfq4-_5tj@0&h#3yga=h-87&gvn+j%s-s4^&^%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 BASE_DD_PRUEBA = False
 
 ALLOWED_HOSTS = ['rescate.juarez.gob.mx', 'localhost', '127.0.0.1']
@@ -72,6 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.reportes.global.global_pdf_context',
             ],
         },
     },

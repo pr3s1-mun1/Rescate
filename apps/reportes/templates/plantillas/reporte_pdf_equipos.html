@@ -1,6 +1,17 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        @page {
+            margin: 2cm;
+            
+            @frame footer_frame {
+                -pdf-frame-content: footerContent;
+                bottom: 0cm;
+                margin-left: 1cm;
+                margin-right: 1cm;
+                height: 2cm;
+            }
+        }
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
@@ -96,6 +107,14 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <pdf:footer>
+        <div id="footerContent" class="footer">
+            <strong>Usuario:    </strong> [ {{ user }} ] </br>
+            <strong>Fecha:      </strong> [ {{ fecha|date:"d-M-Y H:i:s" }} ] </br>
+            <strong>Página:     </strong> [ <pdf:pagenumber/> de <pdf:pagecount/> ]
+        </div>
+    </pdf:footer>
 </body>
 
 </html>

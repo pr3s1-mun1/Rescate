@@ -879,6 +879,10 @@ def imprimir_reporte(request):
 
     fecha_str = request.GET.get('fecha')
     fecha = timezone.now().date()
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     if fecha_str:
         try:
             fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
@@ -902,11 +906,11 @@ def imprimir_reporte(request):
     template = get_template('reloj/reporte_imprimible.html')
     html = template.render({
         'paramedicos': paramedicos,
+        'user' : usuario,
+        'generacion': generacion,
         'fecha': fecha.strftime('%Y-%m-%d'),
         'request': request,  # Para resolver static en el template
     })
-
-    print(paramedicos)
 
     # Crear PDF en memoria
     response = HttpResponse(content_type='application/pdf')

@@ -12,7 +12,8 @@ from collections import defaultdict
 from django.db import connection
 from datetime import date, timedelta
 from django.core.paginator import Paginator
-import io 
+from django.utils import timezone
+import io
 
 @requiere_sesion
 @requiere_tipo_paramedico(5)
@@ -34,6 +35,9 @@ def reporte_servicios(request: HttpRequest):
     fecha_inicio = request.POST.get('fecha_inicio') or request.GET.get('fecha_inicio')
     fecha_fin = request.POST.get('fecha_fin') or request.GET.get('fecha_fin')
 
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     conteos = defaultdict(lambda: defaultdict(int))
     tipos_servicio = set()
     basees = set()
@@ -54,7 +58,7 @@ def reporte_servicios(request: HttpRequest):
                     LEFT JOIN public.catalogos_bases AS B 
                         ON PX.base_id = B.clave
                 WHERE 
-                    S.fecha::date BETWEEN %s AND %s
+                    s.fecha::date::date BETWEEN %s AND %s
                     AND S.estatus = 'T';
             """, [fecha_inicio, fecha_fin])
 
@@ -75,6 +79,8 @@ def reporte_servicios(request: HttpRequest):
         'basees': sorted(basees),
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
+        'user': usuario,
+        'fecha': generacion,
         'usar_landscape': len(basees) > 5
     }
 
@@ -104,7 +110,7 @@ def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT 
-                S.fecha, 
+                s.fecha::date, 
                 P.fecha_salida, 
                 P.fecha_llegada, 
                 P.fecha_retorno,
@@ -145,9 +151,9 @@ def obtener_servicios_ambulancia(fecha_inicio, fecha_fin):
                 public.catalogos_ambulancias AS CA 
                 ON P.ambulancia_id = CA.clave
             WHERE 
-                S.fecha BETWEEN %s AND %s
+                s.fecha::date BETWEEN %s AND %s
             ORDER BY 
-                P.ambulancia_id, S.fecha DESC
+                P.ambulancia_id, s.fecha::date DESC
         """, [fecha_inicio, fecha_fin])
 
         columnas = [col[0] for col in cursor.description]
@@ -185,6 +191,9 @@ def imprimir_reporte_ambulancia_pdf(request):
     servicios_raw = []
     servicios_por_ambulancia = {}
 
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     if fecha_inicio and fecha_fin:
         servicios_raw = obtener_servicios_ambulancia(fecha_inicio, fecha_fin)
 
@@ -197,6 +206,8 @@ def imprimir_reporte_ambulancia_pdf(request):
 
     template = get_template('plantillas/reporte_pdf_ambulancia.html')
     html = template.render({
+        'user' : usuario,
+        'fecha': generacion,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
         'servicios_por_ambulancia': servicios_por_ambulancia
@@ -229,7 +240,7 @@ def obtener_servicios_por_tipo(fecha_inicio, fecha_fin):
                 public.catalogos_tiposservicio AS TS
                 ON TS.clave = S.tipo_servicio_realizado_id
             WHERE 
-                S.fecha BETWEEN %s AND %s
+                s.fecha::date BETWEEN %s AND %s
             GROUP BY 
                 TS.descripcion, P.base_id
             ORDER BY 
@@ -242,10 +253,11 @@ def obtener_servicios_por_tipo(fecha_inicio, fecha_fin):
     return resultados
 
 def reporte_servicios_x_tipo(request):
-    from collections import defaultdict
-
     fecha_inicio = request.POST.get('fecha_inicio') or request.GET.get('fecha_inicio')
     fecha_fin = request.POST.get('fecha_fin') or request.GET.get('fecha_fin')
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
 
     tabla = defaultdict(dict)
     filas = set()
@@ -265,6 +277,8 @@ def reporte_servicios_x_tipo(request):
 
     context = {
         'tabla': tabla,
+        'user' : usuario,
+        'fecha': generacion,
         'filas': sorted(f for f in filas if f is not None),
         'columnas': sorted(c for c in columnas if c is not None),
         'fecha_inicio': fecha_inicio,
@@ -277,6 +291,9 @@ def reporte_servicios_x_tipo(request):
 def imprimir_reporte_tipo_servicio_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
 
     tabla = defaultdict(dict)
     filas = set()
@@ -298,6 +315,8 @@ def imprimir_reporte_tipo_servicio_pdf(request):
     html = template.render({
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
+        'user' : usuario,
+        'fecha': generacion,
         'tabla': tabla,
         'filas': sorted(filas),
         'columnas': sorted(columnas),
@@ -326,7 +345,7 @@ def obtener_totales_por_tipo_servicio(fecha_inicio, fecha_fin):
                 public.catalogos_tiposservicio AS TS
                 ON TS.clave = S.tipo_servicio_realizado_id
             WHERE 
-                S.fecha BETWEEN %s AND %s
+                s.fecha::date BETWEEN %s AND %s
             GROUP BY 
                 TS.descripcion
             ORDER BY 
@@ -358,6 +377,9 @@ def imprimir_resumen_tipo_servicio_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
 
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     datos = []
     if fecha_inicio and fecha_fin:
         datos = obtener_totales_por_tipo_servicio(fecha_inicio, fecha_fin)
@@ -365,6 +387,8 @@ def imprimir_resumen_tipo_servicio_pdf(request):
     template = get_template('plantillas/resumen_conteo_servicio_pdf.html')
     html = template.render({
         'datos': datos,
+        'user' : usuario,
+        'fecha': generacion,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     })
@@ -386,7 +410,7 @@ def obtener_sobresalientes_por_fecha(fecha_inicio, fecha_fin):
             SELECT 
                 s.nombre_persona_reporta,
                 s.clave,
-                s.fecha,
+                s.fecha::date,
                 dc.calle AS direccion_emergencia,
                 cc.colonia AS colonia_emergencia,
                 s.calle_entre_id,
@@ -418,8 +442,8 @@ def obtener_sobresalientes_por_fecha(fecha_inicio, fecha_fin):
             LEFT JOIN public.catalogos_calle AS dp ON p.domicilio_id = dp.clave
             LEFT JOIN public.catalogos_colonia AS cp ON p.colonia_id = cp.clave
             WHERE t.sobresaliente = 'S'
-              AND s.fecha BETWEEN %s AND %s
-            ORDER BY s.fecha
+              AND s.fecha::date BETWEEN %s AND %s
+            ORDER BY s.fecha::date
         """, [fecha_inicio, fecha_fin])
 
         columnas = [col[0] for col in cursor.description]
@@ -487,6 +511,9 @@ def imprimir_reporte_sobresalientes_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio') or request.POST.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin') or request.POST.get('fecha_fin')
 
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     textos = []
 
     if fecha_inicio and fecha_fin:
@@ -524,6 +551,8 @@ def imprimir_reporte_sobresalientes_pdf(request):
     template = get_template('plantillas/reporte_pdf_sobresalientes.html')
     html = template.render({
         'textos': textos,
+        'user' : usuario,
+        'fecha': generacion,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     })
@@ -546,7 +575,7 @@ def obtener_resultados_parte_informativo(fecha_inicio, fecha_fin):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT
-                    s.fecha,
+                    s.fecha::date,
                     dc.calle AS direccion_emergencia,
                     cc.colonia AS colonia_emergencia,
                     s.calle_entre_id,
@@ -562,8 +591,8 @@ def obtener_resultados_parte_informativo(fecha_inicio, fecha_fin):
                 INNER JOIN public.procesos_partexservico AS pxs ON s.clave = pxs.servicio_id
                 LEFT JOIN public.catalogos_calle AS dc ON s.direccion_emergencia_id = dc.clave
                 LEFT JOIN public.catalogos_colonia AS cc ON s.colonia_emergencia_id = cc.clave
-                WHERE s.fecha BETWEEN %s AND %s
-                ORDER BY s.fecha;
+                WHERE s.fecha::date BETWEEN %s AND %s
+                ORDER BY s.fecha::date;
             """, [fecha_inicio, fecha_fin])
 
             columnas = [col[0] for col in cursor.description]
@@ -589,11 +618,16 @@ def reporte_parte_informativo_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
 
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     resultados = obtener_resultados_parte_informativo(fecha_inicio, fecha_fin)
 
     template = get_template('plantillas/reporte_pdf_parte.html')
     context = {
         'resultados': resultados,
+        'user' : usuario,
+        'fecha': generacion,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     }
@@ -625,7 +659,7 @@ def reporte_paramedico_base(request):
                 INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
                 LEFT JOIN public.procesos_paramedicoxpaciente AS pp ON s.clave = pp.servicio_id
                 LEFT JOIN public.catalogos_paramedicos AS paramedicos ON paramedicos.clave = pp.paramedico_id
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             datos_crudos = cursor.fetchall()
 
@@ -670,6 +704,10 @@ def reporte_paramedico_base(request):
 def reporte_paramedico_base_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     datos_crudos = []
 
     if fecha_inicio and fecha_fin:
@@ -682,7 +720,7 @@ def reporte_paramedico_base_pdf(request):
                 INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
                 INNER JOIN public.procesos_paramedicoxpaciente AS pp ON s.clave = pp.servicio_id
                 INNER JOIN public.catalogos_paramedicos AS paramedicos ON paramedicos.clave = pp.paramedico_id
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             datos_crudos = cursor.fetchall()
 
@@ -708,6 +746,8 @@ def reporte_paramedico_base_pdf(request):
     template = get_template("plantillas/reporte_pdf_paramedicos.html")
     html = template.render({
         'resultados': resultados,
+        'user' : usuario,
+        'fecha': generacion,
         'bases': bases_ordenadas,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
@@ -741,7 +781,7 @@ def reporte_materiales(request):
                 INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
                 INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
                 INNER JOIN public.catalogos_material AS mat ON m.material_id = mat.clave
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date::date BETWEEN %s AND %s
                 GROUP BY m.material_id, mat.descripcion, mat.unidad
                 ORDER BY m.material_id
             """, [fecha_inicio, fecha_fin])
@@ -768,6 +808,10 @@ def reporte_materiales(request):
 def reporte_materiales_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT
@@ -780,7 +824,7 @@ def reporte_materiales_pdf(request):
             INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
             INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
             INNER JOIN public.catalogos_material AS mat ON m.material_id = mat.clave
-            WHERE s.fecha BETWEEN %s AND %s
+            WHERE s.fecha::date::date BETWEEN %s AND %s
             GROUP BY m.material_id, mat.descripcion, mat.unidad
             ORDER BY m.material_id
         """, [fecha_inicio, fecha_fin])
@@ -799,7 +843,13 @@ def reporte_materiales_pdf(request):
 
     # 3. Renderizar PDF
     template = get_template('plantillas/reporte_pdf_materiales.html')
-    html = template.render({'materiales': materiales, 'inicio':fecha_inicio, 'fin':fecha_fin})
+    html = template.render({
+        'materiales': materiales,
+        'user' : usuario,
+        'fecha': generacion,
+        'inicio':fecha_inicio, 
+        'fin':fecha_fin
+        })
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="reporte_materiales.pdf"'
     pisa.CreatePDF(html, dest=response)
@@ -825,7 +875,7 @@ def reporte_equipos(request):
                 INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
                 INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
                 INNER JOIN public.catalogos_equipo AS mat ON m.equipo_id = mat.clave
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
                 GROUP BY m.equipo_id, mat.descripcion, mat.unidad
                 ORDER BY m.equipo_id
             """, [fecha_inicio, fecha_fin])
@@ -852,6 +902,10 @@ def reporte_equipos(request):
 def reporte_equipos_pdf(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT
@@ -864,7 +918,7 @@ def reporte_equipos_pdf(request):
             INNER JOIN public.procesos_pacientexservicio AS p ON p.clave = m.paciente_id
             INNER JOIN public.procesos_servicio AS s ON p.servicio_id = s.clave
             INNER JOIN public.catalogos_equipo AS mat ON m.equipo_id = mat.clave
-            WHERE s.fecha BETWEEN %s AND %s
+            WHERE s.fecha::date BETWEEN %s AND %s
             GROUP BY m.equipo_id, mat.descripcion, mat.unidad
             ORDER BY m.equipo_id
         """, [fecha_inicio, fecha_fin])
@@ -883,7 +937,12 @@ def reporte_equipos_pdf(request):
 
     # 3. Renderizar PDF
     template = get_template('plantillas/reporte_pdf_equipos.html')
-    html = template.render({'equipos': equipos, 'inicio':fecha_inicio, 'fin':fecha_fin})
+    html = template.render({
+        'equipos': equipos,
+        'user' : usuario,
+        'fecha': generacion,
+        'inicio':fecha_inicio, 
+        'fin':fecha_fin})
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="reporte_equipos.pdf"'
     pisa.CreatePDF(html, dest=response)
@@ -903,7 +962,7 @@ def reporte_pacientes_por_sexo(request):
                     p.sexo
                 FROM public.procesos_servicio AS s
                 INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             datos_crudos = cursor.fetchall()
 
@@ -913,7 +972,7 @@ def reporte_pacientes_por_sexo(request):
 
     for base_id, sexo in datos_crudos:
         sexo_str = str(sexo)
-        sexo_nombre = palabras["sexo"].get(sexo_str, f"Desconocido ({sexo})")
+        sexo_nombre = palabras["sexo"].get(sexo_str, f"{sexo}")
         tabla[base_id][sexo_nombre] += 1
         sexos_detectados.add(sexo_nombre)
 
@@ -950,6 +1009,10 @@ def reporte_pacientes_por_sexo(request):
 def reporte_pacientes_por_sexo_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     datos_crudos = []
 
     if fecha_inicio and fecha_fin:
@@ -960,7 +1023,7 @@ def reporte_pacientes_por_sexo_pdf(request):
                     p.sexo
                 FROM public.procesos_servicio AS s
                 INNER JOIN public.procesos_pacientexservicio AS p ON s.clave = p.servicio_id
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             datos_crudos = cursor.fetchall()
 
@@ -969,7 +1032,7 @@ def reporte_pacientes_por_sexo_pdf(request):
 
     for base_id, sexo in datos_crudos:
         sexo_str = str(sexo)
-        sexo_nombre = palabras["sexo"].get(sexo_str, f"Desconocido ({sexo})")
+        sexo_nombre = palabras["sexo"].get(sexo_str, f"{sexo}")
         tabla[base_id][sexo_nombre] += 1
         sexos_detectados.add(sexo_nombre)
 
@@ -1000,6 +1063,8 @@ def reporte_pacientes_por_sexo_pdf(request):
     html = template.render({
         "resultados": resultados,
         "sexos": sexos_ordenados,
+        'user' : usuario,
+        'fecha': generacion,
         "fecha_inicio": fecha_inicio,
         "fecha_fin": fecha_fin,
         "totales_inferiores": totales_inferiores,
@@ -1032,7 +1097,7 @@ def reporte_enfermedades_por_grupo(request):
                 JOIN catalogos_enfermedad AS e ON pe.enfermedad_id = e.clave
                 JOIN catalogos_grupoenfermedad AS ge ON e.grupoenfermedad_id = ge.clave
                 JOIN procesos_servicio AS s ON pe.servicio_id = s.clave
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
                 GROUP BY ge.descripcion, e.nombre
                 ORDER BY ge.descripcion, e.nombre;
             """, [fecha_inicio, fecha_fin])
@@ -1118,6 +1183,10 @@ def reporte_asistencia_paramedicos(request):
 def reporte_asistencia_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     datos = []
     fechas = []
 
@@ -1164,7 +1233,9 @@ def reporte_asistencia_pdf(request):
         "datos": datos,
         "fechas": [f.strftime('%d/%m') for f in fechas],
         "fecha_inicio": fecha_inicio,
-        "fecha_fin": fecha_fin
+        "fecha_fin": fecha_fin,
+        "user" : usuario,
+        "fecha": generacion,
     })
 
     # Generar PDF
@@ -1182,6 +1253,11 @@ def reporte_asistencia_pdf(request):
 def reporte_enfermedades_por_grupo_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
+
     datos_crudos = []
 
     if fecha_inicio and fecha_fin:
@@ -1195,7 +1271,7 @@ def reporte_enfermedades_por_grupo_pdf(request):
                 JOIN catalogos_enfermedad AS e ON pe.enfermedad_id = e.clave
                 JOIN catalogos_grupoenfermedad AS ge ON e.grupoenfermedad_id = ge.clave
                 JOIN procesos_servicio AS s ON pe.servicio_id = s.clave
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
                 GROUP BY ge.descripcion, e.nombre
                 ORDER BY ge.descripcion, e.nombre;
             """, [fecha_inicio, fecha_fin])
@@ -1221,6 +1297,8 @@ def reporte_enfermedades_por_grupo_pdf(request):
     template = get_template("plantillas/reporte_pdf_grupo_enfermedades.html")
     html = template.render({
         "enfermedades_por_grupo": enfermedades_por_grupo,
+        'user' : usuario,
+        'fecha': generacion,
         "fecha_inicio": fecha_inicio,
         "fecha_fin": fecha_fin
     })
@@ -1238,6 +1316,8 @@ def reporte_materiales_pacientes(request):
     fecha_fin = request.GET.get("fecha_fin")
     materiales = []
 
+    print(fecha_fin)
+    print(fecha_fin)
     if fecha_inicio and fecha_fin:
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -1251,7 +1331,7 @@ def reporte_materiales_pacientes(request):
             JOIN catalogos_material AS m ON m.clave = mp.material_id
             JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
             JOIN procesos_servicio AS s ON s.clave = p.servicio_id
-            WHERE s.fecha BETWEEN %s AND %s
+            WHERE date(s.fecha::date) BETWEEN %s AND %s
             GROUP BY m.descripcion, m.clave
             ORDER BY valor_total DESC;
             """, [fecha_inicio, fecha_fin])
@@ -1267,22 +1347,27 @@ def reporte_materiales_pacientes(request):
 def reporte_materiales_pacientes_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     materiales = []
 
     if fecha_inicio and fecha_fin:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT 
+                SELECT
+                    m.clave,
                     m.descripcion AS material,
                     COUNT(DISTINCT mp.paciente_id) AS cantidad_pacientes,
-                    COALESCE(SUM(mp.cantidad), 0) AS cantidad_total,
-                    COALESCE(SUM(mp.cantidad * mp.costo), 0) AS valor_total
+                    SUM(mp.cantidad) AS cantidad_total,
+                    SUM(mp.cantidad * mp.costo) AS valor_total
                 FROM procesos_materialxpaciente AS mp
                 JOIN catalogos_material AS m ON m.clave = mp.material_id
                 JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
                 JOIN procesos_servicio AS s ON s.clave = p.servicio_id
-                WHERE s.fecha BETWEEN %s AND %s
-                GROUP BY m.descripcion
+                WHERE date(s.fecha::date) BETWEEN %s AND %s
+                GROUP BY m.descripcion, m.clave
                 ORDER BY valor_total DESC;
             """, [fecha_inicio, fecha_fin])
             materiales = cursor.fetchall()
@@ -1290,6 +1375,8 @@ def reporte_materiales_pacientes_pdf(request):
     template_path = 'plantillas/reporte_pdf_material_pacientes.html'
     context = {
         'materiales': materiales,
+        'user' : usuario,
+        'fecha': generacion,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     }
@@ -1325,7 +1412,7 @@ def reporte_medicamentos_pacientes(request):
             JOIN catalogos_medicamento AS m ON m.clave = mp.medicamento_id
             JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
             JOIN procesos_servicio AS s ON s.clave = p.servicio_id
-            WHERE s.fecha BETWEEN %s AND %s
+            WHERE s.fecha::date BETWEEN %s AND %s
             GROUP BY m.descripcion, mp.medicamento_id
             ORDER BY mp.medicamento_id;
             """, [fecha_inicio, fecha_fin])
@@ -1341,6 +1428,10 @@ def reporte_medicamentos_pacientes(request):
 def reporte_medicamentos_pacientes_pdf(request):
     fecha_inicio = request.GET.get("fecha_inicio")
     fecha_fin = request.GET.get("fecha_fin")
+
+    usuario = request.session.get('user', 'Invitado')
+    generacion = timezone.now()
+
     materiales = []
 
     if fecha_inicio and fecha_fin:
@@ -1356,7 +1447,7 @@ def reporte_medicamentos_pacientes_pdf(request):
                 JOIN catalogos_medicamento AS m ON m.clave = mp.medicamento_id
                 JOIN procesos_pacientexservicio AS p ON p.clave = mp.paciente_id
                 JOIN procesos_servicio AS s ON s.clave = p.servicio_id
-                WHERE s.fecha BETWEEN %s AND %s
+                WHERE s.fecha::date BETWEEN %s AND %s
                 GROUP BY m.descripcion, mp.medicamento_id
                 ORDER BY mp.medicamento_id;
             """, [fecha_inicio, fecha_fin])
@@ -1365,6 +1456,8 @@ def reporte_medicamentos_pacientes_pdf(request):
     template_path = 'plantillas/reporte_pdf_medicamentos_pacientes.html'
     context = {
         'materiales': materiales,
+        'user' : usuario,
+        'fecha': generacion,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     }
