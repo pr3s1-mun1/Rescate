@@ -91,9 +91,9 @@
     <table class="report-table">
         <thead>
             <tr>
-                <th>Nombre</th>
+                <th style="width: 35%; text-align: left;">Nombre</th>
                 {% for fecha in fechas %}
-                    <th>{{ fecha }}</th>
+                    <th style="width: 4.8%; text-align: center; white-space: nowrap;">{{ fecha }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -101,12 +101,21 @@
             {% for fila in datos %}
                 <tr>
                     {% for celda in fila %}
-                        <td>{% if celda %}{{ celda }}{% else %}&nbsp;{% endif %}</td>
+                        {% if forloop.first %}
+                            <td style="width: 35%; text-align: left;">
+                                {% if celda %}{{ celda }}{% else %}&nbsp;{% endif %}
+                            </td>
+                        {% else %}
+                            <td style="width: 4.8%; text-align: center; white-space: nowrap;">
+                                {% if celda %}{{ celda }}{% else %}&nbsp;{% endif %}
+                            </td>
+                        {% endif %}
                     {% endfor %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
 
     <pdf:footer>
         <div id="footerContent" class="footer">

@@ -67,6 +67,7 @@
         .report-table th {
             background-color: #f0f0f0;
         }
+        
     </style>
 </head>
 
@@ -101,7 +102,7 @@
             {% for p in paramedicos %}
             <tr>
                 <td>{{ p.nombre }}</td>
-                <td style="text-align: center;">{{ p.ultimo_estatus }}</td>
+                <td style="width: 8%; text-align: center;">{{ p.ultimo_estatus }}</td>
                 <td>{{ p.ultima_observacion }}</td>
             </tr>
             {% empty %}

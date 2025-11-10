@@ -726,10 +726,13 @@ def guardar_paciente(servicio, request, paciente_existente=None):
         return paciente
 
     else:
-        print("❌ Errores en formulario de paciente:", form_paciente.errors)
+        errores = form_paciente.errors.as_text()
+
+        print("❌ Errores en formulario de paciente:\n", errores)
+
         Logs_Sistema.objects.create(
-            usuario=request.session.get("user", "Desconocido"),
-            accion=f"Error al guardar paciente en servicio {servicio.clave}: {form_paciente.errors}"
+            usuario=request.user.username if request.user.is_authenticated else "Desconocido",
+            accion=f"Error al guardar paciente en servicio {servicio.clave}: {errores}"
         )
         return paciente_existente
 
@@ -875,8 +878,6 @@ def ver_reloj(request):
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)
 def imprimir_reporte(request):
-
-
     fecha_str = request.GET.get('fecha')
     fecha = timezone.now().date()
 
