@@ -2,156 +2,128 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from django.core.paginator import Paginator
-from django.urls import reverse
 from django.utils import timezone
-from django.db import transaction
-from django.db.models import Max, Q, OuterRef, Exists, Value, Subquery
-from django.db.models.functions import Concat
+from django.db.models import Q, OuterRef, Exists, Subquery, Prefetch
 from django.contrib import messages
-from urllib.parse import urlencode
-
-from urllib.parse import urlencode
 from datetime import datetime, timedelta
-from collections import defaultdict
 import json
 import io
-
 from xhtml2pdf import pisa
-
 from .models import *
-from .forms import ServicioForm, PacientesForm, EmbarazoAsignadoForm, PartesAsignadoForm, CombustibleForm
+from .forms import *
 from apps.catalogos.forms import *
 from apps.catalogos.views import requiere_tipo_paramedico, requiere_sesion, Logs_Sistema
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
-def paginar_queryset(qs, request, param='page', per_page=9):
-    """Paginación genérica para cualquier queryset."""
-    paginator = Paginator(qs, per_page)
-    page_number = request.GET.get(param)
-    return paginator.get_page(page_number)
-
-def buscar_servicios_filtrados(filtros):
-    """
-    Filtra PacientexServicio considerando campos simples y ForeignKeys
-    a través de la relación Servicio.
-    """
-    qs = PacientexServicio.objects.all().select_related('servicio')
-
-    # Filtros sobre Servicio
-    if filtros.get('clave'):
-        qs = qs.filter(servicio__clave__icontains=filtros['clave'])
-    if filtros.get('fecha_inicio'):
-        qs = qs.filter(servicio__fecha__date__gte=filtros['fecha_inicio'])
-    if filtros.get('fecha_fin'):
-        qs = qs.filter(servicio__fecha__date__lte=filtros['fecha_fin'])
-    if filtros.get('direccion'):
-        qs = qs.filter(servicio__direccion_emergencia__calle__icontains=filtros['direccion'])
-
-    # Filtro por paciente
+def construir_filtro_paciente(filtros):
+    q = Q()
     paciente = filtros.get('paciente')
     if paciente:
         paciente = paciente.strip()
         if paciente.isdigit():
-            qs = qs.filter(clave=int(paciente))
+            q &= Q(pacientes__clave=int(paciente))
         else:
-            qs = qs.annotate(
-                nombre_completo=Concat(
-                    'nombre', Value(' '),
-                    'apellido_paterno', Value(' '),
-                    'apellido_materno'
-                )
-            ).filter(nombre_completo__icontains=paciente)
+            q &= (
+                Q(pacientes__nombre__icontains=paciente) |
+                Q(pacientes__apellido_paterno__icontains=paciente) |
+                Q(pacientes__apellido_materno__icontains=paciente)
+            )
 
-    # Campos simples
     campos_simples = ['ropa', 'sintoma', 'antecedente', 'placas', 'sexo']
     for campo in campos_simples:
         valor = filtros.get(campo)
         if valor:
-            qs = qs.filter(**{f"{campo}__icontains": valor})
+            q &= Q(**{f'pacientes__{campo}__icontains': valor})
 
-    # ForeignKey en Servicio
-    if filtros.get('servicio_realizado'):
-        qs = qs.filter(
-            servicio__tipo_servicio_realizado__descripcion__icontains=filtros['servicio_realizado']
-        )
-
-
-    # ForeignKeys en PacientexServicio
     if filtros.get('enfermedad'):
-        qs = qs.filter(enfermedad__nombre__icontains=filtros['enfermedad'])
+        q &= Q(pacientes__enfermedad__nombre__icontains=filtros['enfermedad'])
     if filtros.get('hospital'):
-        qs = qs.filter(hospital__nombre__icontains=filtros['hospital'])
+        q &= Q(pacientes__hospital__nombre__icontains=filtros['hospital'])
     if filtros.get('ambulancia'):
-        qs = qs.filter(ambulancia__descripcion__icontains=filtros['ambulancia'])
+        q &= Q(pacientes__ambulancia__descripcion__icontains=filtros['ambulancia'])
     if filtros.get('base'):
-        qs = qs.filter(base__clave__icontains=filtros['base'])
+        q &= Q(pacientes__base__clave__icontains=filtros['base'])
 
-    return qs.order_by('-servicio__clave')
+    return q
 
-
-
-def buscar_servicios_sin_pacientes(filtros):
-    """Aplica filtros sobre Servicios sin pacientes."""
-    qs = Servicio.objects.all()
+def construir_filtro_servicio(filtros):
+    q = Q()
     if filtros.get('clave'):
-        qs = qs.filter(clave__icontains=filtros['clave'])
+        q &= Q(clave__icontains=filtros['clave'])
     if filtros.get('fecha_inicio'):
-        qs = qs.filter(fecha__gte=filtros['fecha_inicio'])
+        q &= Q(fecha__date__gte=filtros['fecha_inicio'])
     if filtros.get('fecha_fin'):
-        qs = qs.filter(fecha__lte=filtros['fecha_fin'])
+        q &= Q(fecha__date__lte=filtros['fecha_fin'])
     if filtros.get('direccion'):
-        qs = qs.filter(direccion_emergencia__calle__icontains=filtros['direccion'])
-    return qs
+        q &= Q(direccion_emergencia__calle__icontains=filtros['direccion'])
+    if filtros.get('servicio_realizado'):
+        q &= Q(tipo_servicio_realizado__descripcion__icontains=filtros['servicio_realizado'])
+    return q
 
-
-from urllib.parse import urlencode
-
-@requiere_sesion
-@requiere_tipo_paramedico(2, 3, 4, 5)
 def formulario_buscar(request):
-    filtros = request.GET.dict()
+    # Crear una copia mutable de GET parameters
+    filtros = request.GET.copy()
+    tipo_busqueda = filtros.get('tipo_busqueda', '')
+    
+    # Remover 'page' de los filtros para evitar conflictos
+    if 'page' in filtros:
+        del filtros['page']
+    
+    # Base del queryset
+    servicios = Servicio.objects.all().order_by('-clave')
 
-    # Pacientes con servicios existentes
-    if filtros:
-        pacientes_servicios_query = buscar_servicios_filtrados(filtros).filter(servicio__isnull=False)
-    else:
-        pacientes_servicios_query = (
-            PacientexServicio.objects
-            .filter(servicio__isnull=False)
-            .select_related('servicio')
-            .order_by('-servicio__clave')
+    # Subquery para detectar servicios con pacientes
+    pacientes_qs = PacientexServicio.objects.filter(servicio=OuterRef('pk'))
+
+    # Filtro por tipo de búsqueda
+    if tipo_busqueda == 'con_pacientes':
+        servicios = servicios.filter(Exists(pacientes_qs))
+    elif tipo_busqueda == 'sin_pacientes':
+        servicios = servicios.filter(~Exists(pacientes_qs))
+
+    # Filtros del modelo Servicio
+    filtro_servicio = construir_filtro_servicio(filtros)
+    if filtro_servicio:
+        servicios = servicios.filter(filtro_servicio)
+
+    # Filtros del modelo PacientexServicio (campos del paciente)
+    filtro_paciente = construir_filtro_paciente(filtros)
+    if filtro_paciente:
+        # Aplica sólo a servicios que tengan pacientes coincidentes
+        servicios = servicios.filter(
+            Exists(pacientes_qs.filter(filtro_paciente))
         )
 
-    pacientes_servicios = paginar_queryset(pacientes_servicios_query, request, 'page_con')
+    # Prefetch para traer los pacientes asociados
+    servicios = servicios.prefetch_related(
+        Prefetch('pacientes', queryset=PacientexServicio.objects.all())
+    )
 
-    # Claves de servicios con paciente
-    claves_con_paciente = pacientes_servicios_query.values_list('servicio__clave', flat=True).distinct()
+    # Paginación
+    paginator = Paginator(servicios, 12)
+    page_number = request.GET.get('page', 1)
+    try:
+        servicios_page = paginator.page(page_number)
+    except PageNotAnInteger:
+        servicios_page = paginator.page(1)
+    except EmptyPage:
+        servicios_page = paginator.page(paginator.num_pages)
 
-    # Servicios sin pacientes asociados
-    if filtros:
-        servicios_sin_paciente_query = (
-            buscar_servicios_sin_pacientes(filtros)
-            .exclude(clave__in=claves_con_paciente)
-        )
-    else:
-        servicios_sin_paciente_query = (
-            Servicio.objects
-            .exclude(clave__in=claves_con_paciente)
-            .order_by('-clave')
-        )
-
-    servicios_sin_paciente = paginar_queryset(servicios_sin_paciente_query, request, 'page_sin')
-
-    # Reconstruir query string sin parámetros de paginación
-    filtros_sin_paginacion = {k: v for k, v in filtros.items() if k not in ['page_con', 'page_sin']}
-    query_string = urlencode(filtros_sin_paginacion)
+    # Crear query string para paginación (sin el parámetro page)
+    query_params = filtros.urlencode()
 
     context = {
-        'pacientes_servicios': pacientes_servicios,
-        'servicios_sin_paciente': servicios_sin_paciente,
+        'servicios': servicios_page,
         'filtros': filtros,
-        'query_string': query_string,
+        'query_params': query_params,  
+        'tipos_servicio': TiposServicio.objects.all().order_by('descripcion'),
+        'enfermedades': Enfermedad.objects.all().order_by('nombre'),
+        'hospitales': Hospitales.objects.all().order_by('nombre'),
+        'ambulancias': Ambulancias.objects.all().order_by('descripcion'),
+        'bases': Bases.objects.all().order_by('clave'),
+        'paginator': paginator,
     }
+
     return render(request, 'buscador_servicios.html', context)
 
 
@@ -233,7 +205,6 @@ def vista_principal(request):
 
     return render(request, 'serv_principal.html', context)
 
-
 def crear_servicio(request):
     if request.method == 'POST':
         servicio_guardado = guardar_servicio(request)
@@ -248,7 +219,6 @@ def crear_servicio(request):
             no_paciente = True
             return render(request, 'create.html', {'form': form, 'no_mostrar_pacientes': no_paciente})
 
-
 @requiere_sesion
 @requiere_tipo_paramedico(4, 5)
 def eliminar_servicio(request, pk):
@@ -260,8 +230,6 @@ def eliminar_servicio(request, pk):
         accion=f"Eliminó servicio {pk}"
     ) 
     return redirect('formulario_buscar')
-
-#279362
 
 def guardar_auxiliares(request, servicio, paciente):
         guardar_unidades(request, servicio)
@@ -277,11 +245,9 @@ def guardar_auxiliares(request, servicio, paciente):
         guardar_impactos(request, paciente)
         guardar_testigos(request, paciente)
 
-
 def fallo_guardado(request):
     error = request.GET.get('error', 'Error desconocido')
     return render(request, 'fallo_guardado.html', {'error': error})
-
 
 def guardar_unidades(request, servicio):
     UnidadxServicio.objects.filter(servicio=servicio).delete()
@@ -380,7 +346,6 @@ def guardar_impactos(request, paciente):
         descripcion = i.get('descripcion')
         ImpactoxVehiculo.objects.create(paciente=paciente, impacto=descripcion)
 
-
 def guardar_testigos(request, paciente):
     """
     Guarda los testigos asociados a un paciente.
@@ -417,11 +382,6 @@ def guardar_testigos(request, paciente):
             error_msg = f"Error al guardar testigo #{idx}: {str(e)}"
             errores.append(error_msg)
             print.error(error_msg)
-
-
-
-    
-
 
 @requiere_tipo_paramedico(3, 4, 5)
 def reporte_servicio(request, clave):
@@ -481,8 +441,6 @@ def obtener_calles_por_calle(request):
 
     data = [{'id': c['calle'], 'nombre': c['calle__calle']} for c in calles]
     return JsonResponse(data, safe=False)
-
-
 
 salidas_enfalso = ['34', '35', '213']
 
@@ -609,14 +567,7 @@ def carga_modifica_v2(request, pk, ps=None):
 
     return render(request, 'modificar_servicio.html', context)
 
-
-
-
 def carga_relacionados(servicio, paciente=None):
-    """
-    Retorna un diccionario con todos los objetos relacionados a un paciente y servicio.
-    Si paciente es None, solo devuelve los datos de servicio.
-    """
     context = {
         'paramedicos_asignados': ParamedicoxPaciente.objects.filter(servicio=servicio),
         'unidades_asignadas': UnidadxServicio.objects.filter(servicio=servicio),
@@ -645,9 +596,6 @@ def carga_relacionados(servicio, paciente=None):
         })
 
     return context
-
-    
-
 
 def guardar_servicio(request, servicio=None, paciente=None):
     """
@@ -687,8 +635,6 @@ def guardar_servicio(request, servicio=None, paciente=None):
     )
 
     return servicio
-
-
 
 def guardar_paciente(servicio, request, paciente_existente=None):
     """
@@ -735,10 +681,6 @@ def guardar_paciente(servicio, request, paciente_existente=None):
             accion=f"Error al guardar paciente en servicio {servicio.clave}: {errores}"
         )
         return paciente_existente
-
-
-
-
 
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)
@@ -793,8 +735,6 @@ def editar_combustible(request, clave):
     else:
         form = CombustibleForm(instance=combustible)
     return render(request, 'combustible/formulario.html', {'form': form, 'accion': 'Editar'})
-
-
 
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)
@@ -874,7 +814,6 @@ def ver_reloj(request):
         'alerta_fecha_futura': alerta_fecha_futura,
     })
 
-
 @requiere_sesion
 @requiere_tipo_paramedico(3, 4, 5)
 def imprimir_reporte(request):
@@ -926,8 +865,6 @@ def imprimir_reporte(request):
     else:
         return HttpResponse('Error al generar PDF', status=500)
 
-
-
 def guardar_embarazo_partes(paciente, servicio, request):
     """
     Guarda embarazo y partes solo si existen y son válidos.
@@ -944,8 +881,6 @@ def guardar_embarazo_partes(paciente, servicio, request):
         parte = form_partes.save(commit=False)
         parte.servicio = servicio
         parte.save()
-
-
 
 def guardar_sin_paciente(request, pk):
     """

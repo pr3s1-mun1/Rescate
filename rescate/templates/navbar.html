@@ -344,7 +344,7 @@
 <body>
 
   <nav class="navbar navbar-expand-lg rsc-navbar sticky-top">
-    <div class="container">
+    <div class="container-fluid">
       <a class="navbar-brand rsc-navbar-brand d-flex align-items-center"
         href="{% url 'catalogo_general' 'ambulancias' %}">
         <img src="{% static 'img/escudorescate.gif' %}" class="rsc-rounded-circle me-2" style="height: 45px;"
@@ -411,7 +411,7 @@
           <button class="btn rsc-user-btn dropdown-toggle d-flex align-items-center" type="button" id="rscUserMenu"
             data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-person-circle"></i>
-            <span>{{ request.session.user|default:"Iniciar sesión"|truncatechars:15 }}</span>
+            <span>{{ request.session.user|default:"Iniciar sesión" }}</span>
           </button>
           <ul class="dropdown-menu rsc-dropdown-menu dropdown-menu-end" aria-labelledby="rscUserMenu">
             {% if request.session.user %}

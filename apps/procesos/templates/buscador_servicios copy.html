@@ -1,0 +1,500 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Servicios Médicos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/buscador.css' %}">
+
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <header class="main-header">
+            <h1 class="main-title">Buscador de Servicios Médicos</h1>
+        </header>
+
+        <section class="search-section py-3">
+            <div class="container">
+                <div class="card p-3">
+                    <form method="get">
+                        {% csrf_token %}
+
+                        <!-- Fila principal: número de servicio -->
+                        <div class="position-relative mb-2">
+                            <i class="fas fa-search position-absolute" style="top: 50%; left: 6px; transform: translateY(-50%); color: #6c757d;"></i>
+                            <input type="text" name="clave" class="form-control ps-4" placeholder="Buscar número de servicio" value="{{ filtros.clave|default:'' }}">
+                        </div>
+
+
+                        <!-- Filtros secundarios -->
+                        <div class="row mb-2 g-2">
+                            <div class="col-6 col-md-6">
+                                <label for="fecha_inicio" class="form-label">Fecha inicio</label>
+                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ filtros.fecha_inicio|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <label for="fecha_fin" class="form-label">Fecha fin</label>
+                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ filtros.fecha_fin|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="paciente" class="form-control" placeholder="Nombre o clave del paciente" value="{{ filtros.paciente|default:'' }}">
+                            </div>
+
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="direccion" class="form-control" placeholder="Dirección" value="{{ filtros.direccion|default:'' }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-2 g-2">
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="ropa" class="form-control" placeholder="Ropa" value="{{ filtros.ropa|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="sintoma" class="form-control" placeholder="Síntoma" value="{{ filtros.sintoma|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="text" name="antecedente" class="form-control" placeholder="Antecedente" value="{{ filtros.antecedente|default:'' }}">
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="placas" class="form-control" placeholder="Placas" value="{{ filtros.placas|default:'' }}">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select name="sexo" class="form-select">
+                                    <option value="">Sexo</option>
+                                    <option value="M" {% if filtros.sexo == 'M' %}selected{% endif %}>Masculino</option>
+                                    <option value="F" {% if filtros.sexo == 'F' %}selected{% endif %}>Femenino</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select name="servicio_realizado" class="form-control">
+                                    <option value="" selected>-- SERVICIO REALIZADO --</option>
+                                    {% for ts in tipos_servicio %}
+                                        <option value="{{ ts.descripcion}}" {% if filtros.servicio_realizado == ts.descripcion|stringformat:"s" %}selected{% endif %}>
+                                            {{ ts.descripcion }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <select name="enfermedad" class="form-control">
+                                    <option value="" {% if not filtros.enfermedad %}selected{% endif %}>-- ENFERMEDAD --</option>
+                                    {% for e in enfermedades %}
+                                        <option value="{{ e.nombre }}" {% if filtros.enfermedad == e.nombre %}selected{% endif %}>
+                                            {{ e.nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>                            
+                            </div>     
+
+                            <div class="col-6 col-md-2">
+                                <select name="hospital" class="form-control">
+                                    <option value="" {% if not filtros.hospital %}selected{% endif %}>-- HOSPITAL --</option>
+                                    {% for h in hospitales %}
+                                        <option value="{{ h.nombre }}" {% if filtros.hospital == h.nombre %}selected{% endif %}>
+                                            {{ h.nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>                            
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <select name="ambulancia" class="form-control">
+                                    <option value="" {% if not filtros.ambulancia %}selected{% endif %}>-- AMBULANCIA --</option>
+                                    {% for a in ambulancias %}
+                                        <option value="{{ a.descripcion }}" {% if filtros.ambulancia == a.descripcion %}selected{% endif %}>
+                                            {{ a.descripcion }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-6 col-md-2">
+                                <select name="base" class="form-control">
+                                    <option value="" {% if not filtros.base %}selected{% endif %}>-- BASE --</option>
+                                    {% for b in bases %}
+                                        <option value="{{ b.clave }}" {% if filtros.base == b.clave|stringformat:"s" %}selected{% endif %}>
+                                            {{ b.clave }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- Botón de búsqueda -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn w-100 botones-busc">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="results-section">
+            {% if pacientes_servicios or servicios_sin_paciente %}
+                <div class="tabs">
+                    <div class="tab {% if pacientes_servicios %}active{% endif %}" onclick="changeTab('con-paciente')">
+                        Servicios con paciente ({{ pacientes_servicios.paginator.count }})
+                    </div>
+                    <div class="tab {% if not pacientes_servicios and servicios_sin_paciente %}active{% endif %}" onclick="changeTab('sin-paciente')">
+                        Servicios sin paciente ({{ servicios_sin_paciente.paginator.count }})
+                    </div>
+                </div>
+
+                <!-- Pestaña de servicios con paciente -->
+                <div id="con-paciente" class="tab-content {% if pacientes_servicios %}active{% endif %}">
+                    {% if pacientes_servicios %}
+                        <div class="servicios-grid">
+                            {% for ps in pacientes_servicios %}
+                                <div class="servicio-card" style="animation-delay: {{ forloop.counter0|divisibleby:2|yesno:'0s,0.1s' }}">
+                                    <!-- Header -->
+                                    <div class="servicio-header">
+                                        <h6 class="servicio-title">
+                                            {% if ps %}
+                                                {{ ps.nombre|add:" "|add:ps.apellido_paterno|add:" "|add:ps.apellido_materno|truncatechars:20 }}
+                                            {% else %}
+                                                Sin paciente
+                                            {% endif %}
+                                        </h6>
+                                        <span class="servicio-badge badge-primary">#{{ ps.servicio.clave }}</span>
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div class="servicio-body">
+                                        <!-- Service Information -->
+                                        <div class="info-section">
+                                            <h4 class="info-title">
+                                                <i class="fas fa-ambulance"></i> Información del Servicio
+                                            </h4>
+                                            <div class="info-grid">
+                                                <div class="info-block">
+                                                    <span class="info-label">Fecha</span>
+                                                    <span class="info-value">{{ ps.servicio.fecha|date:"d/m/Y" }}</span>
+                                                </div>
+                                                <div class="info-block">
+                                                    <span class="info-label">Estado</span>
+                                                    <span class="info-value">
+                                                        {% if ps.servicio.estatus == 'P' %}
+                                                            <span class="status-indicator status-pending"></span>En Proceso
+                                                        {% elif ps.servicio.estatus == 'T' %}
+                                                            <span class="status-indicator status-completed"></span>Terminado
+                                                        {% else %}
+                                                            <span class="status-indicator status-cancelled"></span>Cancelado
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                                <div class="info-block">
+                                                    <span class="info-label">Ubicación</span>
+                                                    <span class="info-value">{{ ps.servicio.direccion_emergencia.calle }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Patient Information -->
+                                        {% if ps %}
+                                            <div class="info-section">
+                                                <h4 class="info-title">
+                                                    <i class="fas fa-user-injured"></i> Información del Paciente
+                                                </h4>
+                                                <div class="info-grid">
+                                                    <div class="info-block">
+                                                        <span class="info-label"># Paciente</span>
+                                                        <span class="info-value">{{ ps.clave }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Edad</span>
+                                                        <span class="info-value">{{ ps.edad }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Sexo</span>
+                                                        <span class="info-value">
+                                                            {% if ps.sexo == "M" %}
+                                                                Masculino
+                                                            {% elif ps.sexo == "F" %}
+                                                                Femenino
+                                                            {% else %}
+                                                                No especificado
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Vehicle Information -->
+                                            <div class="info-section">
+                                                <h4 class="info-title">
+                                                    <i class="fas fa-car"></i> Información del Vehículo
+                                                </h4>
+                                                <div class="info-grid">
+                                                    <div class="info-block">
+                                                        <span class="info-label">Ambulancia</span>
+                                                        <span class="info-value">{{ ps.ambulancia|default:"-" }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Hospital</span>
+                                                        <span class="info-value">{{ ps.hospital|default:"-" }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Base</span>
+                                                        <span class="info-value">{{ ps.base|default:"-" }}</span>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+
+                                            <div class="info-section">
+                                                <h4 class="info-title">
+                                                    <i class="fas fa-clock"></i> Información del Horario
+                                                </h4>
+                                                <div class="info-grid">
+                                                    <div class="info-block">
+                                                        <span class="info-label">Fecha Salida</span>
+                                                        <span class="info-value">{{ ps.fecha_salida|default:"-" }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Fecha Llegada</span>
+                                                        <span class="info-value">{{ ps.fecha_llegada|default:"-" }}</span>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <span class="info-label">Fecha Retorno</span>
+                                                        <span class="info-value">{{ ps.fecha_retorno|default:"-" }}</span>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="info-section">
+                                                <p class="info-value"><em>Sin datos de paciente</em></p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="acciones">
+                                        <a href="{% url 'carga_modifica_v2_ps' ps.servicio.clave ps.clave %}" class="btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Modificar
+                                        </a>
+                                        <form action="{% url 'reporte_servicio' ps.servicio.clave %}" method="post" target="_blank" style="display: inline;">
+                                        {% csrf_token %}
+                                        {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                                <button class="btn-sm btn-secondary" type="submit">
+                                                    <i class="fas fa-file-alt"></i> Reporte
+                                                </button>
+                                            
+                                        </form>
+                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ ps.servicio.clave }}">
+                                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalLabelEliminar" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-danger">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="modalLabelEliminar">
+                                ⚠️ Confirmar eliminación
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p class="mb-3">Esta acción eliminará el registro <b>de forma permanente</b>.</p>
+                                <p class="fw-bold text-danger">Para continuar, escriba <code style="color: rgb(0, 0, 78);">ELIMINAR</code> en el campo:</p>
+                                <input type="text" id="confirmarTexto" class="form-control text-center mt-2" placeholder="Escriba ELIMINAR">
+                                <input type="hidden" id="registroId">
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar definitivamente</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
+                            {% if pacientes_servicios.has_other_pages %}
+                            <div style="text-align:center; margin-bottom:2rem; display:inline-flex; gap:0.5rem;">
+                                {% if pacientes_servicios.has_previous %}
+                                    <a href="?page_con={{ pacientes_servicios.previous_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
+                                {% endif %}
+
+                                {% for num in pacientes_servicios.paginator.page_range %}
+                                    {% if pacientes_servicios.number == num %}
+                                        <span class="btn-sm btn-primary">{{ num }}</span>
+                                    {% elif num > pacientes_servicios.number|add:'-3' and num < pacientes_servicios.number|add:'3' %}
+                                        <a href="?page_con={{ num }}&{{ query_string }}" class="btn-sm btn-secondary">{{ num }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if pacientes_servicios.has_next %}
+                                    <a href="?page_con={{ pacientes_servicios.next_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list empty-icon"></i>
+                            <p class="empty-text">No se encontraron servicios con pacientes</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Pestaña de servicios sin paciente -->
+                <div id="sin-paciente" class="tab-content {% if not pacientes_servicios and servicios_sin_paciente %}active{% endif %}">
+                    {% if servicios_sin_paciente %}
+                        <div class="servicios-grid">
+                            {% for servicio in servicios_sin_paciente %}
+                                <div class="servicio-card">
+                                    <div class="servicio-header">
+                                        <h3 class="servicio-title">Sin paciente asignado</h3>
+                                        <span class="servicio-badge badge-primary">#{{ servicio.clave }}</span>
+                                    </div>
+                                    <div class="servicio-body">
+                                        <div class="info-section">
+                                            <h4 class="info-title">
+                                                <i class="fas fa-ambulance"></i> Información del Servicio
+                                            </h4>
+                                            <div class="info-grid">
+                                                <div class="info-block">
+                                                    <span class="info-label">Fecha</span>
+                                                    <span class="info-value">{{ servicio.fecha|date:"d/m/Y" }}</span>
+                                                </div>
+                                                <div class="info-block">
+                                                    <span class="info-label">Estado</span>
+                                                    <span class="info-value">
+                                                        {% if servicio.estatus == 'P' %}
+                                                            <span class="status-indicator status-pending"></span>En Proceso
+                                                        {% elif servicio.estatus == 'T' %}
+                                                            <span class="status-indicator status-completed"></span>Terminado
+                                                        {% else %}
+                                                            <span class="status-indicator status-cancelled"></span>Cancelado
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                                <div class="info-block">
+                                                    <span class="info-label">Ubicación</span>
+                                                    <span class="info-value">{{ servicio.direccion_emergencia.calle|truncatechars:20 }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="info-section">
+                                            <p class="info-value"><em>Este servicio no tiene pacientes asignados.</em></p>
+                                        </div>
+                                    </div>
+                                    <div class="acciones">
+                                        <a href="{% url 'carga_modifica_v2' servicio.clave %}" class="btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Modificar
+                                        </a>
+                                        <form action="{% url 'reporte_servicio' servicio.clave %}" method="post" target="_blank" style="display: inline;">
+                                            {% csrf_token %}
+                                            {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                                <button class="btn-sm btn-secondary" type="submit">
+                                                    <i class="fas fa-file-alt"></i> Reporte
+                                                </button>
+                                            {% endif %}
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="pagination" style="text-align:center; margin-bottom: 2rem;">
+                            {% if servicios_sin_paciente.has_other_pages %}
+                            <div style="text-align:center; margin-bottom:2rem; display:inline-flex; gap:0.5rem;">
+                                {% if servicios_sin_paciente.has_previous %}
+                                    <a href="?page_sin={{ servicios_sin_paciente.previous_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">&laquo; Anterior</a>
+                                {% endif %}
+
+                                {% for num in servicios_sin_paciente.paginator.page_range %}
+                                    {% if servicios_sin_paciente.number == num %}
+                                        <span class="btn-sm btn-primary">{{ num }}</span>
+                                    {% elif num > servicios_sin_paciente.number|add:'-3' and num < servicios_sin_paciente.number|add:'3' %}
+                                        <a href="?page_sin={{ num }}&{{ query_string }}" class="btn-sm btn-secondary">{{ num }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if servicios_sin_paciente.has_next %}
+                                    <a href="?page_sin={{ servicios_sin_paciente.next_page_number }}&{{ query_string }}" class="btn-sm btn-secondary">Siguiente &raquo;</a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list empty-icon"></i>
+                            <p class="empty-text">No se encontraron servicios sin pacientes</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list empty-icon"></i>
+                    <p class="empty-text">No se encontraron servicios médicos</p>
+                    <a href="{% url 'formulario_servicio' %}" class="btn-empty">
+                        <i class="fas fa-plus mr-2"></i> Crear nuevo servicio
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    {% include 'footer.html' %}
+    
+    <script src="{% static 'js/buscador.js' %}"></script>
+    <script>
+        // Inicializar variables
+        const modalEliminar = document.getElementById('modalConfirmarEliminar');
+        const inputTexto = document.getElementById('confirmarTexto');
+        const btnEliminar = document.getElementById('btnConfirmarEliminar');
+        const inputId = document.getElementById('registroId');
+
+        // Cada vez que se abre el modal
+        modalEliminar.addEventListener('show.bs.modal', function (event) {
+            const boton = event.relatedTarget; // Botón que abrió el modal
+            const idRegistro = boton.getAttribute('data-id');
+            inputId.value = idRegistro;
+
+            // Reiniciar modal
+            inputTexto.value = '';
+            btnEliminar.disabled = true;
+        });
+
+        // Escucha lo que escribe el usuario
+        inputTexto.addEventListener('input', function () {
+            btnEliminar.disabled = (this.value.trim() !== 'ELIMINAR');
+        });
+
+        // Acción de eliminación
+        btnEliminar.addEventListener('click', function () {
+            const id = inputId.value;
+
+            fetch(`/servicios/eliminar/${id}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                .then(resp => {
+                    if (resp.ok) {
+                        alert('✅ Registro eliminado correctamente.');
+                        location.reload();
+                    } else {
+                        alert('❌ Error al eliminar el registro.');
+                    }
+                });
+        });
+    </script>
+</body>
+</html>
