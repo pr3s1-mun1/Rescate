@@ -60,6 +60,7 @@ def construir_filtro_servicio(filtros):
         q &= Q(tipo_servicio_realizado__descripcion__icontains=filtros['servicio_realizado'])
     return q
 
+@requiere_sesion
 def formulario_buscar(request):
     # Crear una copia mutable de GET parameters
     filtros = request.GET.copy()
@@ -126,8 +127,8 @@ def formulario_buscar(request):
 
     return render(request, 'buscador_servicios.html', context)
 
-
 #Función para cargar formulario y pestañas de creación (Primera Parte)
+@requiere_sesion
 def formulario_servicio(request):    
     context = {
         'form': ServicioForm(),
