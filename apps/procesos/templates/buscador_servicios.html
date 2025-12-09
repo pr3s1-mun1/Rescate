@@ -250,6 +250,9 @@
                                         <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
                                             <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
                                         </form>
+                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ ps.servicio.clave }}">
+                                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -289,6 +292,31 @@
                                     <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
                                         <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
                                     </form>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ s.clave }}">
+                                        <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalLabelEliminar" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-danger">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title" id="modalLabelEliminar">
+                                    ⚠️ Confirmar eliminación
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <p class="mb-3">Esta acción eliminará el registro <b>de forma permanente</b>.</p>
+                                    <p class="fw-bold text-danger">Para continuar, escriba <code style="color: rgb(0, 0, 78);">ELIMINAR</code> en el campo:</p>
+                                    <input type="text" id="confirmarTexto" class="form-control text-center mt-2" placeholder="Escriba ELIMINAR">
+                                    <input type="hidden" id="registroId">
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar definitivamente</button>
+                                </div>
                                 </div>
                             </div>
                         </div>

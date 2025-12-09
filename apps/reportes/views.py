@@ -1222,7 +1222,6 @@ def reporte_asistencia_pdf(request):
             ORDER BY p.nombre;
         """
 
-
         with connection.cursor() as cursor:
             cursor.execute(query, [fecha_inicio_date, fecha_fin_date])
             datos = cursor.fetchall()
@@ -1234,20 +1233,25 @@ def reporte_asistencia_pdf(request):
         "fechas": [f.strftime('%d/%m') for f in fechas],
         "fecha_inicio": fecha_inicio,
         "fecha_fin": fecha_fin,
-        "user" : usuario,
+        "user": usuario,
         "fecha": generacion,
     })
 
-    # Generar PDF
+    # Generar PDF correctamente
     result = io.BytesIO()
-    pisa_status = pisa.CreatePDF(io.StringIO(html), dest=result)
+    pisa_status = pisa.CreatePDF(
+        src=html.encode('utf-8'),
+        dest=result,
+        encoding='utf-8'
+    )
 
     if pisa_status.err:
         return HttpResponse("Error al generar el PDF", status=500)
 
     response = HttpResponse(result.getvalue(), content_type="application/pdf")
-    response['Content-Disposition'] = 'inline; filename="plantillas/reporte_pdf_asistencia.html.pdf"'
+    response['Content-Disposition'] = 'inline; filename="reporte_asistencia.pdf"'
     return response
+
 
 
 def reporte_enfermedades_por_grupo_pdf(request):
