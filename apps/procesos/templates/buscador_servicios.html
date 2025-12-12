@@ -247,12 +247,14 @@
                                     <!-- Acciones -->
                                     <div class="acciones">
                                         <a href="{% url 'carga_modifica_v2_ps' s.clave ps.clave %}" class="btn-sm btn-primary"><i class="fas fa-edit"></i> Modificar</a>
-                                        <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
-                                            <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
-                                        </form>
-                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ ps.servicio.clave }}">
-                                            <i class="fas fa-trash-alt me-1"></i> Eliminar
-                                        </button>
+                                        {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                            <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
+                                                <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
+                                            </form>
+                                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ ps.servicio.clave }}">
+                                                <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                            </button>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -289,12 +291,15 @@
                                 <!-- Acciones -->
                                 <div class="acciones">
                                     <a href="{% url 'carga_modifica_v2' s.clave %}" class="btn-sm btn-primary"><i class="fas fa-edit"></i> Modificar</a>
-                                    <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
-                                        <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
-                                    </form>
-                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ s.clave }}">
-                                        <i class="fas fa-trash-alt me-1"></i> Eliminar
-                                    </button>
+                                    {% if request.session.permisos == 4 or request.session.permisos == 5 %}
+                                        <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
+                                            <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
+                                        </form>
+                                        
+                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ s.clave }}">
+                                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
