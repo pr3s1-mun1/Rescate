@@ -68,7 +68,7 @@ class PacientexServicio(models.Model):
     domicilio = models.ForeignKey(Calle, on_delete=models.SET_NULL, null=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
     colonia = models.ForeignKey(Colonia, on_delete=models.SET_NULL, null=True)
-    estatura = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    estatura = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)
     complexion = models.CharField(max_length=10)
     tez = models.CharField(max_length=10)
     pelo = models.CharField(max_length=10)

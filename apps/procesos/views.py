@@ -17,32 +17,36 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def construir_filtro_paciente(filtros):
     q = Q()
+
     paciente = filtros.get('paciente')
     if paciente:
         paciente = paciente.strip()
         if paciente.isdigit():
-            q &= Q(pacientes__clave=int(paciente))
+            q &= Q(clave=int(paciente))
         else:
             q &= (
-                Q(pacientes__nombre__icontains=paciente) |
-                Q(pacientes__apellido_paterno__icontains=paciente) |
-                Q(pacientes__apellido_materno__icontains=paciente)
+                Q(nombre__icontains=paciente) |
+                Q(apellido_paterno__icontains=paciente) |
+                Q(apellido_materno__icontains=paciente)
             )
 
-    campos_simples = ['ropa', 'sintoma', 'antecedente', 'placas', 'sexo']
+    campos_simples = ['ropa', 'sintoma', 'antecedente', 'sexo']
     for campo in campos_simples:
         valor = filtros.get(campo)
         if valor:
-            q &= Q(**{f'pacientes__{campo}__icontains': valor})
+            q &= Q(**{f'{campo}__icontains': valor})
 
     if filtros.get('enfermedad'):
-        q &= Q(pacientes__enfermedad__nombre__icontains=filtros['enfermedad'])
+        q &= Q(enfermedad__nombre__icontains=filtros['enfermedad'])
+
     if filtros.get('hospital'):
-        q &= Q(pacientes__hospital__nombre__icontains=filtros['hospital'])
+        q &= Q(hospital__nombre__icontains=filtros['hospital'])
+
     if filtros.get('ambulancia'):
-        q &= Q(pacientes__ambulancia__descripcion__icontains=filtros['ambulancia'])
+        q &= Q(ambulancia__descripcion__icontains=filtros['ambulancia'])
+
     if filtros.get('base'):
-        q &= Q(pacientes__base__clave__icontains=filtros['base'])
+        q &= Q(base__clave__icontains=filtros['base'])
 
     return q
 
@@ -87,13 +91,18 @@ def formulario_buscar(request):
     if filtro_servicio:
         servicios = servicios.filter(filtro_servicio)
 
-    # Filtros del modelo PacientexServicio (campos del paciente)
+    pacientes_qs = PacientexServicio.objects.filter(
+    servicio=OuterRef('pk')
+    )
+
     filtro_paciente = construir_filtro_paciente(filtros)
+
     if filtro_paciente:
-        # Aplica sólo a servicios que tengan pacientes coincidentes
         servicios = servicios.filter(
             Exists(pacientes_qs.filter(filtro_paciente))
         )
+
+
 
     # Prefetch para traer los pacientes asociados
     servicios = servicios.prefetch_related(
@@ -126,6 +135,39 @@ def formulario_buscar(request):
     }
 
     return render(request, 'buscador_servicios.html', context)
+
+
+def construir_filtro_paciente_subquery(filtros):
+    q = Q()
+
+    paciente = filtros.get('paciente')
+    if paciente:
+        paciente = paciente.strip()
+        if paciente.isdigit():
+            q &= Q(paciente__clave=int(paciente))
+        else:
+            q &= (
+                Q(paciente__nombre__icontains=paciente) |
+                Q(paciente__apellido_paterno__icontains=paciente) |
+                Q(paciente__apellido_materno__icontains=paciente)
+            )
+
+    campos_simples = ['ropa', 'sintoma', 'antecedente', 'placas', 'sexo']
+    for campo in campos_simples:
+        valor = filtros.get(campo)
+        if valor:
+            q &= Q(**{f'paciente__{campo}__icontains': valor})
+
+    if filtros.get('enfermedad'):
+        q &= Q(paciente__enfermedad__nombre__icontains=filtros['enfermedad'])
+    if filtros.get('hospital'):
+        q &= Q(paciente__hospital__nombre__icontains=filtros['hospital'])
+    if filtros.get('ambulancia'):
+        q &= Q(paciente__ambulancia__descripcion__icontains=filtros['ambulancia'])
+    if filtros.get('base'):
+        q &= Q(paciente__base__clave__icontains=filtros['base'])
+
+    return q
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
 @requiere_sesion

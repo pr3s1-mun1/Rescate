@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from decimal import Decimal, InvalidOperation
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -67,6 +68,21 @@ class PacientesForm(forms.ModelForm):
         'fecha_ultima_comida', 'fecha_liberacion_respon'
     ]
 
+    def clean_estatura(self):
+        valor = self.cleaned_data.get("estatura")
+
+        if valor is None:
+            return valor
+
+        # Si viene como string con coma
+        if isinstance(valor, str):
+            valor = valor.replace(",", ".")
+
+        try:
+            return Decimal(valor)
+        except InvalidOperation:
+            raise forms.ValidationError("Estatura inválida")
+
     class Meta:
         model = PacientexServicio
         exclude = ['servicio']
@@ -105,6 +121,8 @@ class PacientesForm(forms.ModelForm):
 
 
 
+
+
         # Querysets dinámicos
         self.fields['enfermedad'].queryset = Enfermedad.objects.order_by('nombre')
         self.fields['base'].queryset = Bases.objects.order_by('clave')
@@ -113,14 +131,25 @@ class PacientesForm(forms.ModelForm):
         self.fields['empleado_recibe'].queryset = Paramedicos.objects.filter(estatus='A', tipo='P').order_by('nombre')
 
         for field_name, field in self.fields.items():
-            # Campos tipo fecha
             if field_name in self.DATE_FIELDS:
+                field.input_formats = [
+                    '%Y-%m-%dT%H:%M',     # datetime-local
+                    '%Y-%m-%d %H:%M:%S',  # formato Django
+                ]
+
                 field.widget = forms.DateTimeInput(
-                    attrs={'type': 'datetime-local', 'class': 'form-control mb-3'},
-                    format='%Y-%m-%dT%H:%M'
+                    format='%Y-%m-%dT%H:%M',
+                    attrs={
+                        'type': 'datetime-local',
+                        'class': 'form-control mb-3'
+                    }
                 )
+
                 if self.instance and getattr(self.instance, field_name, None):
-                    field.initial = getattr(self.instance, field_name).strftime('%Y-%m-%dT%H:%M')
+                    field.initial = getattr(self.instance, field_name).strftime(
+                        '%Y-%m-%dT%H:%M'
+                    )
+
 
             # Campos booleanos con "Sí / No"
             elif field_name in self.CHOICES:
