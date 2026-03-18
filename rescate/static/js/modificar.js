@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
+        if (!validaFechasEmbarazo()){
+            e.preventDefault();
+            alert('Los campos de fechas en embarazo no están completos, favor de verificar')
+            return false;
+        }
+
         // Deshabilitar el botón de submit mientras se guarda
         const submitBtn = document.getElementById('btnGuardar');
         if (submitBtn) {
@@ -182,3 +188,4 @@ function confirmarGuardar() {
 function confirmarCancelar() {
     return confirm("¿Estás seguro de que desea cancelar el agregado del paciente?");
 }
+

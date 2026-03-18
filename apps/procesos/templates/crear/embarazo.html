@@ -1,6 +1,6 @@
 {% load static %}
 <body>
-    <input type="hidden" id="input-embarazo" name="embarazo">
+    <input type="hidden" id="input-embarazo" name="embarazo" value="{% if form_embarazo.instance.pk %}true{% endif %}">
 
     <div class="text-center mt-4">
         <p id="activar-formulario" style="cursor: pointer;" class="text-primary">
@@ -16,8 +16,16 @@
                     <h1 class="text-center mb-4">Datos del Embarazo del Paciente</h1>
                     
                     <div class="form-group mb-3">
-                        <label for="{{ form_embarazo.secuencia.id_for_label }}">Secuencia</label>
-                        {{ form_embarazo.secuencia }}
+                        <label>Secuencia de Embarazo</label>
+                        <input type="text" 
+                            class="form-control bg-light" 
+                            value="{% if form_embarazo.instance.pk %}{{ form_embarazo.instance.pk }}{% else %}Pendiente de asignar{% endif %}" 
+                            readonly>
+                        
+                        {# Campo oculto para que el POST no falle si el formulario espera el dato #}
+                        {% if form_embarazo.instance.pk %}
+                            <input type="hidden" name="secuencia" value="{{ form_embarazo.instance.pk }}">
+                        {% endif %}
                     </div>
 
                     <div class="form-group mb-3">

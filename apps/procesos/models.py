@@ -219,7 +219,7 @@ class TestigoxPaciente(models.Model):
 
 
 class EmbarazoxPaciente(models.Model):
-    secuencia = models.IntegerField(primary_key=True)
+    secuencia = models.AutoField(primary_key=True)
     paciente = models.ForeignKey(PacientexServicio, on_delete=models.SET_NULL, null=True)
     numero_gestaciones = models.IntegerField(blank=True)
     numero_partos = models.IntegerField(blank=True)

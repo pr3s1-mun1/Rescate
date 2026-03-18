@@ -136,7 +136,6 @@ def formulario_buscar(request):
 
     return render(request, 'buscador_servicios.html', context)
 
-
 def construir_filtro_paciente_subquery(filtros):
     q = Q()
 
@@ -406,9 +405,9 @@ def guardar_testigos(request, paciente):
     try:
         testigos = json.loads(testigos_json)
     except json.JSONDecodeError as e:
-        errores.append(f"Error al decodificar JSON: {str(e)}")
-        print.error(f"JSONDecodeError al guardar testigos: {str(e)}")
-        testigos = []
+            errores.append(f"Error al decodificar JSON: {str(e)}")
+            print(f"Error al guardar testigos: {str(e)}") # <--- Quita el .error
+            testigos = []
 
     # Guardar cada testigo
     for idx, testigo_data in enumerate(testigos, start=1):
@@ -520,7 +519,7 @@ def agregar_paciente(request, pk):
                 guardar_servicio(request, servicio_guardado, paciente)
 
                 # Guardar embarazo y partes
-                guardar_embarazo_partes(paciente, servicio_guardado, request)
+                guardar_embarazo(paciente, request)
 
                 # Redirigir usando la clave generada
                 messages.success(request, "Paciente y servicio guardados exitosamente")
@@ -703,14 +702,14 @@ def guardar_paciente(servicio, request, paciente_existente=None):
         guardar_quemaduras(request, paciente)
         guardar_impactos(request, paciente)
         guardar_testigos(request, paciente)
+        guardar_embarazo(paciente, request)
 
         Logs_Sistema.objects.create(
             usuario=request.session.get("user", "Desconocido"),
             accion=f"Paciente guardado con clave {paciente.clave} en servicio {servicio.clave}"
         )
 
-        embarazo = request.POST.get('embarazo')
-        
+
 
         return paciente
 
@@ -908,22 +907,34 @@ def imprimir_reporte(request):
     else:
         return HttpResponse('Error al generar PDF', status=500)
 
-def guardar_embarazo_partes(paciente, servicio, request):
+def guardar_embarazo(paciente, request):
     """
-    Guarda embarazo y partes solo si existen y son válidos.
+    Guarda un nuevo embarazo o actualiza el existente para un paciente.
     """
-    form_embarazo = EmbarazoAsignadoForm(request.POST)
-    form_partes = PartesAsignadoForm(request.POST)
+    # 1. Buscamos si el paciente ya tiene un registro de embarazo
+    embarazo_existente = EmbarazoxPaciente.objects.filter(paciente=paciente).first()
 
-    if paciente and form_embarazo.is_valid() and request.POST.get('embarazo') == 'true':
-        embarazo = form_embarazo.save(commit=False)
-        embarazo.paciente = paciente
-        embarazo.save()
+    # 2. Verificamos si el usuario marcó el check de embarazo
+    if paciente and request.POST.get('embarazo') == 'true':
+        
+        # 3. PASAMOS LA INSTANCIA: Si existe, Django hará UPDATE. Si es None, hará INSERT.
+        form_embarazo = EmbarazoAsignadoForm(request.POST, instance=embarazo_existente)
 
-    if form_partes.is_valid():
-        parte = form_partes.save(commit=False)
-        parte.servicio = servicio
-        parte.save()
+        if form_embarazo.is_valid():
+            try:
+                embarazo = form_embarazo.save(commit=False)
+                embarazo.paciente = paciente
+                embarazo.save()
+                print(f"Éxito: Embarazo {'actualizado' if embarazo_existente else 'guardado'}.")
+            except Exception as e:
+                # Aquí capturamos errores de base de datos (como el de la fecha null)
+                print(f"Error crítico de base de datos: {e}")
+        else:
+            # 4. Si hay errores de validación (ej. formatos de fecha), los vemos aquí
+            print(f"Errores de validación en Embarazo: {form_embarazo.errors.as_json()}")
+    else:
+        # Opcional: Si el check de 'embarazo' se desmarcó, podrías decidir si borrarlo o ignorarlo
+        print("No se procesó embarazo: Check desactivado o sin paciente.")
 
 def guardar_sin_paciente(request, pk):
     """

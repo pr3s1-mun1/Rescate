@@ -31,3 +31,29 @@ document.addEventListener('DOMContentLoaded', function () {
         testigos = true;
     }
 });
+
+function validaFechasEmbarazo() {
+    const fechaMenstruacion = document.querySelector('input[name="utlima_menstruacion"]');
+    const fechaContracciones = document.querySelector('input[name="inicio_contracciones"]');
+    const inputEmbarazo = document.querySelector('input[name="embarazo"]');
+
+    // Comparamos el VALOR del input (.value)
+    if (inputEmbarazo && inputEmbarazo.value === 'true') {
+        
+        const camposFecha = [
+            { elemento: fechaMenstruacion, nombre: "Última Menstruación" },
+            { elemento: fechaContracciones, nombre: "Inicio de Contracciones" }
+        ];
+
+        for (let campo of camposFecha) {
+            // Si el campo no existe en el DOM o su valor está vacío
+            if (!campo.elemento || !campo.elemento.value) {
+                alert(`Por favor, complete la fecha y hora de: ${campo.nombre}`);
+                if (campo.elemento) campo.elemento.focus();
+                return false; // Detiene el flujo
+            }
+        }
+    }
+
+    return true; // Si no es 'true' o todo está lleno, permite continuar
+}

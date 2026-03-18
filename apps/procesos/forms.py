@@ -195,7 +195,7 @@ class ParamedicoAsignadoForm(forms.ModelForm):
 class EmbarazoAsignadoForm(forms.ModelForm):
     DATE_FIELDS = ['utlima_menstruacion', 'inicio_contracciones']
     CHOICES = ['presenta_sangrado', 'bolsa_rota', 'atencion_medica_embarazo']
-    EXCLUDED_FIELDS = ['paciente', 'secuencia']  # Por ejemplo, campos que quieres hacer readonly
+    EXCLUDED_FIELDS = ['paciente', 'secuencia']  
 
     class Meta:
         model = EmbarazoxPaciente
