@@ -397,61 +397,77 @@
     {% include 'footer.html' %}
     
     <script src="{% static 'js/buscador.js' %}"></script>
-    <script>
-        // La función anónima asegura que el DOM esté cargado
-        (function() {
-            const inicializarModal = () => {
-                const modalEliminar = document.getElementById('modalConfirmarEliminar');
-                const inputTexto = document.getElementById('confirmarTexto');
-                const btnEliminar = document.getElementById('btnConfirmarEliminar');
-                const inputId = document.getElementById('registroId');
+<script>
+    (function() {
+        // Usamos delegación de eventos a nivel de 'document'
+        // Esto permite que el script cargue ANTES que Bootstrap y ANTES que el HTML
+        
+        document.addEventListener('show.bs.modal', function (event) {
+            // Verificamos si el modal que se está abriendo es el de eliminación
+            if (event.target.id === 'modalConfirmarEliminar') {
+                const modal = event.target;
+                const botonDisparador = event.relatedTarget;
+                
+                const inputId = modal.querySelector('#registroId');
+                const inputTexto = modal.querySelector('#confirmarTexto');
+                const btnEliminar = modal.querySelector('#btnConfirmarEliminar');
 
-                // Si el modal no existe en esta página, salimos para no dar error
-                if (!modalEliminar) return;
-
-                modalEliminar.addEventListener('show.bs.modal', function (event) {
-                    const boton = event.relatedTarget;
-                    inputId.value = boton.getAttribute('data-id');
-                    inputTexto.value = '';
-                    btnEliminar.disabled = true;
-                });
-
-                inputTexto.addEventListener('input', function () {
-                    // .toUpperCase() es vital para Safari/Móviles
-                    const valor = this.value.trim().toUpperCase();
-                    btnEliminar.disabled = (valor !== 'ELIMINAR');
-                });
-
-                btnEliminar.addEventListener('click', function () {
-                    const id = inputId.value;
-                    this.disabled = true; // Evitar doble clic
-                    
-                    fetch(`/servicios/eliminar/${id}/`, { 
-                        method: 'POST', 
-                        headers: { 'X-CSRFToken': '{{ csrf_token }}' } 
-                    })
-                    .then(resp => {
-                        if (resp.ok) {
-                            location.reload();
-                        } else {
-                            alert('❌ Error al eliminar.');
-                            this.disabled = false;
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        this.disabled = false;
-                    });
-                });
-            };
-
-            // Ejecutar al cargar
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', inicializarModal);
-            } else {
-                inicializarModal();
+                if (inputId && botonDisparador) {
+                    inputId.value = botonDisparador.getAttribute('data-id');
+                }
+                
+                if (inputTexto) inputTexto.value = '';
+                if (btnEliminar) btnEliminar.disabled = true;
             }
-        })();
-    </script>
+        }, true); // El 'true' ayuda a capturar eventos que no burbujean bien en Safari
+
+        // Delegación para el input de texto
+        document.addEventListener('input', function (event) {
+            if (event.target.id === 'confirmarTexto') {
+                const input = event.target;
+                const modal = input.closest('.modal');
+                const btnEliminar = modal.querySelector('#btnConfirmarEliminar');
+                
+                if (btnEliminar) {
+                    const valor = input.value.trim().toUpperCase();
+                    btnEliminar.disabled = (valor !== 'ELIMINAR');
+                }
+            }
+        });
+
+        // Delegación para el botón de eliminar
+        document.addEventListener('click', function (event) {
+            if (event.target.id === 'btnConfirmarEliminar') {
+                const btn = event.target;
+                if (btn.disabled) return;
+
+                const modal = btn.closest('.modal');
+                const id = modal.querySelector('#registroId').value;
+
+                btn.disabled = true;
+                btn.innerText = 'Eliminando...';
+
+                fetch(`/servicios/eliminar/${id}/`, { 
+                    method: 'POST', 
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' } 
+                })
+                .then(resp => {
+                    if (resp.ok) {
+                        location.reload();
+                    } else {
+                        alert('❌ Error al eliminar.');
+                        btn.disabled = false;
+                        btn.innerText = 'Eliminar';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    btn.disabled = false;
+                    btn.innerText = 'Eliminar';
+                });
+            }
+        });
+    })();
+</script>
 </body>
 </html>
