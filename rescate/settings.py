@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-jwq=u@wby$5@yfq4-_5tj@0&h#3yga=h-87&gvn+j%s-s4^&^%
 DEBUG = True
 BASE_DD_PRUEBA = False
 
-ALLOWED_HOSTS = ['rescate.juarez.gob.mx', 'rescate.gobjuarez.mpio', 'localhost', '127.0.0.1', '10.236.62.93']
+ALLOWED_HOSTS = ['rescate.juarez.gob.mx', 'rescate.gobjuarez.mpio', 'localhost', '127.0.0.1', '10.236.62.93', '100.86.80.34']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://rescate.juarez.gob.mx',

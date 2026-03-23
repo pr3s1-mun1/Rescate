@@ -310,22 +310,20 @@
                         <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalLabelEliminar" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border-danger">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title" id="modalLabelEliminar">
-                                    ⚠️ Confirmar eliminación
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <p class="mb-3">Esta acción eliminará el registro <b>de forma permanente</b>.</p>
-                                    <p class="fw-bold text-danger">Para continuar, escriba <code style="color: rgb(0, 0, 78);">ELIMINAR</code> en el campo:</p>
-                                    <input type="text" id="confirmarTexto" class="form-control text-center mt-2" placeholder="Escriba ELIMINAR">
-                                    <input type="hidden" id="registroId">
-                                </div>
-                                <div class="modal-footer justify-content-center">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar definitivamente</button>
-                                </div>
+                                    <div class="modal-header bg-danger text-white">
+                                        <h1 class="modal-title fs-5" id="modalLabelEliminar">⚠️ Confirmar eliminación</h1>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <p>Esta acción eliminará el registro <b>de forma permanente</b>.</p>
+                                        <p class="fw-bold text-danger">Escriba <code>ELIMINAR</code> para confirmar:</p>
+                                        <input type="text" id="confirmarTexto" class="form-control text-center" placeholder="ELIMINAR" autocomplete="off">
+                                        <input type="hidden" id="registroId">
+                                    </div>
+                                    <div class="modal-footer justify-content-center">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

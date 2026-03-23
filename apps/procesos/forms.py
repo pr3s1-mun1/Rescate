@@ -104,7 +104,7 @@ class PacientesForm(forms.ModelForm):
             'respuesta_motora_glasgow': forms.Select(choices=[('1', 'NO EVALUADO'), ('2', 'OBEDECE ORDENES'), ('3', 'LOCALIZA DOLOR'), ('4', 'RECHAZO AL DOLOR'), ('5', 'FLEXION ANORMAL AL DOLOR'), ('6', 'EXTENSION ANORMAL AL DOLOR'), ('7', 'NO RESPUESTA')]),
             'edad_tipo': forms.Select(choices=[('1', 'DIAS'), ('2', 'SEMANAS'), ('3', 'MESES'), ('4', 'AÑOS')]),
             'color_vehiculo': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'BLANCO'), ('3', 'NEGRO'), ('4', 'ROJO'), ('5', 'AMARILLO'), ('6', 'VERDE'), ('7', 'CAFE'), ('8', 'GRIS')]),
-            'parentesco_acompanante': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'PADRE'), ('3', 'MADRE'), ('4', 'HERMANO(A)'), ('5', 'TIO(A)'), ('6', 'ABUELO(A)'), ('7', 'CUÑADO(A)'), ('8', 'HIJO(A)'), ('9', 'ESPOSO(A)'), ('10', 'COMPAÑERO(A)'), ('11', 'SOBRINO(A)'), ('11', 'VECINO(A)')]),
+            'parentesco_acompanante': forms.Select(choices=[('1', 'NINGUNO'), ('2', 'PADRE'), ('3', 'MADRE'), ('4', 'HERMANO(A)'), ('5', 'TIO(A)'), ('6', 'ABUELO(A)'), ('7', 'CUÑADO(A)'), ('8', 'HIJO(A)'), ('9', 'ESPOSO(A)'), ('10', 'COMPAÑERO(A)'), ('11', 'SOBRINO(A)'), ('12', 'VECINO(A)'), ('13', 'AMIGO(A)'), ('14', 'PRIMO(A)'), ('15', 'PAREJA')]),
             'sexo_acompanante' : forms.Select(choices=[('N', 'NO ESPECIFICA'), ('M', 'MASCULINO'), ('F', 'FEMENINO')]),
         }
 

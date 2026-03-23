@@ -530,6 +530,20 @@
                         CUÑADO(A)
                     {% elif paciente.parentesco_acompanante == '8' %}
                         HIJO(A)
+                    {% elif paciente.parentesco_acompanante == '9' %}
+                        ESPOSO(A)
+                    {% elif paciente.parentesco_acompanante == '10' %}
+                        COMPAÑERO
+                    {% elif paciente.parentesco_acompanante == '11' %}
+                        SOBRINO(A)
+                    {% elif paciente.parentesco_acompanante == '12' %}
+                        VECINO(A)
+                    {% elif paciente.parentesco_acompanante == '13' %}
+                        AMIGO(A)
+                    {% elif paciente.parentesco_acompanante == '14' %}
+                        PRIMO(A)
+                    {% elif paciente.parentesco_acompanante == '15' %}
+                        PAREJA
                     {% else %}
                         No especificado
                     {% endif %}
