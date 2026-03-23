@@ -16,7 +16,8 @@
 <body>
     {% include 'navbar.html' %}
 
-    <div class="container">
+    {% block content %}
+        <div class="container">
         <header class="main-header">
             <h1 class="main-title">Buscador de Servicios Médicos</h1>
         </header>
@@ -255,7 +256,7 @@
                                             <form action="{% url 'reporte_servicio' s.clave %}" method="post" target="_blank" style="display:inline;">{% csrf_token %}
                                                 <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
                                             </form>
-                                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ ps.servicio.clave }}">
+                                            <button class="btn btn-danger btn-eliminar" data-id="{{ ps.servicio.clave }}">
                                                 <i class="fas fa-trash-alt me-1"></i> Eliminar
                                             </button>
                                         {% endif %}
@@ -300,33 +301,14 @@
                                             <button class="btn-sm btn-secondary" type="submit"><i class="fas fa-file-alt"></i> Reporte</button>
                                         </form>
                                         
-                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar" data-id="{{ s.clave }}">
+                                        <button class="btn btn-danger btn-eliminar" data-id="{{ s.clave }}">
                                             <i class="fas fa-trash-alt me-1"></i> Eliminar
                                         </button>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalLabelEliminar" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-danger">
-                                    <div class="modal-header bg-danger text-white">
-                                        <h1 class="modal-title fs-5" id="modalLabelEliminar">⚠️ Confirmar eliminación</h1>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body text-center">
-                                        <p>Esta acción eliminará el registro <b>de forma permanente</b>.</p>
-                                        <p class="fw-bold text-danger">Escriba <code>ELIMINAR</code> para confirmar:</p>
-                                        <input type="text" id="confirmarTexto" class="form-control text-center" placeholder="ELIMINAR" autocomplete="off">
-                                        <input type="hidden" id="registroId">
-                                    </div>
-                                    <div class="modal-footer justify-content-center">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     {% endif %}
                 {% empty %}
                     <div class="empty-state text-center">
@@ -335,7 +317,26 @@
                     </div>
                 {% endfor %}
             </div>
-
+            <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-danger">
+                        <div class="modal-header bg-danger text-white">
+                            <h1 class="modal-title fs-5" id="modalLabelEliminar">⚠️ Confirmar eliminación</h1>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p>Esta acción eliminará el registro <b>de forma permanente</b>.</p>
+                            <p class="fw-bold text-danger">Escriba <code>ELIMINAR</code> para confirmar:</p>
+                            <input type="text" id="confirmarTexto" class="form-control text-center" placeholder="ELIMINAR" autocomplete="off">
+                            <input type="hidden" id="registroId">
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="btnConfirmarEliminar" disabled>Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="pagination-container mt-4">
                 {% if servicios.has_other_pages %}
                     <nav aria-label="Paginación de servicios">
@@ -393,81 +394,97 @@
 
 
     </div>
+    {% endblock %}
+
+
 
     {% include 'footer.html' %}
-    
     <script src="{% static 'js/buscador.js' %}"></script>
-<script>
-    (function() {
-        // Usamos delegación de eventos a nivel de 'document'
-        // Esto permite que el script cargue ANTES que Bootstrap y ANTES que el HTML
-        
-        document.addEventListener('show.bs.modal', function (event) {
-            // Verificamos si el modal que se está abriendo es el de eliminación
-            if (event.target.id === 'modalConfirmarEliminar') {
-                const modal = event.target;
-                const botonDisparador = event.relatedTarget;
-                
-                const inputId = modal.querySelector('#registroId');
-                const inputTexto = modal.querySelector('#confirmarTexto');
-                const btnEliminar = modal.querySelector('#btnConfirmarEliminar');
+    <script>
+        (function() {
 
-                if (inputId && botonDisparador) {
-                    inputId.value = botonDisparador.getAttribute('data-id');
+            let modal = null;
+
+            // Abrir modal
+            document.addEventListener('click', function (event) {
+                const btn = event.target.closest('.btn-eliminar');
+                if (!btn) return;
+
+                const modalEl = document.getElementById('modalConfirmarEliminar');
+                if (!modalEl) {
+                    console.error('Modal no encontrado');
+                    return;
                 }
-                
-                if (inputTexto) inputTexto.value = '';
-                if (btnEliminar) btnEliminar.disabled = true;
-            }
-        }, true); // El 'true' ayuda a capturar eventos que no burbujean bien en Safari
 
-        // Delegación para el input de texto
-        document.addEventListener('input', function (event) {
-            if (event.target.id === 'confirmarTexto') {
-                const input = event.target;
-                const modal = input.closest('.modal');
-                const btnEliminar = modal.querySelector('#btnConfirmarEliminar');
-                
+                modal = new bootstrap.Modal(modalEl);
+
+                const id = btn.getAttribute('data-id');
+
+                const inputId = modalEl.querySelector('#registroId');
+                const inputTexto = modalEl.querySelector('#confirmarTexto');
+                const btnEliminar = modalEl.querySelector('#btnConfirmarEliminar');
+
+                if (inputId) inputId.value = id;
+                if (inputTexto) inputTexto.value = '';
                 if (btnEliminar) {
-                    const valor = input.value.trim().toUpperCase();
+                    btnEliminar.disabled = true;
+                    btnEliminar.innerText = 'Eliminar';
+                }
+
+                modal.show();
+            });
+
+            // Validar texto
+            document.addEventListener('input', function (event) {
+                if (event.target.id !== 'confirmarTexto') return;
+
+                const modalEl = document.getElementById('modalConfirmarEliminar');
+                if (!modalEl) return;
+
+                const valor = event.target.value.trim().toUpperCase();
+                const btnEliminar = modalEl.querySelector('#btnConfirmarEliminar');
+
+                if (btnEliminar) {
                     btnEliminar.disabled = (valor !== 'ELIMINAR');
                 }
-            }
-        });
+            });
 
-        // Delegación para el botón de eliminar
-        document.addEventListener('click', function (event) {
-            if (event.target.id === 'btnConfirmarEliminar') {
+            // Eliminar
+            document.addEventListener('click', function (event) {
+                if (event.target.id !== 'btnConfirmarEliminar') return;
+
                 const btn = event.target;
                 if (btn.disabled) return;
 
-                const modal = btn.closest('.modal');
-                const id = modal.querySelector('#registroId').value;
+                const modalEl = document.getElementById('modalConfirmarEliminar');
+                if (!modalEl) return;
+
+                const id = modalEl.querySelector('#registroId').value;
 
                 btn.disabled = true;
                 btn.innerText = 'Eliminando...';
 
-                fetch(`/servicios/eliminar/${id}/`, { 
-                    method: 'POST', 
-                    headers: { 'X-CSRFToken': '{{ csrf_token }}' } 
-                })
-                .then(resp => {
-                    if (resp.ok) {
-                        location.reload();
-                    } else {
-                        alert('❌ Error al eliminar.');
-                        btn.disabled = false;
-                        btn.innerText = 'Eliminar';
+                fetch(`/servicios/eliminar/${id}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
                     }
                 })
-                .catch(err => {
-                    console.error(err);
+                .then(resp => {
+                    if (!resp.ok) throw new Error();
+
+                    if (modal) modal.hide();
+
+                    setTimeout(() => location.reload(), 300);
+                })
+                .catch(() => {
                     btn.disabled = false;
                     btn.innerText = 'Eliminar';
+                    alert('❌ Error al eliminar.');
                 });
-            }
-        });
-    })();
-</script>
+            });
+
+        })();
+    </script>
 </body>
 </html>
