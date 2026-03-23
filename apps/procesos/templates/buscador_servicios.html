@@ -398,42 +398,60 @@
     
     <script src="{% static 'js/buscador.js' %}"></script>
     <script>
-        // Inicializar variables
-        const modalEliminar = document.getElementById('modalConfirmarEliminar');
-        const inputTexto = document.getElementById('confirmarTexto');
-        const btnEliminar = document.getElementById('btnConfirmarEliminar');
-        const inputId = document.getElementById('registroId');
+        // La función anónima asegura que el DOM esté cargado
+        (function() {
+            const inicializarModal = () => {
+                const modalEliminar = document.getElementById('modalConfirmarEliminar');
+                const inputTexto = document.getElementById('confirmarTexto');
+                const btnEliminar = document.getElementById('btnConfirmarEliminar');
+                const inputId = document.getElementById('registroId');
 
-        // Cada vez que se abre el modal
-        modalEliminar.addEventListener('show.bs.modal', function (event) {
-            const boton = event.relatedTarget; // Botón que abrió el modal
-            const idRegistro = boton.getAttribute('data-id');
-            inputId.value = idRegistro;
+                // Si el modal no existe en esta página, salimos para no dar error
+                if (!modalEliminar) return;
 
-            // Reiniciar modal
-            inputTexto.value = '';
-            btnEliminar.disabled = true;
-        });
-
-        // Escucha lo que escribe el usuario
-        inputTexto.addEventListener('input', function () {
-            btnEliminar.disabled = (this.value.trim() !== 'ELIMINAR');
-        });
-
-        // Acción de eliminación
-        btnEliminar.addEventListener('click', function () {
-            const id = inputId.value;
-
-            fetch(`/servicios/eliminar/${id}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
-                .then(resp => {
-                    if (resp.ok) {
-                        alert('✅ Registro eliminado correctamente.');
-                        location.reload();
-                    } else {
-                        alert('❌ Error al eliminar el registro.');
-                    }
+                modalEliminar.addEventListener('show.bs.modal', function (event) {
+                    const boton = event.relatedTarget;
+                    inputId.value = boton.getAttribute('data-id');
+                    inputTexto.value = '';
+                    btnEliminar.disabled = true;
                 });
-        });
+
+                inputTexto.addEventListener('input', function () {
+                    // .toUpperCase() es vital para Safari/Móviles
+                    const valor = this.value.trim().toUpperCase();
+                    btnEliminar.disabled = (valor !== 'ELIMINAR');
+                });
+
+                btnEliminar.addEventListener('click', function () {
+                    const id = inputId.value;
+                    this.disabled = true; // Evitar doble clic
+                    
+                    fetch(`/servicios/eliminar/${id}/`, { 
+                        method: 'POST', 
+                        headers: { 'X-CSRFToken': '{{ csrf_token }}' } 
+                    })
+                    .then(resp => {
+                        if (resp.ok) {
+                            location.reload();
+                        } else {
+                            alert('❌ Error al eliminar.');
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        this.disabled = false;
+                    });
+                });
+            };
+
+            // Ejecutar al cargar
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', inicializarModal);
+            } else {
+                inicializarModal();
+            }
+        })();
     </script>
 </body>
 </html>
