@@ -12,6 +12,7 @@ urlpatterns = [
     path('guardando/<str:pk>/', guardar_sin_paciente, name='guardar_sin_paciente'),
 
     path('eliminar/<pk>/', eliminar_servicio, name='eliminar_servicio'),
+    path('eliminar_paciente/<pk>/<servicio>/', eliminar_paciente, name='eliminar_paciente'),
     path('agregar-paciente/<int:pk>/', agregar_paciente, name='agregar_paciente'),
     path('reporte/<str:clave>/', reporte_servicio, name='reporte_servicio'),
 

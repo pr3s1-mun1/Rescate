@@ -141,6 +141,11 @@
                                         </td>
                                         <td>
                                             <a href="{% url 'carga_modifica_v2_ps' servicio.clave p.clave %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                            <a href="{% url 'eliminar_paciente' p.clave servicio.clave %}"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('¿Estás seguro de eliminar este paciente?');">
+                                            Eliminar
+                                            </a>                                        
                                         </td>
                                     </tr>
                                     {% endfor %}

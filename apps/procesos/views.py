@@ -273,6 +273,11 @@ def eliminar_servicio(request, pk):
     ) 
     return redirect('formulario_buscar')
 
+def eliminar_paciente(request, pk, servicio):
+    paciente = get_object_or_404(PacientexServicio, pk=pk)
+    paciente.delete()
+    return redirect('carga_modifica_v2', servicio)
+
 def guardar_auxiliares(request, servicio, paciente):
         guardar_unidades(request, servicio)
         guardar_paramedicos(request, servicio, paciente)
