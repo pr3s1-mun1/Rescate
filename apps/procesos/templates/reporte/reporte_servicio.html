@@ -249,7 +249,7 @@
                 </td>
                                 </td>
                 <th class="label">Sexo:</th>
-                <td>{% if paciente.sexo == '1' %}NO INGRESADO{% elif paciente.sexo == '2' %}MASCULINO{% elif paciente.sexo == '3' %}FEMENINO{% else %}NO ESPECIFICADO{% endif %}</td>
+                <td>{% if paciente.sexo == 'M' %}MASCULINO{% elif paciente.sexo == 'F' %}FEMENINO{% else %}NO ESPECIFICADO{% endif %}</td>
             </tr>
             <tr>
                 <th class="label">Estado Civil:</th>
@@ -266,7 +266,7 @@
             </tr>
             <tr>
                 <th class="label">Estatura:</th>
-                <td>{{ paciente.estatura|default:"No especificado" }} m</td>
+                <td>{{ paciente.estatura_m|default:"No especificado" }} m</td>                
                 <th class="label">Complexión:</th>
                 <td>{% if paciente.complexion == '1' %}Caquexia{% elif paciente.complexion == '2' %}Delgado{% elif paciente.complexion == '3' %}Regular{% elif paciente.complexion == '4' %}Robusta{% elif paciente.complexion == '5' %}Obesa{% elif paciente.complexion == '6' %}Obesidad móribida{% else %}No especificado{% endif %}</td>
             </tr>

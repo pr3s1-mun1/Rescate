@@ -435,6 +435,15 @@ def reporte_servicio(request, clave):
     servicio = get_object_or_404(Servicio, clave=clave)
     paciente = PacientexServicio.objects.filter(servicio=servicio).first()
 
+    if paciente and paciente.estatura:
+        try:
+            estatura = float(str(paciente.estatura).replace(',', '.'))
+            paciente.estatura_m = f"{estatura / 100:.2f}"
+        except (ValueError, TypeError):
+            paciente.estatura_m = None
+    else:
+        paciente.estatura_m = None
+
     template = get_template("reporte/reporte_servicio.html")
     context = {
         "servicio": servicio,
