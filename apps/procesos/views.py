@@ -69,11 +69,11 @@ def formulario_buscar(request):
     # Crear una copia mutable de GET parameters
     filtros = request.GET.copy()
     tipo_busqueda = filtros.get('tipo_busqueda', '')
-    
+
     # Remover 'page' de los filtros para evitar conflictos
     if 'page' in filtros:
         del filtros['page']
-    
+
     # Base del queryset
     servicios = Servicio.objects.all().order_by('-clave')
 
@@ -125,7 +125,7 @@ def formulario_buscar(request):
     context = {
         'servicios': servicios_page,
         'filtros': filtros,
-        'query_params': query_params,  
+        'query_params': query_params,
         'tipos_servicio': TiposServicio.objects.all().order_by('descripcion'),
         'enfermedades': Enfermedad.objects.all().order_by('nombre'),
         'hospitales': Hospitales.objects.all().order_by('nombre'),
@@ -170,14 +170,14 @@ def construir_filtro_paciente_subquery(filtros):
 
 #Función para cargar formulario y pestañas de creación (Primera Parte)
 @requiere_sesion
-def formulario_servicio(request):    
+def formulario_servicio(request):
     context = {
         'form': ServicioForm(),
         'paramedicos': Paramedicos.objects.filter(estatus='A').exclude(clave=16).order_by('nombre'),
         'unidades': TipoUnidad.objects.all(),
         'no_mostrar_pacientes': True,
         }
-    
+
     return render(request, 'create.html', context)
 
 #Función para mostrar conteos de hojas de servicio además de los botones de selección
@@ -270,7 +270,7 @@ def eliminar_servicio(request, pk):
     Logs_Sistema.objects.create(
         usuario=request.session.get('user', 'desconocido'),
         accion=f"Eliminó servicio {pk}"
-    ) 
+    )
     return redirect('formulario_buscar')
 
 def eliminar_paciente(request, pk, servicio):
@@ -433,7 +433,7 @@ def guardar_testigos(request, paciente):
 @requiere_tipo_paramedico(3, 4, 5)
 def reporte_servicio(request, clave):
     servicio = get_object_or_404(Servicio, clave=clave)
-    paciente = PacientexServicio.objects.filter(servicio=servicio).first()
+    paciente = PacientexServicio.objects.filter(servicio=servicio).first() # Solo hay que quitar (.first())
 
     if paciente and paciente.estatura:
         try:
@@ -481,7 +481,7 @@ def obtener_colonias_por_calle(request):
     return JsonResponse(data, safe=False)
 
 def obtener_calles_por_calle(request):
-    calle_id = request.GET.get('calle_id')  
+    calle_id = request.GET.get('calle_id')
     if not calle_id:
         return JsonResponse([], safe=False)
 
@@ -587,13 +587,13 @@ def carga_modifica_v2(request, pk, ps=None):
             messages.success(request, "Servicio y paciente actualizados exitosamente")
             return redirect('carga_modifica_v2_ps', pk=pk, ps=paciente.clave)
 
-        
+
         return redirect('carga_modifica_v2', pk=pk)
 
     # Formulario del servicio
     form_servicio = ServicioForm(instance=servicio)
 
-    # Partes 
+    # Partes
     parte_instancia = PartexServico.objects.filter(servicio=servicio).first()
     form_partes = PartesAsignadoForm(instance=parte_instancia)
 
@@ -930,7 +930,7 @@ def guardar_embarazo(paciente, request):
 
     # 2. Verificamos si el usuario marcó el check de embarazo
     if paciente and request.POST.get('embarazo') == 'true':
-        
+
         # 3. PASAMOS LA INSTANCIA: Si existe, Django hará UPDATE. Si es None, hará INSERT.
         form_embarazo = EmbarazoAsignadoForm(request.POST, instance=embarazo_existente)
 
