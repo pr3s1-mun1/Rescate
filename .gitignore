@@ -1,1 +1,23 @@
+# Entornos virtuales
 venv/
+ENV/
+env/
+.env
+
+# Caché de Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Bases de datos locales (por si acaso usas sqlite para pruebas rápidas)
+*.sqlite3
+*.db
+
+# Archivos del sistema y de editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
