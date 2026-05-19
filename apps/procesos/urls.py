@@ -14,7 +14,10 @@ urlpatterns = [
     path('eliminar/<pk>/', eliminar_servicio, name='eliminar_servicio'),
     path('eliminar_paciente/<pk>/<servicio>/', eliminar_paciente, name='eliminar_paciente'),
     path('agregar-paciente/<int:pk>/', agregar_paciente, name='agregar_paciente'),
-    path('reporte/<str:clave>/', reporte_servicio, name='reporte_servicio'),
+
+    # Declaramos la ruta para el reporte, ahora con el paciente incluido
+    path('reporte/<str:clave>/<str:ps_clave>/', reporte_servicio, name='reporte_servicio'),
+
 
     path('fallo/', fallo_guardado, name='fallo_guardado'),
     path('ajax/calles_por_colonia/', obtener_colonias_por_calle, name='ajax_colonias_por_calle'),

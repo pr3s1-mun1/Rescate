@@ -431,9 +431,14 @@ def guardar_testigos(request, paciente):
             print.error(error_msg)
 
 @requiere_tipo_paramedico(3, 4, 5)
-def reporte_servicio(request, clave):
+def reporte_servicio(request, clave, ps_clave=None):
     servicio = get_object_or_404(Servicio, clave=clave)
-    paciente = PacientexServicio.objects.filter(servicio=servicio).first() # Solo hay que quitar (.first())
+
+    # Primero validamos que se esté recibiendo el numero del paciente, si no se recibe, se carga el primer paciente asociado al servicio (si es que hay alguno)
+    if ps_clave:
+        paciente = get_object_or_404(PacientexServicio, clave=ps_clave, servicio=servicio)
+    else:
+        paciente = PacientexServicio.objects.filter(servicio=servicio).first() # Solo hay que quitar (.first())
 
     if paciente and paciente.estatura:
         try:
