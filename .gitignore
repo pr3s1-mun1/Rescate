@@ -4,7 +4,7 @@ ENV/
 env/
 .env
 
-# Caché de Python.
+# Caché de Python
 **/__pycache__/
 *.pyc
 *.pyo
